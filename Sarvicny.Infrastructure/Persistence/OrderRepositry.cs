@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Email;
+using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Specification;
@@ -35,18 +36,10 @@ namespace Sarvicny.Infrastructure.Persistence
         }
 
 
-        public async Task<object> ShowOrderDetails(string orderId)
+        public async Task<object> ShowOrderDetails(string orderId, ISpecifications<Order> spec)
         {
-            var order = _context.Orders
-              .Include(o => o.Customer)
-              .ThenInclude(c => c.Cart)
-              .ThenInclude(c => c.ServiceRequests)
-              .ThenInclude(c => c.providerService)
-              .FirstOrDefault(o => o.OrderID == orderId);
-            if (order == null)
-            {
-                throw new Exception("Order Not Found");
-            }
+            var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
+          
             var customer = order.Customer;
 
             var response = new
@@ -150,5 +143,7 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return SpecificationBuilder<Order>.Build(_context.Orders, spec);
         }
+
+       
     }
 }

@@ -15,7 +15,7 @@ namespace Sarvicny.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static object AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetSection("constr").Value;
 
@@ -37,8 +37,10 @@ public static class DependencyInjection
         services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<ICriteriaRepository, CriteriaRepository>();
         services.AddScoped<IServiceProviderRepository , ServiceProviderRepository>();
+        services.AddScoped<IOrderRepository, OrderRepositry>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         
+
         services.AddAuthentication(); // UserManager / SigninManager / RoleManager
 
         return services;

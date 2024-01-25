@@ -24,7 +24,7 @@ namespace Sarvicny.Domain.Entities
 
         public List<ServiceRequest> ServiceRequests { get; set; }
 
-        //public List<ProviderService> WorkerServices = new List<ProviderService>();
+        public List<ProviderService> WorkerServices = new List<ProviderService>();
 
         //public DateTime? AddedTime { get; set; }
 

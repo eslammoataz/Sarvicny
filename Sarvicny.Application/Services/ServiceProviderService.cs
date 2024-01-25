@@ -4,6 +4,7 @@ using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
@@ -36,6 +37,7 @@ namespace Sarvicny.Application.Services
                 return new Response<object>()
 
                 {
+                    isError = true,
                     Payload = null,
                     Message = "Provider Not Found"
                 };
@@ -48,6 +50,31 @@ namespace Sarvicny.Application.Services
             }; 
         }
 
+        public async Task<Response<object>> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
+        {
+           var avaliability = await _serviceProviderRepository.AddAvailabilitySlots(slotDto, availabilityId);
+            if(avaliability == null) 
+            {
+                return new Response<object>()
+
+                {   isError= true,
+                    Payload = null,
+                    Message = "Provider Not Found"
+                };
+            }
+            else
+            {
+                _unitOfWork.Commit();
+                return new Response<object>()
+
+                {
+                    Payload = avaliability,
+                    Message = "success"
+                };
+                
+            }  
+        }
+
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
             var spec = new OrderWithCustomerSpecification();
@@ -57,8 +84,10 @@ namespace Sarvicny.Application.Services
                 return new Response<object>()
 
                 {
+                    isError = true,
                     Payload = null,
-                    Message = "Order Not Found"
+                    Message = "Order Not Found",
+                   
                 };
 
             }
@@ -79,6 +108,7 @@ namespace Sarvicny.Application.Services
                 return new Response<object>()
 
                 {
+                    isError = true,
                     Payload = null,
                     Message = "Order Not Found"
                 };
@@ -95,6 +125,7 @@ namespace Sarvicny.Application.Services
             {
                 return new Response<object>()
                 {
+                    isError = true,
                     Message = "Order was not originally approved to be Canceled",
                     Payload = null
                 };
@@ -133,6 +164,7 @@ namespace Sarvicny.Application.Services
             {
                 return new Response<ICollection<object>>()
                 {
+                    isError = true,
                     Message = "Provider Not found",
                     Payload= null
                 };
@@ -157,6 +189,7 @@ namespace Sarvicny.Application.Services
                 return new Response<ICollection<object>>()
 
                 {
+
                     Payload = null,
                     Message = "Provider is not found"
                 };
@@ -231,12 +264,27 @@ namespace Sarvicny.Application.Services
 
         public  async Task<Response<object>> ShowOrderDetails(string orderId)
         {
-            return new Response<object>()
+            var spec = new OrderWithCustomers_Carts();
+            var order = _orderRepository.ShowOrderDetails(orderId, spec);
+            if (order == null)
             {
-                Status = "Success",
-                Message = "Action Done Successfully",
-                Payload = await _serviceProviderRepository.ShowOrderDetails(orderId)
-            };
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null
+                };
+            }
+
+            else
+            {
+                return new Response<object>()
+                {
+                    Status = "Success",
+                    Message = "Action Done Successfully",
+                    Payload = order
+                };
+            }
 
 
         }

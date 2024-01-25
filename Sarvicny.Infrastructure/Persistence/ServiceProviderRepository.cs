@@ -106,7 +106,7 @@ namespace Sarvicny.Infrastructure.Persistence
             _context.ProviderAvailabilities.Add(availability);
 
             provider.Availabilities.Add(availability);
-            unitOfWork.Commit();
+           
             return availability;
 
         }
@@ -183,6 +183,27 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return SpecificationBuilder<Provider>.Build(_context.Provider, spec);
         }
+
+        public async Task<object> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
+        {
+            var availability = _context.ProviderAvailabilities.FirstOrDefault(a => a.ProviderAvailabilityID == availabilityId);
+
+            var slot = new TimeSlot
+            {
+                ProviderAvailabilityID = availability.ProviderAvailabilityID,
+                StartTime = slotDto.StartTime,
+                EndTime = slotDto.EndTime,
+                enable = true,
+
+            };
+
+
+            _context.Slots.Add(slot);
+            return slot;
+
+        }
+
+        
     }
     
 }

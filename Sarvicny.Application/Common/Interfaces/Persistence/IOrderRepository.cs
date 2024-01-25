@@ -14,10 +14,10 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<Order> GetOrderById(string OrderId, ISpecifications<Order> specifications);
 
 
-        Task<object> ShowOrderDetails(string orderId);
         Task<object> ApproveOrder(string orderId, ISpecifications<Order> spec);
         Task<object> RejectOrder(string orderId ,ISpecifications<Order> spec);
         Task<object> CancelOrder(string orderId, ISpecifications<Order> spec);
+        Task<object> ShowOrderDetails(string orderId, ISpecifications<Order> spec);
     }
 
 }

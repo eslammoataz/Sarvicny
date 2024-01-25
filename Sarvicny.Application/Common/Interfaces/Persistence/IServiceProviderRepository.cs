@@ -26,7 +26,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<object> AddAvailability(AvailabilityDto availabilityDto, string providerId);
         Task<List<TimeSlot>> ConverttoTimeSlot(List<TimeRange> timeRanges, ProviderAvailability providerAvailability);
         Task<List<object>> getAvailability(string providerId, ISpecifications<Provider> spec);
-
+        Task<object> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId);
+      
 
     }
 }
