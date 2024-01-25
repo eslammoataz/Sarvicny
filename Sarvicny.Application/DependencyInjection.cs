@@ -15,7 +15,7 @@ public static class DependencyInjection
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<ICriteriaService, CriteriaService>();
         services.AddScoped<IServiceService, ServiceService>();
-        
+        services.AddScoped<IServiceProviderService, ServiceProviderService>();
         return services;
     }
 

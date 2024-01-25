@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Sarvicny.Api",
+    "\\Sarvicny.Api\\Controllers",
+    "\\Sarvicny.Api\\Controllers\\UsersControllers",
+    "\\Sarvicny.Application",
+    "\\Sarvicny.Infrastructure",
+    "\\Sarvicny.Infrastructure\\Persistence"
+  ],
+  "SelectedNode": "\\Solution1.sln",
+  "PreviewInSolutionExplorer": false
+}

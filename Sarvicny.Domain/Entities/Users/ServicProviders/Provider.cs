@@ -10,8 +10,8 @@ public abstract class Provider : User
     public bool isVerified { get; set; }
 
 
-    // public List<ProviderService> ProviderServices { get; set; }
-    // public List<ProviderAvailability> Availabilities { get; set; } // Make sure this property is present
+     public List<ProviderService> ProviderServices { get; set; }
+     public List<ProviderAvailability> Availabilities { get; set; } // Make sure this property is present
     //list<Service>
     //image (profile)
     //image (license)

@@ -30,6 +30,6 @@ public class Service
     // Navigation property for the child services
     public List<Service> ChildServices { get; set; } = new List<Service>();
 
-    // public List<Schedule> Schedules { get; set; } = new List<Schedule>();
-    // public List<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
+    //public List<Schedule> Schedules { get; set; } = new List<Schedule>();
+     public List<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
 }

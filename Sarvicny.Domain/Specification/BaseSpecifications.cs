@@ -16,5 +16,6 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : class
     {
         Criteria = criteriaExpression;
     }
-    
+
+  
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 
@@ -19,6 +20,15 @@ namespace Sarvicny.Infrastructure.Data
         public DbSet<Service> Services { get; set; }
 
         public DbSet<Admin> Admins { get; set; }
+
+        public DbSet<ProviderService> providerServices { get; set; }
+
+        public DbSet<ProviderAvailability> ProviderAvailabilities { get; set; }
+        public DbSet<Order> Orders { get; set; }
+       
+        public DbSet<OrderStatus> OrderStatuses { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<TimeSlot> Slots { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -64,6 +74,79 @@ namespace Sarvicny.Infrastructure.Data
                 .HasForeignKey(s => s.ParentServiceID)
                 .OnDelete(DeleteBehavior.Restrict); // Choose the appropriate delete behavior
 
+
+            SeedOrderStatusData(builder);
+
+            // Define your relationships here using Fluent API
+
+            builder.Entity<Order>()
+                .HasOne(o => o.Customer)
+                .WithMany(c => c.Orders)
+                .HasForeignKey(o => o.CustomerID);
+
+            builder.Entity<Order>()
+                .HasOne(o => o.OrderStatus)
+                .WithMany()
+                .HasForeignKey(o => o.OrderStatusID);
+
+            builder.Entity<ProviderAvailability>()
+                .HasOne(wa => wa.ServiceProvider)
+                .WithMany(w => w.Availabilities)
+                .HasForeignKey(wa => wa.ServiceProviderID);
+
+            builder.Entity<TimeSlot>()
+                .HasOne(ts => ts.ProviderAvailability)
+                .WithMany(pa => pa.Slots)
+                .HasForeignKey(ts => ts.ProviderAvailabilityID);
+
+            builder.Entity<ProviderService>()
+       .HasKey(ws => new { ws.ProviderID, ws.ServiceID });
+
+            builder.Entity<ProviderService>()
+                .HasOne(ws => ws.Provider)
+                .WithMany(w => w.ProviderServices)
+                .HasForeignKey(ws => ws.ProviderID)
+                .OnDelete(DeleteBehavior.Restrict); // Choose the appropriate delete behavior
+
+            builder.Entity<ProviderService>()
+                .HasOne(ws => ws.Service)
+                .WithMany(s => s.ProviderServices)
+                .HasForeignKey(ws => ws.ServiceID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ProviderAvailability>()
+               .HasOne(wa => wa.ServiceProvider)
+               .WithMany(w => w.Availabilities)
+               .HasForeignKey(wa => wa.ServiceProviderID);
+
+            builder.Entity<TimeSlot>()
+                .HasOne(ts => ts.ProviderAvailability)
+                .WithMany(pa => pa.Slots)
+                .HasForeignKey(ts => ts.ProviderAvailabilityID);
+
+            builder.Entity<Cart>()
+                .HasMany(sr => sr.ServiceRequests)
+                .WithOne(c => c.Cart)
+                .HasForeignKey(c => c.CartID);
+
+            builder.Entity<Customer>()
+                   .HasOne(c => c.Cart)
+                   .WithOne(c => c.Customer)
+                   .HasForeignKey<Customer>(c => c.CartID);
+
+
+
+        }
+        private static void SeedOrderStatusData(ModelBuilder builder)
+        {
+            builder.Entity<OrderStatus>().HasData(
+                 new OrderStatus
+                 {
+                     OrderStatusID = "1", // Adjust the ID as needed
+                     StatusName = "Set"
+
+                 }
+             );
         }
 
 

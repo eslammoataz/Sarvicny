@@ -8,6 +8,7 @@ using Sarvicny.Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Infrastructure.Persistence;
+using Sarvicny.Application.Services.Abstractions;
 
 namespace Sarvicny.Infrastructure;
 
@@ -35,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IRoleRepository , RoleRepository>();
         services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<ICriteriaRepository, CriteriaRepository>();
+        services.AddScoped<IServiceProviderRepository , ServiceProviderRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         
         services.AddAuthentication(); // UserManager / SigninManager / RoleManager

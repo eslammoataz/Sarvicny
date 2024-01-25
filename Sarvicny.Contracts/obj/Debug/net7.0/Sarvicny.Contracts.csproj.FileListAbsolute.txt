@@ -21,3 +21,16 @@ E:\Github Repos\Sarvicny\Solution1\Sarvicny.Contracts\obj\Debug\net7.0\refint\Sa
 E:\Github Repos\Sarvicny\Solution1\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.pdb
 E:\Github Repos\Sarvicny\Solution1\Sarvicny.Contracts\obj\Debug\net7.0\ref\Sarvicny.Contracts.dll
 E:\Github Repos\Sarvicny\Solution1\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.AssemblyReference.cache
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Contracts.deps.json
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Contracts.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Contracts.pdb
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.AssemblyReference.cache
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.AssemblyInfoInputs.cache
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.AssemblyInfo.cs
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.CoreCompileInputs.cache
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.sourcelink.json
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\refint\Sarvicny.Contracts.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.pdb
+D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\ref\Sarvicny.Contracts.dll
