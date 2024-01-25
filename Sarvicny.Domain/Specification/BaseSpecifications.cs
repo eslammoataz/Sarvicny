@@ -16,6 +16,14 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : class
     {
         Criteria = criteriaExpression;
     }
+    protected virtual void AddInclude(Expression<Func<T, object>> includeExpression)
+    {
+        Includes.Add(includeExpression);
+    }
+    protected virtual void AddThenInclude(Expression<Func<T, object>> thenIncludeExpression)
+    {
+        Includes.Add(thenIncludeExpression);
+    }
 
-  
+
 }

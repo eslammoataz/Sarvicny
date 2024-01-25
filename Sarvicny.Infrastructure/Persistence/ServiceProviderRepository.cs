@@ -10,6 +10,7 @@ using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
+using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 using System;
 using System.Collections;
@@ -41,10 +42,13 @@ namespace Sarvicny.Infrastructure.Persistence
             _context.providerServices.Add(workerservice);
             unitOfWork.Commit();
         }
-
-        public async Task<Worker> FindByIdAsync(string workerId)
+        public async Task<Provider> FindByIdAsync(string workerId)
         {
-            return await _context.Users.FindAsync(workerId) as Worker;
+            return _context.Provider.FirstOrDefault(p => p.Id == workerId);
+        }
+        public async Task<Provider> FindByIdWithSpecificationAsync(string workerId, ISpecifications<Provider> specifications)
+        {
+            return await ApplySpecification(specifications).FirstOrDefaultAsync(p=>p.Id== workerId);
         }
 
         public async Task<bool> WorkerExists(string workerId)
@@ -55,25 +59,20 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             var worker = await _context.Users.FindAsync(workerId) as Worker;
 
-            if (worker == null)
-            {
+            //if (worker == null)
+            //{
 
-                return false;
-            }
+            //    return false;
+            //}
 
             return worker.ProviderServices.Any(ws => ws.ServiceID == serviceId);
         }
 
-        public async Task<ICollection<object>> GetRegisteredServices(string workerId)
+        public async Task<ICollection<object>> GetRegisteredServices(string workerId, ISpecifications<Provider> spec)
         {
-            var worker = await _context.Workers
-               .Include(w => w.ProviderServices)
-               .ThenInclude(ws => ws.Service)
-               .FirstOrDefaultAsync(w => w.Id == workerId);
-            if (worker == null)
-            {
-                throw new Exception("Provider Not Found");
-            }
+
+            var worker = await ApplySpecification(spec).FirstOrDefaultAsync(w => w.Id == workerId);
+
             var registeredServicesInfo = worker.ProviderServices
                .Select(ws => new
                {
@@ -84,14 +83,16 @@ namespace Sarvicny.Infrastructure.Persistence
             return registeredServicesInfo;
         }
 
-        public async Task<string> AddAvailability(AvailabilityDto availabilityDto, string providerId)
+
+
+        public async Task<object> AddAvailability(AvailabilityDto availabilityDto, string providerId)
         {
             var provider = _context.Provider.FirstOrDefault(w => w.Id == providerId);
-            if (provider == null)
-            {
-                throw new Exception("Provider Not Found");
+            //if (provider == null)
+            //{
+            //    throw new Exception("Provider Not Found");
 
-            }
+            //}
             var availability = new ProviderAvailability
             {
                 ServiceProviderID = providerId,
@@ -106,7 +107,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
             provider.Availabilities.Add(availability);
             unitOfWork.Commit();
-            return "Success";
+            return availability;
 
         }
 
@@ -132,17 +133,10 @@ namespace Sarvicny.Infrastructure.Persistence
             return timeSlots;
         }
 
-        public async Task<List<object>> getAvailability(string providerId)
+        public async Task<List<object>> getAvailability(string providerId, ISpecifications<Provider> spec)
         {
-            var provider = _context.Provider
-                            .Include(p => p.Availabilities)
-                             .ThenInclude(a => a.Slots)
-                              .FirstOrDefault(p => p.Id == providerId);
+            var provider = await ApplySpecification(spec).FirstOrDefaultAsync(p => p.Id == providerId);
 
-            if (provider == null)
-            {
-                throw new Exception("Provider Not Found");
-            }
             List<object> availability = new List<object>();
 
             var avails = provider.Availabilities
@@ -185,120 +179,9 @@ namespace Sarvicny.Infrastructure.Persistence
 
         }
 
-        public async Task<object> ShowOrderDetails(string orderId)
+        private IQueryable<Provider> ApplySpecification(ISpecifications<Provider> spec)
         {
-            var order = _context.Orders
-              .Include(o => o.Customer)
-              .ThenInclude(c => c.Cart)
-              .ThenInclude(c => c.ServiceRequests)
-              .ThenInclude(c => c.providerService)
-              .FirstOrDefault(o => o.OrderID == orderId);
-            if (order == null)
-            {
-                throw new Exception("Order Not Found");
-            }
-            var customer = order.Customer;
-
-            var response = new
-            {
-                CustomerData = new
-                {
-                    customer.FirstName,
-                    customer.Address,
-                    // Add other customer properties as needed
-                },
-                ServiceData = customer.Cart.ServiceRequests.Select(s => new
-                {
-                    ServiceId = s.providerService.Service.ServiceName
-                }).ToList<object>(),
-            };
-            return response;
-        }
-
-        public  async Task<string> ApproveOrder(string orderId)
-        {
-            var order = _context.Orders
-            .Include(o => o.Customer)
-            .FirstOrDefault(o => o.OrderID == orderId);
-            if (order == null)
-            {
-                throw new Exception("Order Not Found");
-
-            }
-
-            var customer = order.Customer;
-
-            //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
-            order.OrderStatusID = "2";
-            order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Approved");
-
-           
-            unitOfWork.Commit();
-
-            var message = new EmailDto(customer.Email!, "Sarvicny: Approved", "Your order is approved seccessfully");
-
-            _emailService.SendEmail(message);
-            unitOfWork.Commit();
-            return "Order is approved";
-        }
-
-        public async Task<string> RejectOrder(string orderId)
-        {
-            var order = _context.Orders
-                .Include(o => o.Customer)
-                .FirstOrDefault(o => o.OrderID == orderId);
-            if (order == null)
-            {
-                throw new Exception("Order Not Found");
-            }
-            var customer = order.Customer;
-
-            //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
-            order.OrderStatusID = "3";
-            order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Rejected");
-             unitOfWork.Commit ();
-
-            var message = new EmailDto(customer.Email!, "Sarvicny: Rejected", "Your order is Rejected ");
-
-            _emailService.SendEmail(message);
-            unitOfWork.Commit();
-            ///ReAsignnnnnn??
-            return "Order is rejected";
-
-        }
-
-        public async  Task<string> CancelOrder(string orderId)
-        {
-            var order = _context.Orders
-               .Include(o => o.Customer)
-               .FirstOrDefault(o => o.OrderID == orderId);
-            if (order == null)
-            {
-                throw new Exception("Order Not Found");
-
-            }
-            if (order.OrderStatusID == "2") //Approved
-            {
-
-                //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
-                order.OrderStatusID = "4";
-                order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Canceled");
-            }
-            else
-            {
-                throw new Exception("Order was not originally approved to be Canceled");
-            }
-            var customer = order.Customer;
-
-            var message = new EmailDto(customer.Email!, "Sarvicny: Canceled", "Unfortunally your order is canceled");
-
-            _emailService.SendEmail(message);
-
-            unitOfWork.Commit();
-
-            ///ReAsignnnnnn??
-            return "Order is canceled";
-
+            return SpecificationBuilder<Provider>.Build(_context.Provider, spec);
         }
     }
     

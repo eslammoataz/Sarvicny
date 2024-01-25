@@ -1,6 +1,6 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Application.Services.Specifications;
+
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Specification;

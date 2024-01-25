@@ -1,7 +1,7 @@
 ﻿using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Specification;
 
-namespace Sarvicny.Application.Services.Specifications;
+
 
 public class ServiceWithCriteriaSpecification : BaseSpecifications<Service>
 {
@@ -9,6 +9,6 @@ public class ServiceWithCriteriaSpecification : BaseSpecifications<Service>
     {
         Includes.Add(s => s.Criteria);
     }
-    
-    
+
+
 }
