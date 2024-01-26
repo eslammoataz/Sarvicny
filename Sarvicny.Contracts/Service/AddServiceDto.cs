@@ -11,9 +11,6 @@ public class AddServiceDto
     [Required(ErrorMessage = "Service Description is Required ")]
     public string Description { get; set; }
 
-    [Required(ErrorMessage = "Service Criteria is required")]
-    public string CriteriaName { get; set; }
-
     [Required(ErrorMessage = "Service Price is Required ")]
     public decimal Price { get; set; }
 

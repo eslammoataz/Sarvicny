@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 
 namespace Sarvicny.Infrastructure.Persistence;
@@ -21,6 +22,16 @@ public class CriteriaRepository : ICriteriaRepository
     public async Task<ICollection<Criteria>> GetAllCriterias()
     {
         return await _context.Criterias.ToListAsync();
+    }
+
+    public async Task<Criteria> GetCriteriaById(ISpecifications<Criteria> specifications)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ICollection<Criteria>> GetAllCriterias(ISpecifications<Criteria> specifications)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<Criteria> UpdateCriteria(Criteria criteria)

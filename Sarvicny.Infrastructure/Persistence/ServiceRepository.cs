@@ -25,9 +25,9 @@ public class ServiceRepository : IServiceRepository
         return await ApplySpecification(spec).ToListAsync();
     }
 
-    public async Task<Service> GetServiceById(string serviceId, ISpecifications<Service> specifications)
+    public async Task<Service> GetServiceById(ISpecifications<Service> specifications)
     {
-        return await ApplySpecification(specifications).FirstOrDefaultAsync(s => s.ServiceID == serviceId);
+        return await ApplySpecification(specifications).FirstOrDefaultAsync();
     }
 
     public async Task<Service> UpdateService(Service service)
@@ -42,8 +42,9 @@ public class ServiceRepository : IServiceRepository
 
     public async Task AddServiceAsync(Service newService)
     {
-        throw new NotImplementedException();
+        await _context.Services.AddAsync(newService);
     }
+    
 
     private IQueryable<Service> ApplySpecification(ISpecifications<Service> spec)
     {

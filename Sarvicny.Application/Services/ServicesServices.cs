@@ -1,18 +1,20 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
-
+using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services;
 
-public class ServiceService : IServiceService
+public class ServicesServices : IServicesService
 {
     private readonly IServiceRepository _serviceRepository;
-    public ServiceService(IServiceRepository serviceRepository)
+    private readonly IUnitOfWork _unitOfWork;
+    public ServicesServices(IServiceRepository serviceRepository, IUnitOfWork unitOfWork)
     {
         _serviceRepository = serviceRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Response<ICollection<object>>> GetAllServices()
@@ -32,16 +34,14 @@ public class ServiceService : IServiceService
 
     public async Task<Response<Service>> GetServiceById(string serviceId)
     {
-        var spec = new ServiceWithCriteriaSpecification();
-        var service = await _serviceRepository.GetServiceById(serviceId, spec);
+        var spec = new ServiceWithCriteriaSpecification(serviceId);
+        var service = await _serviceRepository.GetServiceById(spec);
         var response = new Response<Service>();
+        response.Status = "Success";
+        response.Message = "Action Done Successfully";
         response.Payload = service;
+        
         return response;
-    }
-
-    public async Task<Response<ICollection<object>>> GetAllServices(ISpecifications<Service> specifications)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<Response<Service>> GetServiceById(string serviceId, ISpecifications<Service> specifications)
@@ -63,7 +63,28 @@ public class ServiceService : IServiceService
     {
         var response = new Response<Service>();
         await _serviceRepository.AddServiceAsync(newService);
+        _unitOfWork.Commit();
+        response.Status = "Success";
+        response.Message = "Action Done Successfully";
         response.Payload = newService;
+        
         return response;
+    }
+
+    public async Task<Response<object>> GetAllWorkersForSpecificService(string serviceId)
+    {
+        var spec = new ServiceWithWorkersSpecification();
+        var service = await _serviceRepository.GetServiceById(spec);
+        
+        var response = new Response<object>();
+        response.Status = "Success";
+        response.Message = "Action Done Successfully";
+        response.Payload = service;
+        return response;
+    }
+
+    public async Task<Response<object>> GetAllWorkersForService(string serviceId)
+    {
+        throw new NotImplementedException();
     }
 }

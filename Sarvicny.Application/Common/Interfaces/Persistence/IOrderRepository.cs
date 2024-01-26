@@ -11,13 +11,11 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 {
     public interface IOrderRepository
     {
-        Task<Order> GetOrderById(string OrderId, ISpecifications<Order> specifications);
-
-
-        Task<object> ApproveOrder(string orderId, ISpecifications<Order> spec);
-        Task<object> RejectOrder(string orderId ,ISpecifications<Order> spec);
-        Task<object> CancelOrder(string orderId, ISpecifications<Order> spec);
-        Task<object> ShowOrderDetails(string orderId, ISpecifications<Order> spec);
+        Task<Order> GetOrderById(ISpecifications<Order> specifications);
+        Task<object> ApproveOrder(ISpecifications<Order> spec);
+        Task<object> RejectOrder(ISpecifications<Order> spec);
+        Task<object> CancelOrder(ISpecifications<Order> spec);
+        Task<object> ShowOrderDetails(ISpecifications<Order> spec);
     }
 
 }

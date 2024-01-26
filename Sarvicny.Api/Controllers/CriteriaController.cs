@@ -52,9 +52,9 @@ public class CriteriaController : ControllerBase
 
     [HttpPost]
     [Route("addservice")]
-    public async Task<IActionResult> AddServicesToCriteria(string criteriaId, [FromBody] string serviceId)
+    public async Task<IActionResult> AddServicesToCriteria(string criteriaId, string serviceId)
     {
-        var response = await _criteriaService.AddServiceToCriteria(serviceId, criteriaId);
+        var response = await _criteriaService.AddServiceToCriteria(criteriaId, serviceId);
 
 
         if (response.isError)

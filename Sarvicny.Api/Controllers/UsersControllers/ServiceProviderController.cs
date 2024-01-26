@@ -21,27 +21,11 @@ namespace Sarvicny.Api.Controllers.UsersControllers
     [ApiController]
     public class ServiceProviderController : ControllerBase
     {
-        private readonly AppDbContext context;
-        private readonly IConfiguration config;
-        private readonly UserManager<User> workerManager;
-        private readonly ILogger<ServiceProviderController> logger;
-        private readonly ServiceProviderService serviceProviderService;
-        private readonly IEmailService emailService;
-        private readonly IServiceProviderService workerServices;
-        private readonly IAuthenticationService authenticationService;
-        private readonly RoleManager<IdentityRole> roleManager;
-        public ServiceProviderController(AppDbContext _context, IConfiguration _config,
-        RoleManager<IdentityRole> _roleManager, UserManager<User> _customerManager,
-        ILogger<ServiceProviderController> logger, ServiceProviderService serviceProviderService, IEmailService emailService, IAuthenticationService authenticationService, IServiceProviderService workerServices)
+     
+        private readonly IServiceProviderService _serviceProviderService;
+        public ServiceProviderController(IServiceProviderService serviceProviderService)
         {
-            context = _context;
-            config = _config;
-            roleManager = _roleManager;
-            workerManager = _customerManager;
-            this.logger = logger;
-            this.serviceProviderService = serviceProviderService;
-            this.emailService = emailService;
-            this.workerServices = workerServices;
+            _serviceProviderService = serviceProviderService;
         }
 
 
@@ -50,7 +34,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         public async Task<IActionResult> AddAvailability(AvailabilityDto availabilityDto, string workerID)
         {
 
-            var Response = await serviceProviderService.AddAvailability(availabilityDto, workerID);
+            var Response = await _serviceProviderService.AddAvailability(availabilityDto, workerID);
 
             if (Response.isError)
             {
@@ -65,7 +49,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("SetAvailabilitySlots")]
         public async Task<IActionResult> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
         {
-            var Response = await serviceProviderService.AddAvailabilitySlots(slotDto, availabilityId);
+            var Response = await _serviceProviderService.AddAvailabilitySlots(slotDto, availabilityId);
             if (Response.isError) 
             { 
                 return BadRequest(Response);
@@ -78,7 +62,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         public async Task<IActionResult> GetServiceProviderAvailabilityAsync(string providerId)
 
         {
-            var Response = await serviceProviderService.getAvailability(providerId);
+            var Response = await _serviceProviderService.getAvailability(providerId);
 
             if (Response == null)
             {
@@ -87,17 +71,12 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
             return Ok(Response);
         }
-
-
-       
-
-
         
         [HttpPost]
         [Route("approveorder")]
         public async Task<IActionResult> ApproveOrder(string orderId)
         {
-            var Response = await serviceProviderService.ApproveOrder(orderId);
+            var Response = await _serviceProviderService.ApproveOrder(orderId);
 
             if (Response.isError)
             {
@@ -110,7 +89,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("rejectorder")]
         public async Task<IActionResult> RejectOrder(string orderId)
         {
-            var Response = await serviceProviderService.RejectOrder(orderId);
+            var Response = await _serviceProviderService.RejectOrder(orderId);
 
             if (Response.isError)
             {
@@ -123,7 +102,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("Cancelorder")]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
-            var Response = await serviceProviderService.CancelOrder(orderId);
+            var Response = await _serviceProviderService.CancelOrder(orderId);
 
             if (Response.isError)
             {
@@ -136,7 +115,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [HttpGet("ShowOrders")]
         public async Task<IActionResult> ShowOrderDetails(string orderId)
         {
-            var Response = await serviceProviderService.ShowOrderDetails(orderId);
+            var Response = await _serviceProviderService.ShowOrderDetails(orderId);
 
             if (Response.isError)
             {
@@ -148,13 +127,27 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [HttpGet("GetProviders")]
         public async Task<IActionResult> GetAllServiceProviders()
         {
-            var Response = await serviceProviderService.GetAllServiceProviders();
+            var Response = await _serviceProviderService.GetAllServiceProviders();
 
             if (Response.isError)
             {
                 return BadRequest(Response);
             }
             return Ok(Response);
+        }
+
+        [HttpPost]
+        [Route("RegisterService")]
+        public async Task<IActionResult> RegisterService(string workerId, string serviceId, decimal price)
+        {
+            var response = await _serviceProviderService.RegisterServiceAsync(workerId, serviceId, price);
+            
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+            
         }
 
 

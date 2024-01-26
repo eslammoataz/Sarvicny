@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sarvicny.Domain.Entities;
 
 namespace Sarvicny.Application.Services.Abstractions
 {
     public interface IServiceProviderService
     {
-        Task<Response<string>> RegisterService(string workerId, string serviceId, decimal Price); //done
+        Task<Response<ProviderService>> RegisterServiceAsync(string workerId, string serviceId, decimal Price); //done
         Task<Response<ICollection<object>>> GetRegisteredServices(string workerId); //done
 
         Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string workerId); //done

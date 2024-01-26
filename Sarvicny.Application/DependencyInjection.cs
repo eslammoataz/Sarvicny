@@ -14,7 +14,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<ICriteriaService, CriteriaService>();
-        services.AddScoped<IServiceService, ServiceService>();
+        services.AddScoped<IServicesService, ServicesServices>();
         services.AddScoped<IServiceProviderService, ServiceProviderService>();
         
 

@@ -23,14 +23,16 @@ public class CriteriaService : ICriteriaService
     public async Task<Response<ICollection<Criteria>>> GetAllCriteria()
     {
         var response = new Response<ICollection<Criteria>>();
-        response.Payload = await _criteriaRepository.GetAllCriterias();
+        var spec = new BaseSpecifications<Criteria>();
+        response.Payload = await _criteriaRepository.GetAllCriterias(spec);
         return response;
     }
 
     public async Task<Response<Criteria>> GetCriteriaById(string criteriaId)
     {
         var response = new Response<Criteria>();
-        response.Payload = await _criteriaRepository.GetCriteriaById(criteriaId);
+        var spec = new BaseSpecifications<Criteria>(c=> c.CriteriaID == criteriaId);
+        response.Payload = await _criteriaRepository.GetCriteriaById(spec);
         return response;
     }
 
@@ -56,8 +58,9 @@ public class CriteriaService : ICriteriaService
     public async Task<Response<object>> AddServiceToCriteria(string criteriaId, string serviceId)
     {
         var response = new Response<object>();
+        var spec1 = new BaseSpecifications<Criteria>(c => c.CriteriaID == criteriaId);
 
-        var criteria = _criteriaRepository.GetCriteriaById(criteriaId);
+        var criteria = await _criteriaRepository.GetCriteriaById(spec1);
 
         if (criteria == null)
         {
@@ -68,8 +71,8 @@ public class CriteriaService : ICriteriaService
             return response;
         }
 
-        var spec = new BaseSpecifications<Service>();
-        var service = _serviceRepository.GetServiceById(serviceId, spec);
+        var spec = new BaseSpecifications<Service>(s => s.ServiceID == serviceId);
+        var service = await _serviceRepository.GetServiceById(spec);
 
         if (service == null)
         {
@@ -82,6 +85,10 @@ public class CriteriaService : ICriteriaService
         
         
         await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId);
+        
+        response.Status = "Success";
+        response.Message = "Action Done Successfully";
+        response.Payload = service;
         _unitOfWork.Commit();
 
         return response;

@@ -144,6 +144,30 @@ namespace Sarvicny.Infrastructure.Persistence
             return SpecificationBuilder<Order>.Build(_context.Orders, spec);
         }
 
-       
+
+        public async Task<Order> GetOrderById(ISpecifications<Order> specifications)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<object> ApproveOrder(ISpecifications<Order> spec)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<object> RejectOrder(ISpecifications<Order> spec)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<object> CancelOrder(ISpecifications<Order> spec)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<object> ShowOrderDetails(ISpecifications<Order> spec)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

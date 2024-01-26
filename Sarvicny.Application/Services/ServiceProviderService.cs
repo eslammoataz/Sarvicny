@@ -2,6 +2,7 @@
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
+using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
@@ -29,9 +30,15 @@ namespace Sarvicny.Application.Services
             _orderRepository = orderRepository;
         }
 
+        public async Task<Response<ICollection<object>>> GetRegisteredServices(string workerId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string workerId)
         {
-            var provider = _serviceProviderRepository.FindByIdAsync(workerId);
+            var spec = new BaseSpecifications<Provider>();
+            var provider = _serviceProviderRepository.FindByIdAsync(spec);
             if (provider == null)
             {
                 return new Response<object>()
@@ -48,6 +55,11 @@ namespace Sarvicny.Application.Services
                 Payload = await _serviceProviderRepository.AddAvailability(availabilityDto, workerId),
                 Message = "success"
             }; 
+        }
+
+        public async Task<Response<ICollection<object>>> getAvailability(string workerId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<Response<object>> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
@@ -78,7 +90,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
             var spec = new OrderWithCustomerSpecification();
-            var order = _orderRepository.GetOrderById(orderId, spec);
+            var order = _orderRepository.GetOrderById( spec);
             if (order == null)
             {
                 return new Response<object>()
@@ -94,7 +106,7 @@ namespace Sarvicny.Application.Services
             return new Response<object>()
 
             {
-                Payload = await _orderRepository.ApproveOrder(orderId,spec),
+                Payload = await _orderRepository.ApproveOrder(spec),
                 Message = "Success"
             };
 }
@@ -102,7 +114,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> CancelOrder(string orderId)
         {
             var spec = new OrderWithCustomerSpecification();
-            var order = _orderRepository.GetOrderById(orderId, spec);
+            var order = _orderRepository.GetOrderById(spec);
             if (order == null)
             {
                 return new Response<object>()
@@ -118,7 +130,7 @@ namespace Sarvicny.Application.Services
             var Response= new Response<object>()
             {
                 Message = "success",
-                Payload = await _orderRepository.CancelOrder(orderId, spec),
+                Payload = await _orderRepository.CancelOrder(spec),
               
             };
             if (Response.Payload == null)
@@ -155,77 +167,91 @@ namespace Sarvicny.Application.Services
 
     }
 
-        public async Task<Response<ICollection<object>>> getAvailability(string providerId)
+        // public async Task<Response<ICollection<object>>> getAvailability(string providerId)
+        // {
+        //     var spec = new ProviderWithAvailabilitesSpecification();
+        //     var provider= _serviceProviderRepository.FindByIdWithSpecificationAsync(providerId, spec);
+        //
+        //     if (provider == null)
+        //     {
+        //         return new Response<ICollection<object>>()
+        //         {
+        //             isError = true,
+        //             Message = "Provider Not found",
+        //             Payload= null
+        //         };
+        //     }
+        //
+        //     return new Response<ICollection<object>>()
+        //     {
+        //         
+        //         Message = "success",
+        //         Payload = await _serviceProviderRepository.getAvailability(providerId,spec)
+        //     };
+        //
+        // }
+
+        // public async Task<Response<ICollection<object>>> GetRegisteredServices(string workerId)
+        // {
+        //     var spec = new ServiceProviderWithServiceSpecificationcs();
+        //     var provider = _serviceProviderRepository.FindByIdWithSpecificationAsync(workerId,spec);
+        //    
+        //     if (provider == null)
+        //     {
+        //         return new Response<ICollection<object>>()
+        //
+        //         {
+        //
+        //             Payload = null,
+        //             Message = "Provider is not found"
+        //         };
+        //     }
+        //
+        //     return new Response<ICollection<object>>()
+        //
+        //     {
+        //         Payload = await _serviceProviderRepository.GetRegisteredServices(workerId, spec),
+        //         Message = "Success"
+        //     };
+        // }
+
+
+        public async Task<Response<ProviderService>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
         {
-            var spec = new ProviderWithAvailabilitesSpecification();
-            var provider= _serviceProviderRepository.FindByIdWithSpecificationAsync(providerId, spec);
+            var spec1 = new ProviderWithServicesSpecification();
+            
+            var worker = await _serviceProviderRepository.FindByIdAsync(spec1);
+            var spec = new ServiceWithProvidersSpecification(serviceId);
+            var service = await _serviceRepository.GetServiceById(spec);
 
-            if (provider == null)
+            var response = new Response<ProviderService>();
+            
+            if (worker == null)
             {
-                return new Response<ICollection<object>>()
-                {
-                    isError = true,
-                    Message = "Provider Not found",
-                    Payload= null
-                };
-            }
-
-            return new Response<ICollection<object>>()
-            {
-                
-                Message = "success",
-                Payload = await _serviceProviderRepository.getAvailability(providerId,spec)
-            };
-
-        }
-
-        public async Task<Response<ICollection<object>>> GetRegisteredServices(string workerId)
-        {
-            var spec = new ServiceProviderWithServiceSpecificationcs();
-            var provider = _serviceProviderRepository.FindByIdWithSpecificationAsync(workerId,spec);
-           
-            if (provider == null)
-            {
-                return new Response<ICollection<object>>()
-
-                {
-
-                    Payload = null,
-                    Message = "Provider is not found"
-                };
-            }
-
-            return new Response<ICollection<object>>()
-
-            {
-                Payload = await _serviceProviderRepository.GetRegisteredServices(workerId, spec),
-                Message = "Success"
-            };
-        }
-
-
-        public async Task<Response<string>> RegisterService(string workerId, string serviceId, decimal price)
-        {
-            var user = await _serviceProviderRepository.FindByIdAsync(workerId);
-            var spec = new BaseSpecifications<Service>();
-            var service = _serviceRepository.GetServiceById(serviceId , spec);
-
-            if (user == null || !(user is Worker))
-            {
-                return new Response<string> { isError = true, Message = "Worker Not Found" };
+                response.isError = true;
+                response.Status = "failed";
+                response.Message = "Worker Not Found";
+                response.Errors.Add("Worker Not Found");
+                return response;
             }
 
             if (service == null)
             {
-                return new Response<string> { isError = true, Message = "Service Not Found" };
+                response.isError = true;
+                response.Status = "failed";
+                response.Message = "Service Not Found";
+                response.Errors.Add("Service Not Found");
+                return response;
             }
-
-          
-
-            if (await _serviceProviderRepository.WorkerExists(workerId) ||
-                await _serviceProviderRepository.IsServiceRegisteredForWorker(workerId,serviceId))
+            
+            var isServiceRegistered = worker.ProviderServices.Any(ws => ws.ServiceID == serviceId);
+            if (isServiceRegistered)
             {
-                return new Response<string> { isError = true, Message = "Worker already registered for this service" };
+                response.isError = true;
+                response.Status = "failed";
+                response.Message = "Service Already Registered";
+                response.Errors.Add("Service Already Registered");
+                return response;
             }
 
             var workerService = new ProviderService()
@@ -236,14 +262,21 @@ namespace Sarvicny.Application.Services
             };
 
             await _serviceProviderRepository.AddProviderService(workerService);
+            worker.ProviderServices.Add(workerService);
+            service.ProviderServices.Add(workerService);
+            _unitOfWork.Commit();
 
-            return new Response<string> { Message = "Worker registered for Service" };
+            response.Status = "Success";
+            response.Message = "Action Done Successfully";
+            response.Payload = workerService;
+            return response;
+            
         }
 
         public async Task<Response<object>> RejectOrder(string orderId)
         {
             var spec = new OrderWithCustomerSpecification();
-            var order = _orderRepository.GetOrderById(orderId, spec);
+            var order = _orderRepository.GetOrderById(spec);
             if (order == null)
             {
                 return new Response<object>()
@@ -257,7 +290,7 @@ namespace Sarvicny.Application.Services
             return new Response<object>()
 
             {
-                Payload = await _orderRepository.RejectOrder(orderId, spec),
+                Payload = await _orderRepository.RejectOrder(spec),
                 Message = "Success"
             };
          }
@@ -265,7 +298,7 @@ namespace Sarvicny.Application.Services
         public  async Task<Response<object>> ShowOrderDetails(string orderId)
         {
             var spec = new OrderWithCustomers_Carts();
-            var order = _orderRepository.ShowOrderDetails(orderId, spec);
+            var order = _orderRepository.ShowOrderDetails(spec);
             if (order == null)
             {
                 return new Response<object>()

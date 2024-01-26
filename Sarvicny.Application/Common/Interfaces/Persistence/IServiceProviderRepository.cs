@@ -16,13 +16,11 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 {
     public interface IServiceProviderRepository
     {
-        Task<Provider> FindByIdAsync(string workerId);
-        Task<Provider> FindByIdWithSpecificationAsync(string workerId, ISpecifications<Provider>spec);
-
+        Task<Provider> FindByIdAsync(ISpecifications<Provider> specifications);
         Task<bool> WorkerExists(string workerId);
         Task AddProviderService(ProviderService workerService);
         Task<bool> IsServiceRegisteredForWorker(string workerId, string serviceId);
-        Task<ICollection<object>> GetRegisteredServices(string workerId, ISpecifications<Provider>spec =null);
+        Task<ICollection<object>> GetRegisteredServices(ISpecifications<Provider>specifications);
         Task<object> AddAvailability(AvailabilityDto availabilityDto, string providerId);
         Task<List<TimeSlot>> ConverttoTimeSlot(List<TimeRange> timeRanges, ProviderAvailability providerAvailability);
         Task<List<object>> getAvailability(string providerId, ISpecifications<Provider> spec);

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Sarvicny.Domain.Entities;
 
@@ -18,13 +19,16 @@ public class Service
     public string? CriteriaID { get; set; }
 
     // Navigation property for the Criteria relationship
+    [JsonIgnore]
     public Criteria? Criteria { get; set; }
 
 
     // Foreign key for self-referencing relationship
+  
     public string? ParentServiceID { get; set; }
 
     // Navigation property for the parent service
+    [JsonIgnore]
     public Service? ParentService { get; set; }
 
     // Navigation property for the child services

@@ -7,10 +7,8 @@ public interface IServiceRepository
 {
     
     Task<ICollection<Service>> GetAllServices(ISpecifications<Service> specifications);
-    Task<Service> GetServiceById(string serviceId , ISpecifications<Service> specifications);
+    Task<Service> GetServiceById(ISpecifications<Service> specifications);
     Task<Service> UpdateService(Service service);
     Task<Service> DeleteService(string serviceId);
     Task AddServiceAsync(Service newService);
-    
-    
 }

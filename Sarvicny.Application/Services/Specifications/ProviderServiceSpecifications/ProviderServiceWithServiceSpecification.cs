@@ -6,13 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sarvicny.Application.Services.Specifications.ProviderServiceSpecifications
-{
-    public class ProviderServiceWithServiceSpecification: BaseSpecifications<ProviderService>
-    {
-        ProviderServiceWithServiceSpecification() {
+namespace Sarvicny.Application.Services.Specifications.ProviderServiceSpecifications;
 
-            Includes.Add(p => p.Service);
-        }
+public class ProviderServiceWithServiceSpecification : BaseSpecifications<ProviderService>
+{
+    ProviderServiceWithServiceSpecification()
+    {
+        Includes.Add(p => p.Service);
     }
 }

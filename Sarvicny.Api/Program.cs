@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Sarvicny.Application;
@@ -43,7 +44,11 @@ var builder = WebApplication.CreateBuilder(args);
             options.SlidingExpiration = true;
         });
 
-
+    // builder.Services.AddControllers().AddJsonOptions(options =>
+    // {
+    //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    // });
 
 
     builder.Services.AddSingleton(Configuration);

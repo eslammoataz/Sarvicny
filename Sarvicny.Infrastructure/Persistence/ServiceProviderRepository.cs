@@ -42,10 +42,11 @@ namespace Sarvicny.Infrastructure.Persistence
             _context.providerServices.Add(workerservice);
             unitOfWork.Commit();
         }
-        public async Task<Provider> FindByIdAsync(string workerId)
+        public async Task<Provider> FindByIdAsync(ISpecifications<Provider> specifications)
         {
-            return _context.Provider.FirstOrDefault(p => p.Id == workerId);
+            return await ApplySpecification(specifications).FirstOrDefaultAsync();
         }
+
         public async Task<Provider> FindByIdWithSpecificationAsync(string workerId, ISpecifications<Provider> specifications)
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync(p=>p.Id== workerId);
@@ -66,6 +67,11 @@ namespace Sarvicny.Infrastructure.Persistence
             //}
 
             return worker.ProviderServices.Any(ws => ws.ServiceID == serviceId);
+        }
+
+        public async Task<ICollection<object>> GetRegisteredServices(ISpecifications<Provider> specifications)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ICollection<object>> GetRegisteredServices(string workerId, ISpecifications<Provider> spec)
