@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <Folder Include="Services\Specifications\AvailabilitiesSpecifications\" />
+      <Folder Include="Services\Specifications\NewFolder1\" />
     </ItemGroup>
 
 </Project>

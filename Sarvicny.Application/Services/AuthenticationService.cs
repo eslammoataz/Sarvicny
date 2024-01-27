@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Sarvicny.Application.Common.Interfaces.Authentication;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
@@ -25,13 +26,14 @@ namespace Sarvicny.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<AuthenticationService> _logger;
 
 
 
         public AuthenticationService(IConfiguration config, IEmailService emailService,
                 IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator,
                 IJwtTokenGenerator jwtTokenGenerator, IRoleRepository roleRepository, IUserRepository userRepository
-                , IUnitOfWork unitOfWork)
+                , IUnitOfWork unitOfWork, ILogger<AuthenticationService> logger)
         {
             JwtTokenGenerator = jwtTokenGenerator;
             _config = config;
@@ -41,6 +43,7 @@ namespace Sarvicny.Application.Services
             _roleRepository = roleRepository;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            _logger = logger;
         }
 
 

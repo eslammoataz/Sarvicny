@@ -49,6 +49,19 @@ public class CriteriaController : ControllerBase
         return Ok(criteria);
     }
 
+    [HttpGet("GetAll")]
+    public IActionResult GetAllCriterias()
+    {
+        var response = _criteriaService.GetAllCriterias();
+
+        if (response is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(response);
+    }
+
 
     [HttpPost]
     [Route("addservice")]
@@ -64,4 +77,6 @@ public class CriteriaController : ControllerBase
 
         return Ok(response);
     }
+
+
 }

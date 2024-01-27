@@ -1,5 +1,6 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Specifications.NewFolder;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Specification;
@@ -20,20 +21,53 @@ public class CriteriaService : ICriteriaService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Response<ICollection<Criteria>>> GetAllCriteria()
+    public async Task<Response<ICollection<Criteria>>> GetAllCriterias()
     {
-        var response = new Response<ICollection<Criteria>>();
-        var spec = new BaseSpecifications<Criteria>();
-        response.Payload = await _criteriaRepository.GetAllCriterias(spec);
-        return response;
+        var spec = new CriteriaWithServicesSpecification();
+        var criterias = await _criteriaRepository.GetAllCriterias(spec);
+
+        if(criterias == null)
+        {
+            return new Response<ICollection<Criteria>>()
+            {
+                Message = "No Criterias Found",
+                Payload = null,
+                isError = true,
+            };
+
+        }
+        return new Response<ICollection<Criteria>>()
+        {
+            Message = "Sucess",
+            Payload = criterias,
+            isError = false,
+        };
+        
     }
 
     public async Task<Response<Criteria>> GetCriteriaById(string criteriaId)
     {
-        var response = new Response<Criteria>();
-        var spec = new BaseSpecifications<Criteria>(c=> c.CriteriaID == criteriaId);
-        response.Payload = await _criteriaRepository.GetCriteriaById(spec);
-        return response;
+        var spec = new CriteriaWithServicesSpecification(criteriaId);
+        var criteria = await _criteriaRepository.GetCriteriaById(criteriaId);
+
+        if (criteria == null)
+        {
+            return new Response<Criteria>() {
+            Message="No Criteria Found",
+            Payload=null,
+            isError=true,
+            };
+        }
+        return new Response<Criteria>()
+        {
+            Message = "Sucess",
+            Payload = criteria,
+            isError = false,
+        };
+
+
+
+
     }
 
     public async Task<Response<Criteria>> UpdateCriteria(Criteria criteria)
@@ -48,49 +82,74 @@ public class CriteriaService : ICriteriaService
 
     public async Task<Response<Criteria>> AddCriteriaAsync(Criteria newCriteria)
     {
-        var response = new Response<Criteria>();
-        await _criteriaRepository.AddCriteriaAsync(newCriteria);
-        _unitOfWork.Commit();
-        response.Payload = newCriteria;
-        return response;
+        return new Response<Criteria>()
+        {
+            Message = "Sucess",
+            Payload = await _criteriaRepository.AddCriteriaAsync(newCriteria),
+            isError = false,
+        };
     }
 
-    public async Task<Response<object>> AddServiceToCriteria(string criteriaId, string serviceId)
+    public async Task<Response<Criteria>> AddServiceToCriteria(string criteriaId, string serviceId)
     {
-        var response = new Response<object>();
-        var spec1 = new BaseSpecifications<Criteria>(c => c.CriteriaID == criteriaId);
 
-        var criteria = await _criteriaRepository.GetCriteriaById(spec1);
+        var spec = new CriteriaWithServicesSpecification(criteriaId);
+        var criteria = await _criteriaRepository.GetCriteriaById(spec);
 
         if (criteria == null)
         {
-            response.isError = true;
-            response.Status = "Failed";
-            response.Errors.Add($"Criteria with ID {criteriaId} not found.");
-
-            return response;
+            return new Response<Criteria>()
+            {
+                Status="Fail",
+                Message = "Criteria Not Found",
+                Payload = null,
+                isError = true,
+            };
         }
 
-        var spec = new BaseSpecifications<Service>(s => s.ServiceID == serviceId);
-        var service = await _serviceRepository.GetServiceById(spec);
+        var spec1 = new ServiceWithCriteriaSpecification(serviceId);
+        var service = await _serviceRepository.GetServiceById(spec1);
 
         if (service == null)
         {
-            response.isError = true;
-            response.Status = "Failed";
-            response.Errors.Add($"Service with ID {serviceId} not found.");
+            return new Response<Criteria>()
+            {
+                Status = "Fail",
+                Message = "Service Not Found",
+                Payload = null,
+                isError = true,
+            };
+        }
 
-            return response;
+        if (service.Criteria!=null)
+        {
+            if (service.Criteria == criteria)
+            {
+                return new Response<Criteria>()
+                {
+                    Status = "Fail",
+                    Message = "Service is already found in this Criteria",
+                    Payload = null,
+                    isError = true,
+                };
+            }
+            return new Response<Criteria>()
+            {
+                Status = "Fail",
+                Message = "Service is already assigned to another criteria",
+                Payload = null,
+                isError = true,
+            };
         }
         
+        return new Response<Criteria>()
+        {
+            Message = "Sucess",
+            Payload = await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId),
+            isError = false,
+        };
         
-        await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId);
-        
-        response.Status = "Success";
-        response.Message = "Action Done Successfully";
-        response.Payload = service;
-        _unitOfWork.Commit();
 
-        return response;
+        
     }
 }

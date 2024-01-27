@@ -47,6 +47,7 @@ namespace Sarvicny.Infrastructure.Persistence
             return await ApplySpecification(specifications).FirstOrDefaultAsync();
         }
 
+
         public async Task<Provider> FindByIdWithSpecificationAsync(string workerId, ISpecifications<Provider> specifications)
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync(p=>p.Id== workerId);

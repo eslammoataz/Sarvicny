@@ -4,6 +4,7 @@ using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Infrastructure.Data;
 
 namespace Sarvicny.Api.Controllers.UsersControllers;
@@ -77,21 +78,12 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> ApproveServiceProviderRegister(string WorkerID)
     {
         var response = await _adminService.ApproveServiceProviderRegister(WorkerID);
-        if (response.isError)
-        {
-            return NotFound("Not Found");
+        if (response.Payload == null) {
+            return NotFound(response.Message);
         }
+        else return Ok(response);
 
-        //Add Token to Verify the email....
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(response.Payload);
-
-        _logger.LogInformation(response.Payload.Email);
-
-        var message = new EmailDto(response.Payload.Email!, "Sarvicny: Worker Approved Successfully",
-            "Congratulations you are accepted");
-
-        _emailService.SendEmail(message);
-        return Ok($"Worker Approved Successfully , Verification Email sent to {response.Payload.Email} ");
+        
     }
 
 
@@ -99,24 +91,11 @@ public class AdminController : ControllerBase
     [Route("RejectServiceProvider")]
     public async Task<IActionResult> RejectServiceProviderRegister(string workerId)
     {
-        var provider = _context.Provider.FirstOrDefault(w => w.Id == workerId && w.isVerified == false);
-        if (provider == null)
+        var response = await _adminService.ApproveServiceProviderRegister(workerId);
+        if (response.Payload == null)
         {
-            return BadRequest("Wrong Worker ID");
+            return NotFound(response.Message);
         }
-
-
-        _context.Provider.Remove(provider);
-        _context.SaveChanges();
-
-        //Add Token to Verify the email....
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
-
-
-        var message = new EmailDto(provider.Email!, "Sarvicny: Worker Rejected", "Sorry you are rejected");
-
-        _emailService.SendEmail(message);
-
-        return Ok($" Worker Rejected Successfully, Verification Email sent to {provider.Email} ");
+        else return Ok(response);
     }
 }

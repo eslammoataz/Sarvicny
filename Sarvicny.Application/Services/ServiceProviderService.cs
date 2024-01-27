@@ -234,6 +234,14 @@ namespace Sarvicny.Application.Services
                 response.Errors.Add("Worker Not Found");
                 return response;
             }
+            if(worker.isVerified=false)
+            {
+                response.isError = true;
+                response.Status = "failed";
+                response.Message = "Worker Not Verified";
+                response.Errors.Add("Worker Not Verified");
+                return response;
+            }
 
             if (service == null)
             {
@@ -264,7 +272,7 @@ namespace Sarvicny.Application.Services
             await _serviceProviderRepository.AddProviderService(workerService);
             worker.ProviderServices.Add(workerService);
             service.ProviderServices.Add(workerService);
-            _unitOfWork.Commit();
+            
 
             response.Status = "Success";
             response.Message = "Action Done Successfully";

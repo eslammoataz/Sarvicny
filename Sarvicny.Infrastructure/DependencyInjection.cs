@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<ICriteriaRepository, CriteriaRepository>();
         services.AddScoped<IServiceProviderRepository , ServiceProviderRepository>();
         services.AddScoped<IOrderRepository, OrderRepositry>();
+        services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         
 

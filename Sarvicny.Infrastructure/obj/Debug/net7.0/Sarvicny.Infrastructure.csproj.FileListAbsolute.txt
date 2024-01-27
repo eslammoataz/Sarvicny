@@ -54,3 +54,23 @@ D:\Graduation Project\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny
 D:\Graduation Project\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Domain.pdb
 D:\Graduation Project\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.csproj.CopyComplete
 D:\Graduation Project\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\ref\Sarvicny.Infrastructure.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Infrastructure.deps.json
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Infrastructure.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Infrastructure.pdb
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Application.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Contracts.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Domain.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Application.pdb
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Contracts.pdb
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Domain.pdb
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.AssemblyInfo.cs
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.sourcelink.json
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.csproj.CopyComplete
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\refint\Sarvicny.Infrastructure.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.pdb
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\ref\Sarvicny.Infrastructure.dll

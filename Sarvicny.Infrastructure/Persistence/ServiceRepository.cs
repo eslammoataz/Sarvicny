@@ -15,19 +15,34 @@ public class ServiceRepository : IServiceRepository
     {
         _context = context;
     }
-    public async Task<ICollection<Provider>> GetAllServiceProviders()
-    {
-        throw new NotImplementedException();
-    }
+
 
     public async Task<ICollection<Service>> GetAllServices(ISpecifications<Service> spec)
     {
-        return await ApplySpecification(spec).ToListAsync();
+        return await ApplySpecificationS(spec).ToListAsync();
+    }
+    public async Task<ICollection<object>> GetAllWorkersForService(ISpecifications<ProviderService> specifications)
+    {
+        var providerServices= await ApplySpecificationPS(specifications).ToListAsync();
+        List<object> providers= new List<object>();
+        foreach( var ps in providerServices)
+        {
+            var provider = new
+            {
+                ps.ProviderID,
+                fn = ps.Provider.FirstName,
+                ls = ps.Provider.LastName,
+                email = ps.Provider.Email,
+            };
+            providers.Add(provider);
+        };
+
+        return (ICollection<object>)providers;
     }
 
     public async Task<Service> GetServiceById(ISpecifications<Service> specifications)
     {
-        return await ApplySpecification(specifications).FirstOrDefaultAsync();
+        return await ApplySpecificationS(specifications).FirstOrDefaultAsync();
     }
 
     public async Task<Service> UpdateService(Service service)
@@ -46,9 +61,20 @@ public class ServiceRepository : IServiceRepository
     }
     
 
-    private IQueryable<Service> ApplySpecification(ISpecifications<Service> spec)
+    private IQueryable<Service> ApplySpecificationS(ISpecifications<Service> spec)
     {
         return SpecificationBuilder<Service>.Build(_context.Services, spec);
     }
-    
+
+    private IQueryable<ProviderService> ApplySpecificationPS(ISpecifications<ProviderService> spec)
+    {
+        return SpecificationBuilder<ProviderService>.Build(_context.providerServices, spec);
+    }
+
+    public Task<ICollection<Provider>> GetServiceById(string serviceId)
+    {
+        throw new NotImplementedException();
+    }
+
+
 }

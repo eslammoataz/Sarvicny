@@ -5,11 +5,12 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence;
 
 public interface ICriteriaRepository
 {
+    Task<Criteria> GetCriteriaById(string criteriaId);
     Task<Criteria> GetCriteriaById(ISpecifications<Criteria> specifications);
     Task<ICollection<Criteria>> GetAllCriterias(ISpecifications<Criteria> specifications);
     Task<Criteria> UpdateCriteria(Criteria criteria);
     Task<Criteria> DeleteCriteria(string criteriaId);
-    Task AddCriteriaAsync(Criteria newCriteria);
+    Task<Criteria> AddCriteriaAsync(Criteria newCriteria);
     
-    Task AddServiceToCriteria(string criteriaId, string serviceId);
+    Task<Criteria> AddServiceToCriteria(string criteriaId, string serviceId);
 }

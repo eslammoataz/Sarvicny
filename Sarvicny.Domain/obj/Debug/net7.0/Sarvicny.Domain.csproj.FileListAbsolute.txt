@@ -34,3 +34,16 @@ D:\Graduation Project\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.
 D:\Graduation Project\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.dll
 D:\Graduation Project\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.pdb
 D:\Graduation Project\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\ref\Sarvicny.Domain.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.deps.json
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.pdb
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.csproj.AssemblyReference.cache
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.AssemblyInfoInputs.cache
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.AssemblyInfo.cs
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.sourcelink.json
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\refint\Sarvicny.Domain.dll
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.pdb
+C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\ref\Sarvicny.Domain.dll
