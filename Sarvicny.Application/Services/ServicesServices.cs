@@ -1,9 +1,9 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Application.Services.Specifications.ProviderServiceSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services;
@@ -12,24 +12,26 @@ public class ServicesServices : IServicesService
 {
     private readonly IServiceRepository _serviceRepository;
     private readonly IUnitOfWork _unitOfWork;
-    public ServicesServices(IServiceRepository serviceRepository, IUnitOfWork unitOfWork)
+    private readonly IServiceProviderRepository _serviceProviderRepository;
+    public ServicesServices(IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository)
     {
         _serviceRepository = serviceRepository;
         _unitOfWork = unitOfWork;
+        _serviceProviderRepository = serviceProviderRepository;
     }
 
     public async Task<Response<ICollection<object>>> GetAllServices()
     {
         var spec = new ServiceWithCriteriaSpecification();
-        var services = await  _serviceRepository.GetAllServices(spec);
-        
+        var services = await _serviceRepository.GetAllServices(spec);
+
         var servicesAsObjects = services.ToList<object>();
-        
+
         var response = new Response<ICollection<object>>();
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = servicesAsObjects;
-        
+
         return response;
     }
 
@@ -41,7 +43,7 @@ public class ServicesServices : IServicesService
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = service;
-        
+
         return response;
     }
 
@@ -68,33 +70,62 @@ public class ServicesServices : IServicesService
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = newService;
-        
+
         return response;
     }
 
 
-    public async Task<Response<object>> GetAllWorkersForService(string serviceId)
+    public async Task<Response<ICollection<object>>> GetAllWorkersForService(string serviceId)
     {
-        var specPS = new ProviderServiceWithProviderSpecification(serviceId);
+        var response = new Response<ICollection<object>>();
 
-        var specS= new ServiceWithProvidersSpecification(serviceId);
-        var service = await _serviceRepository.GetServiceById(specS);
+        var spec = new ServiceWithProvidersSpecification(serviceId);
+
+        var service = await _serviceRepository.GetServiceById(spec);
 
         if (service == null)
         {
-            return new Response<object>()
+            response.Status = "Fail";
+            response.Message = "Service Not Found";
+            response.Payload = new List<object>();
+            response.isError = false;
+            return response;
+        }
+
+        var providers = new List<object>();
+
+        foreach (var p in service.ProviderServices)
+        {
+            var spec3 = new BaseSpecifications<Provider>(pr => pr.Id == p.ProviderID);
+            var provider = await _serviceProviderRepository.FindByIdAsync(spec3);
+            var serviceProvidersAsObjects = new
+            {
+                provider.Id,
+                provider.FirstName,
+                provider.LastName,
+                provider.Email,
+                provider.PhoneNumber,
+                provider.isVerified,
+            };
+
+            providers.Add(serviceProvidersAsObjects);
+        }
+
+        if (providers.Count == 0)
+        {
+            return new Response<ICollection<object>>()
             {
                 Status = "Fail",
-                Message = "Service Not Found",
-                Payload = null,
-                isError = true,
+                Message = "No Providers Found",
+                Payload = providers,
+                isError = false,
             };
         }
-        return new Response<object>()
+
+        return new Response<ICollection<object>>()
         {
-            
-            Message = "Service Not Found",
-            Payload = _serviceRepository.GetAllWorkersForService(specPS),
+            Message = "Action Done Successfully",
+            Payload = providers,
             isError = false,
         };
 

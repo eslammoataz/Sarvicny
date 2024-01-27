@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Criteria;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Infrastructure.Data;
 
 namespace Sarvicny.Api.Controllers;
 
@@ -37,9 +34,9 @@ public class CriteriaController : ControllerBase
 
 
     [HttpGet("{id}")]
-    public IActionResult GetCriteria(string id)
+    public async Task<IActionResult> GetCriteria(string id)
     {
-        var criteria = _criteriaService.GetCriteriaById(id);
+        var criteria = await _criteriaService.GetCriteriaById(id);
 
         if (criteria is null)
         {
@@ -50,9 +47,9 @@ public class CriteriaController : ControllerBase
     }
 
     [HttpGet("GetAll")]
-    public IActionResult GetAllCriterias()
+    public async Task<IActionResult> GetAllCriterias()
     {
-        var response = _criteriaService.GetAllCriterias();
+        var response = await _criteriaService.GetAllCriterias();
 
         if (response is null)
         {

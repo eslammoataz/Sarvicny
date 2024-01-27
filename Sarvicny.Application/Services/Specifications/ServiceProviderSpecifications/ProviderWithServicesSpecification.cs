@@ -9,8 +9,8 @@ public class ProviderWithServicesSpecification : BaseSpecifications<Provider>
     {
         Includes.Add(p => p.ProviderServices);
     }
-    
-    public ProviderWithServicesSpecification(string providerId): base(p => p.Id == providerId)
+
+    public ProviderWithServicesSpecification(string providerId) : base(p => p.Id == providerId)
     {
         Includes.Add(p => p.ProviderServices);
     }

@@ -44,11 +44,11 @@ var builder = WebApplication.CreateBuilder(args);
             options.SlidingExpiration = true;
         });
 
-    // builder.Services.AddControllers().AddJsonOptions(options =>
-    // {
-    //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    //     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    // });
+    builder.Services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 
 
     builder.Services.AddSingleton(Configuration);

@@ -1,12 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Application.Services.Email;
-using Sarvicny.Application.Services.Specifications;
-using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
-using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 
 namespace Sarvicny.Application.Services;
@@ -20,13 +14,13 @@ public class AdminService : IAdminService
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public AdminService(IUserRepository userRepository , IServiceRepository serviceRepository,IUnitOfWork unitOfWork,IServiceProviderRepository serviceProviderRepositor,IAdminRepository adminRepository)
+    public AdminService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository)
     {
         _serviceRepository = serviceRepository;
-       _userRepository = userRepository;
+        _userRepository = userRepository;
         _providerRepository = serviceProviderRepositor;
         _adminRepository = adminRepository;
-       _unitOfWork = unitOfWork;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -40,7 +34,7 @@ public class AdminService : IAdminService
             c.LastName,
             c.Email
         }).ToList<object>();
-        
+
 
         return new Response<ICollection<object>>()
         {
@@ -85,8 +79,8 @@ public class AdminService : IAdminService
             CriteriaName = s.Criteria?.CriteriaName
 
         }).ToList<object>();
-        
-        
+
+
         return new Response<ICollection<object>>()
         {
             Status = "Success",
@@ -97,8 +91,8 @@ public class AdminService : IAdminService
 
     public async Task<Response<Provider>> ApproveServiceProviderRegister(string workerId)
     {
-        
-        var provider =  await _userRepository.GetUserByIdAsync(workerId);
+
+        var provider = await _userRepository.GetUserByIdAsync(workerId);
         if (provider == null)
         {
             return new Response<Provider>()
@@ -106,7 +100,7 @@ public class AdminService : IAdminService
                 Status = "Fail",
                 Message = "Provider Not Found",
                 Payload = null,
-                
+
             };
         }
         return new Response<Provider>()
@@ -117,7 +111,7 @@ public class AdminService : IAdminService
 
         };
 
-        
+
     }
 
     public async Task<Response<Provider>> RejectServiceProviderRegister(string workerId)
@@ -143,4 +137,20 @@ public class AdminService : IAdminService
 
         };
     }
+
+    public async Task<Response<ICollection<Provider>>> GetServiceProvidersRegistrationRequests()
+    {
+        var unHandledProviders = await _providerRepository.GetProvidersRegistrationRequest();
+
+        var response = new Response<ICollection<Provider>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = unHandledProviders,
+            isError = false
+        };
+
+        return response;
+    }
+
 }

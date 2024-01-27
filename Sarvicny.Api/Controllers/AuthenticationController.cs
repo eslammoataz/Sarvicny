@@ -28,7 +28,7 @@ namespace Sarvicny.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     response);
             }
-            
+
             return Ok(Response);
         }
 

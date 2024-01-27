@@ -11,13 +11,13 @@ public class UserRepository : IUserRepository
 {
     private readonly UserManager<User> _userManager;
     private readonly AppDbContext _context;
-    
-    public UserRepository(UserManager<User> userManager , AppDbContext context)
+
+    public UserRepository(UserManager<User> userManager, AppDbContext context)
     {
         _context = context;
         _userManager = userManager;
     }
-        
+
     public async Task<User?> GetUserByIdAsync(string id)
     {
         var user = await _userManager.FindByIdAsync(id);

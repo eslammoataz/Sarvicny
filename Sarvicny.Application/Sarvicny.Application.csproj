@@ -7,6 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Services\Specifications\AvailabilitiesSpecifications\**" />
+      <Compile Remove="Services\Specifications\NewFolder1\**" />
+      <EmbeddedResource Remove="Services\Specifications\AvailabilitiesSpecifications\**" />
+      <EmbeddedResource Remove="Services\Specifications\NewFolder1\**" />
+      <None Remove="Services\Specifications\AvailabilitiesSpecifications\**" />
+      <None Remove="Services\Specifications\NewFolder1\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Sarvicny.Contracts\Sarvicny.Contracts.csproj" />
       <ProjectReference Include="..\Sarvicny.Domain\Sarvicny.Domain.csproj" />
     </ItemGroup>
@@ -16,11 +25,6 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.14" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
       <PackageReference Include="MimeKit" Version="4.3.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Services\Specifications\AvailabilitiesSpecifications\" />
-      <Folder Include="Services\Specifications\NewFolder1\" />
     </ItemGroup>
 
 </Project>

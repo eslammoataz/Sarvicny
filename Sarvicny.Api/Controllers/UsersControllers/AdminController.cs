@@ -1,11 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Application.Services.Email;
-using Sarvicny.Domain.Entities.Emails;
-using Sarvicny.Domain.Entities.Users;
-using Sarvicny.Domain.Entities.Users.ServicProviders;
-using Sarvicny.Infrastructure.Data;
 
 namespace Sarvicny.Api.Controllers.UsersControllers;
 
@@ -14,25 +8,10 @@ namespace Sarvicny.Api.Controllers.UsersControllers;
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
-    private readonly AppDbContext _context;
-    private readonly IConfiguration _config;
-    private readonly UserManager<User> _userManager;
-    private readonly ILogger<AdminController> _logger;
-    private readonly IEmailService _emailService;
-    private readonly RoleManager<IdentityRole> _roleManager;
 
-
-    public AdminController(IAdminService adminService, AppDbContext context, UserManager<User> adminManager,
-        RoleManager<IdentityRole> roleManager, IConfiguration config, ILogger<AdminController> logger,
-        IEmailService emailService)
+    public AdminController(IAdminService adminService)
     {
         _adminService = adminService;
-        _context = context;
-        _userManager = adminManager;
-        _roleManager = roleManager;
-        _config = config;
-        _logger = logger;
-        _emailService = emailService;
     }
 
 
@@ -58,17 +37,17 @@ public class AdminController : ControllerBase
 
 
     [HttpGet("getRequests")]
-    public IActionResult GetRequests()
+    public async Task<IActionResult> GetRequests()
     {
-        var unHandeledProviders = _context.Provider.Where(w => w.isVerified == false).ToList();
+        var response = await _adminService.GetServiceProvidersRegistrationRequests();
 
-        if (unHandeledProviders.Count == 0)
+        if (response.isError)
         {
-            return NotFound("No Requests found");
+            return NotFound(response);
         }
         else
         {
-            return Ok(unHandeledProviders);
+            return Ok(response);
         }
     }
 
@@ -78,12 +57,13 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> ApproveServiceProviderRegister(string WorkerID)
     {
         var response = await _adminService.ApproveServiceProviderRegister(WorkerID);
-        if (response.Payload == null) {
+        if (response.Payload == null)
+        {
             return NotFound(response.Message);
         }
         else return Ok(response);
 
-        
+
     }
 
 
@@ -91,7 +71,7 @@ public class AdminController : ControllerBase
     [Route("RejectServiceProvider")]
     public async Task<IActionResult> RejectServiceProviderRegister(string workerId)
     {
-        var response = await _adminService.ApproveServiceProviderRegister(workerId);
+        var response = await _adminService.RejectServiceProviderRegister(workerId);
         if (response.Payload == null)
         {
             return NotFound(response.Message);

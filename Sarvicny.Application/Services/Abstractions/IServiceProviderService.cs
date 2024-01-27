@@ -1,13 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Contracts;
+﻿using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sarvicny.Domain.Entities;
 
 namespace Sarvicny.Application.Services.Abstractions
 {
@@ -27,6 +21,7 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> CancelOrder(string orderId); //done
         Task<Response<ICollection<Object>>> GetAllServiceProviders(); //done
         Task<Response<object>> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId);
-        
-        }
+
+
+    }
 }

@@ -1,16 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Application.Services.Email;
-using Sarvicny.Domain.Entities.Users;
-using Sarvicny.Domain.Entities;
-using Sarvicny.Infrastructure.Data;
-using Sarvicny.Application.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
-using Microsoft.AspNetCore.Authentication;
-using Sarvicny.Application.Services.Abstractions;
-using IAuthenticationService = Sarvicny.Application.Services.Abstractions.IAuthenticationService;
 
 
 
@@ -21,7 +12,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
     [ApiController]
     public class ServiceProviderController : ControllerBase
     {
-     
+
         private readonly IServiceProviderService _serviceProviderService;
         public ServiceProviderController(IServiceProviderService serviceProviderService)
         {
@@ -50,8 +41,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         public async Task<IActionResult> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
         {
             var Response = await _serviceProviderService.AddAvailabilitySlots(slotDto, availabilityId);
-            if (Response.isError) 
-            { 
+            if (Response.isError)
+            {
                 return BadRequest(Response);
             }
             return Ok(Response);
@@ -71,7 +62,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
             return Ok(Response);
         }
-        
+
         [HttpPost]
         [Route("approveorder")]
         public async Task<IActionResult> ApproveOrder(string orderId)
@@ -141,13 +132,13 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         public async Task<IActionResult> RegisterService(string workerId, string serviceId, decimal price)
         {
             var response = await _serviceProviderService.RegisterServiceAsync(workerId, serviceId, price);
-            
+
             if (response.isError)
             {
                 return BadRequest(response);
             }
             return Ok(response);
-            
+
         }
 
 

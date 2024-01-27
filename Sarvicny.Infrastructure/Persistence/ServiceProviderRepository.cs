@@ -1,23 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
-using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Email;
-using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
-using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
@@ -25,9 +16,9 @@ namespace Sarvicny.Infrastructure.Persistence
     {
         private readonly UserManager<User> _userManager;
         private readonly AppDbContext _context;
-        private readonly IUnitOfWork  unitOfWork;
-        private readonly IEmailService _emailService;   
-      
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IEmailService _emailService;
+
 
         public ServiceProviderRepository(UserManager<User> userManager, AppDbContext context, IUnitOfWork unitOfWork, IEmailService emailService)
         {
@@ -50,7 +41,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<Provider> FindByIdWithSpecificationAsync(string workerId, ISpecifications<Provider> specifications)
         {
-            return await ApplySpecification(specifications).FirstOrDefaultAsync(p=>p.Id== workerId);
+            return await ApplySpecification(specifications).FirstOrDefaultAsync(p => p.Id == workerId);
         }
 
         public async Task<bool> WorkerExists(string workerId)
@@ -113,7 +104,7 @@ namespace Sarvicny.Infrastructure.Persistence
             _context.ProviderAvailabilities.Add(availability);
 
             provider.Availabilities.Add(availability);
-           
+
             return availability;
 
         }
@@ -210,7 +201,14 @@ namespace Sarvicny.Infrastructure.Persistence
 
         }
 
-        
+        public async Task<ICollection<Provider>> GetProvidersRegistrationRequest()
+        {
+            var providers = await _context.Provider
+                .Where(p => p.isVerified == false)
+                .ToListAsync();
+
+            return providers;
+        }
     }
-    
+
 }

@@ -3,7 +3,6 @@ using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.NewFolder;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services;
 
@@ -26,7 +25,7 @@ public class CriteriaService : ICriteriaService
         var spec = new CriteriaWithServicesSpecification();
         var criterias = await _criteriaRepository.GetAllCriterias(spec);
 
-        if(criterias == null)
+        if (criterias == null)
         {
             return new Response<ICollection<Criteria>>()
             {
@@ -36,37 +35,60 @@ public class CriteriaService : ICriteriaService
             };
 
         }
+
+        foreach (var criteria in criterias)
+        {
+            criteria.Services = criteria.Services.Select(s => new Service
+            {
+                ServiceID = s.ServiceID,
+                ServiceName = s.ServiceName,
+                Description = s.Description,
+                AvailabilityStatus = s.AvailabilityStatus,
+                ParentServiceID = s.ParentServiceID,
+                Price = s.Price
+            }).ToList();
+        }
+
         return new Response<ICollection<Criteria>>()
         {
             Message = "Sucess",
             Payload = criterias,
             isError = false,
         };
-        
+
     }
 
     public async Task<Response<Criteria>> GetCriteriaById(string criteriaId)
     {
         var spec = new CriteriaWithServicesSpecification(criteriaId);
-        var criteria = await _criteriaRepository.GetCriteriaById(criteriaId);
+        var criteria = await _criteriaRepository.GetCriteriaById(spec);
 
         if (criteria == null)
         {
-            return new Response<Criteria>() {
-            Message="No Criteria Found",
-            Payload=null,
-            isError=true,
+            return new Response<Criteria>()
+            {
+                Message = "No Criteria Found",
+                Payload = null,
+                isError = true,
             };
         }
+
+        criteria.Services = criteria.Services.Select(s => new Service
+        {
+            ServiceID = s.ServiceID,
+            ServiceName = s.ServiceName,
+            Description = s.Description,
+            AvailabilityStatus = s.AvailabilityStatus,
+            ParentServiceID = s.ParentServiceID,
+            Price = s.Price
+        }).ToList();
+
         return new Response<Criteria>()
         {
             Message = "Sucess",
             Payload = criteria,
             isError = false,
         };
-
-
-
 
     }
 
@@ -82,10 +104,13 @@ public class CriteriaService : ICriteriaService
 
     public async Task<Response<Criteria>> AddCriteriaAsync(Criteria newCriteria)
     {
+        var criteria = await _criteriaRepository.AddCriteriaAsync(newCriteria);
+        _unitOfWork.Commit();
+
         return new Response<Criteria>()
         {
             Message = "Sucess",
-            Payload = await _criteriaRepository.AddCriteriaAsync(newCriteria),
+            Payload = criteria,
             isError = false,
         };
     }
@@ -100,7 +125,7 @@ public class CriteriaService : ICriteriaService
         {
             return new Response<Criteria>()
             {
-                Status="Fail",
+                Status = "Fail",
                 Message = "Criteria Not Found",
                 Payload = null,
                 isError = true,
@@ -121,7 +146,7 @@ public class CriteriaService : ICriteriaService
             };
         }
 
-        if (service.Criteria!=null)
+        if (service.Criteria != null)
         {
             if (service.Criteria == criteria)
             {
@@ -141,15 +166,15 @@ public class CriteriaService : ICriteriaService
                 isError = true,
             };
         }
-        
+
         return new Response<Criteria>()
         {
             Message = "Sucess",
             Payload = await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId),
             isError = false,
         };
-        
 
-        
+
+
     }
 }

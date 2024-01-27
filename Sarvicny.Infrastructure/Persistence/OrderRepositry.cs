@@ -1,26 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Email;
-using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
     public class OrderRepositry : IOrderRepository
     {
         private readonly AppDbContext _context;
-        
+
         private readonly IUnitOfWork unitOfWork;
         private readonly IEmailService _emailService;
-        
+
 
         public OrderRepositry(AppDbContext context, IUnitOfWork unitOfWork, IEmailService emailService)
         {
@@ -32,14 +26,14 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<Order> GetOrderById(string OrderId, ISpecifications<Order> specifications)
         {
 
-            return await ApplySpecification(specifications).FirstOrDefaultAsync(o=>o.OrderID == OrderId);
+            return await ApplySpecification(specifications).FirstOrDefaultAsync(o => o.OrderID == OrderId);
         }
 
 
         public async Task<object> ShowOrderDetails(string orderId, ISpecifications<Order> spec)
         {
             var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
-          
+
             var customer = order.Customer;
 
             var response = new
@@ -61,7 +55,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<object> ApproveOrder(string orderId, ISpecifications<Order> spec)
         {
             var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
-      
+
             //if (order == null)
             //{
             //    throw new Exception("Order Not Found");
@@ -87,7 +81,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<object> RejectOrder(string orderId, ISpecifications<Order> spec)
         {
             var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
-           
+
             var customer = order.Customer;
 
             //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db

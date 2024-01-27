@@ -23,9 +23,9 @@ public class ServiceRepository : IServiceRepository
     }
     public async Task<ICollection<object>> GetAllWorkersForService(ISpecifications<ProviderService> specifications)
     {
-        var providerServices= await ApplySpecificationPS(specifications).ToListAsync();
-        List<object> providers= new List<object>();
-        foreach( var ps in providerServices)
+        var providerServices = await ApplySpecificationPS(specifications).ToListAsync();
+        List<object> providers = new List<object>();
+        foreach (var ps in providerServices)
         {
             var provider = new
             {
@@ -59,7 +59,7 @@ public class ServiceRepository : IServiceRepository
     {
         await _context.Services.AddAsync(newService);
     }
-    
+
 
     private IQueryable<Service> ApplySpecificationS(ISpecifications<Service> spec)
     {

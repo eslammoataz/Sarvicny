@@ -2,7 +2,6 @@
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Service;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Infrastructure.Data;
 
 namespace Sarvicny.Api.Controllers;
 
@@ -18,7 +17,7 @@ public class ServiceController : ControllerBase
         _servicesService = servicesService;
         _criteriaService = criteriaService;
     }
-    
+
     [HttpGet]
     [Route("GetAllServices")]
     public async Task<IActionResult> GetAllServices()
@@ -26,7 +25,7 @@ public class ServiceController : ControllerBase
         var response = await _servicesService.GetAllServices();
         return Ok(response);
     }
-    
+
     [HttpGet]
     [Route("GetServiceById")]
     public async Task<IActionResult> GetServiceById(string serviceId)
@@ -34,15 +33,21 @@ public class ServiceController : ControllerBase
         var response = await _servicesService.GetServiceById(serviceId);
         return Ok(response);
     }
-    
+
     [HttpGet]
     [Route("GetAllWorkersForService")]
     public async Task<IActionResult> GetAllWorkersForService(string serviceId)
     {
         var response = await _servicesService.GetAllWorkersForService(serviceId);
+
+        if (response.isError)
+        {
+            return BadRequest(response);
+        }
+
         return Ok(response);
     }
-    
+
     [HttpPost]
     [Route("AddService")]
     public async Task<IActionResult> AddService([FromBody] AddServiceDto serviceDto)
@@ -62,6 +67,6 @@ public class ServiceController : ControllerBase
             return BadRequest(response);
         }
 
-        return Ok(newService);
+        return Ok(response);
     }
 }

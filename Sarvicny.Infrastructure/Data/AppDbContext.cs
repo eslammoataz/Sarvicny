@@ -25,7 +25,7 @@ namespace Sarvicny.Infrastructure.Data
 
         public DbSet<ProviderAvailability> ProviderAvailabilities { get; set; }
         public DbSet<Order> Orders { get; set; }
-       
+
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<TimeSlot> Slots { get; set; }
@@ -54,10 +54,12 @@ namespace Sarvicny.Infrastructure.Data
 
             // Configure the Admin table
             builder.Entity<Admin>().ToTable("Admins");
-            
-            
-            
-          
+
+
+            builder.Entity<Criteria>().ToTable("Criterias");
+
+
+
             builder.Entity<Service>()
                 .HasKey(s => s.ServiceID);
 
@@ -67,7 +69,7 @@ namespace Sarvicny.Infrastructure.Data
                 .WithMany(s => s.Services)
                 .HasForeignKey(s => s.CriteriaID)
                 .OnDelete(DeleteBehavior.Restrict); // Choose the appropriate delete behavior
-            
+
             builder.Entity<Service>()
                 .HasMany(s => s.ChildServices)
                 .WithOne(s => s.ParentService)

@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj": {}
+    "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Api\\Sarvicny.Api.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Api\\Sarvicny.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Api\\Sarvicny.Api.csproj",
         "projectName": "Sarvicny.Api",
-        "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj",
-        "packagesPath": "C:\\Users\\Karen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Api\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Api\\Sarvicny.Api.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Api\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Karen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -32,14 +28,14 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
-                "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj"
+              "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\Sarvicny.Application.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\Sarvicny.Application.csproj"
               },
-              "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
-                "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
+              "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
               },
-              "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj"
+              "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj"
               }
             }
           }
@@ -82,25 +78,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\Sarvicny.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\Sarvicny.Application.csproj",
         "projectName": "Sarvicny.Application",
-        "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
-        "packagesPath": "C:\\Users\\Karen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\Sarvicny.Application.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Karen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -114,11 +106,11 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
-                "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
+              "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
               },
-              "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
-                "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
+              "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
               }
             }
           }
@@ -166,25 +158,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
         "projectName": "Sarvicny.Contracts",
-        "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
-        "packagesPath": "C:\\Users\\Karen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Contracts\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Karen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -231,25 +219,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
         "projectName": "Sarvicny.Domain",
-        "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
-        "packagesPath": "C:\\Users\\Karen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Domain\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Karen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -296,25 +280,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
         "projectName": "Sarvicny.Infrastructure",
-        "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\Karen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Infrastructure\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Karen\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -328,8 +308,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
-                "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj"
+              "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\Sarvicny.Application.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Solution1\\Sarvicny.Application\\Sarvicny.Application.csproj"
               }
             }
           }
@@ -365,7 +345,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     }

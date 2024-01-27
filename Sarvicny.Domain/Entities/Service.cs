@@ -24,7 +24,7 @@ public class Service
 
 
     // Foreign key for self-referencing relationship
-  
+
     public string? ParentServiceID { get; set; }
 
     // Navigation property for the parent service
@@ -35,5 +35,5 @@ public class Service
     public List<Service> ChildServices { get; set; } = new List<Service>();
 
     //public List<Schedule> Schedules { get; set; } = new List<Schedule>();
-     public List<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
+    public List<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
 }

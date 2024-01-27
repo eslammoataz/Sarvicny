@@ -6,8 +6,8 @@ namespace Sarvicny.Infrastructure.Persistence;
 public class RoleRepository : IRoleRepository
 {
     private readonly RoleManager<IdentityRole> _roleManager;
-    
-    public RoleRepository( RoleManager<IdentityRole> roleManager)
+
+    public RoleRepository(RoleManager<IdentityRole> roleManager)
     {
         _roleManager = roleManager;
     }
