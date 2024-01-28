@@ -13,12 +13,14 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task AddProviderService(ProviderService workerService);
         Task<bool> IsServiceRegisteredForWorker(string workerId, string serviceId);
         Task<ICollection<object>> GetRegisteredServices(ISpecifications<Provider> specifications);
-        Task<object> AddAvailability(AvailabilityDto availabilityDto, string providerId);
+        Task<ProviderAvailability> AddAvailability(AvailabilityDto availabilityDto, ISpecifications<Provider> specifications);
         Task<List<TimeSlot>> ConverttoTimeSlot(List<TimeRange> timeRanges, ProviderAvailability providerAvailability);
-        Task<List<object>> getAvailability(string providerId, ISpecifications<Provider> spec);
-        Task<object> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId);
+        Task <List<ProviderAvailability>> getAvailability( ISpecifications<Provider> spec);
+        Task<List<TimeSlot>> getAvailabilitySlots(ISpecifications<ProviderAvailability> spec);
+      
 
         Task<ICollection<Provider>> GetProvidersRegistrationRequest();
+        
 
 
     }

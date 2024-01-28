@@ -166,7 +166,7 @@ public class CriteriaService : ICriteriaService
                 isError = true,
             };
         }
-
+        _unitOfWork.Commit();
         return new Response<Criteria>()
         {
             Message = "Sucess",

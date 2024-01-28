@@ -8,7 +8,6 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence;
 public interface IServiceRepository
 {
     Task<ICollection<Service>> GetAllServices(ISpecifications<Service> spec);
-    Task<ICollection<object>> GetAllWorkersForService(ISpecifications<ProviderService> specifications);
     Task<ICollection<Provider>> GetServiceById(string serviceId);
     Task<Service> GetServiceById(ISpecifications<Service> specifications);
     Task<Service> UpdateService(Service service);

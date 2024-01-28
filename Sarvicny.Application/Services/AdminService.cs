@@ -1,6 +1,10 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Microsoft.AspNetCore.Identity;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Email;
 using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities.Emails;
+using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 
 namespace Sarvicny.Application.Services;
@@ -11,6 +15,8 @@ public class AdminService : IAdminService
     private readonly IUserRepository _userRepository;
     private readonly IServiceProviderRepository _providerRepository;
     private readonly IAdminRepository _adminRepository;
+    private readonly UserManager<User> _userManager;
+    private readonly IEmailService _emailService;
 
     private readonly IUnitOfWork _unitOfWork;
 
@@ -102,7 +108,17 @@ public class AdminService : IAdminService
                 Payload = null,
 
             };
+
         }
+        _unitOfWork.Commit();
+
+        //Add Token to Verify the email....
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
+
+
+        var message = new EmailDto(provider.Email!, "Sarvicny: Worker Approved Successfully", "Congratulations you are accepted");
+
+        _emailService.SendEmail(message);
         return new Response<Provider>()
         {
             Status = "Success",
@@ -116,7 +132,7 @@ public class AdminService : IAdminService
 
     public async Task<Response<Provider>> RejectServiceProviderRegister(string workerId)
     {
-        var provider = _userRepository.GetUserByIdAsync(workerId);
+        var provider = await _userRepository.GetUserByIdAsync(workerId);
         if (provider == null)
         {
             return new Response<Provider>()
@@ -128,6 +144,15 @@ public class AdminService : IAdminService
 
             };
         }
+        _unitOfWork.Commit();
+
+        //Add Token to Verify the email....
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
+
+
+        var message = new EmailDto(provider.Email!, "Sarvicny: Worker Rejected", "Sorry you are rejected");
+
+        _emailService.SendEmail(message);
         return new Response<Provider>()
         {
             Status = "Success",

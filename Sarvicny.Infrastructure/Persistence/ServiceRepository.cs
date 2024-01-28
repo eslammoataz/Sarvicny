@@ -21,24 +21,7 @@ public class ServiceRepository : IServiceRepository
     {
         return await ApplySpecificationS(spec).ToListAsync();
     }
-    public async Task<ICollection<object>> GetAllWorkersForService(ISpecifications<ProviderService> specifications)
-    {
-        var providerServices = await ApplySpecificationPS(specifications).ToListAsync();
-        List<object> providers = new List<object>();
-        foreach (var ps in providerServices)
-        {
-            var provider = new
-            {
-                ps.ProviderID,
-                fn = ps.Provider.FirstName,
-                ls = ps.Provider.LastName,
-                email = ps.Provider.Email,
-            };
-            providers.Add(provider);
-        };
-
-        return (ICollection<object>)providers;
-    }
+   
 
     public async Task<Service> GetServiceById(ISpecifications<Service> specifications)
     {

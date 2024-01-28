@@ -31,7 +31,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task AddProviderService(ProviderService workerservice)
         {
             _context.providerServices.Add(workerservice);
-            unitOfWork.Commit();
+           
         }
         public async Task<Provider> FindByIdAsync(ISpecifications<Provider> specifications)
         {
@@ -83,9 +83,9 @@ namespace Sarvicny.Infrastructure.Persistence
 
 
 
-        public async Task<object> AddAvailability(AvailabilityDto availabilityDto, string providerId)
+        public async Task<ProviderAvailability> AddAvailability(AvailabilityDto availabilityDto, ISpecifications<Provider> specifications)
         {
-            var provider = _context.Provider.FirstOrDefault(w => w.Id == providerId);
+            var provider = await ApplySpecification(specifications).FirstOrDefaultAsync();
             //if (provider == null)
             //{
             //    throw new Exception("Provider Not Found");
@@ -93,7 +93,7 @@ namespace Sarvicny.Infrastructure.Persistence
             //}
             var availability = new ProviderAvailability
             {
-                ServiceProviderID = providerId,
+                ServiceProviderID = provider.Id,
                 DayOfWeek = availabilityDto.DayOfWeek,
                 AvailabilityDate = DateTime.Now,
                 ServiceProvider = provider
@@ -131,75 +131,34 @@ namespace Sarvicny.Infrastructure.Persistence
             return timeSlots;
         }
 
-        public async Task<List<object>> getAvailability(string providerId, ISpecifications<Provider> spec)
+        public async Task<List<ProviderAvailability>> getAvailability( ISpecifications<Provider> spec)
         {
-            var provider = await ApplySpecification(spec).FirstOrDefaultAsync(p => p.Id == providerId);
-
-            List<object> availability = new List<object>();
-
-            var avails = provider.Availabilities
-                .SelectMany(a => a.Slots)
-                .Select(slot => new
-                {
-                    slot.StartTime,
-                    slot.EndTime
-                })
-                .ToList<object>();
+            var provider = await ApplySpecification(spec).FirstOrDefaultAsync( );
 
 
-            List<object> reponse = new List<object>();
 
-            foreach (var providerAvail in provider.Availabilities)
-            {
-
-                List<object> slots = new List<object>();
-
-                foreach (var avail in providerAvail.Slots)
-                {
-                    slots.Add(new
-                    {
-                        StartTime = avail.StartTime,
-                        EndTime = avail.EndTime
-                    });
-
-                }
-
-                var obj = new
-                {
-                    DayOfWeek = providerAvail.DayOfWeek,
-                    Date = providerAvail.AvailabilityDate,
-                    Slots = slots
-                };
-                reponse.Add(obj);
-            }
-            return reponse;
+           
+            return provider.Availabilities;
 
 
         }
-
+        public async Task<List<TimeSlot>> getAvailabilitySlots(ISpecifications<ProviderAvailability> spec)
+        {
+            var avail = await ApplySpecificationA(spec).FirstOrDefaultAsync();
+            return avail.Slots;
+        }
+        private IQueryable<ProviderAvailability> ApplySpecificationA(ISpecifications<ProviderAvailability> spec)
+        {
+            return SpecificationBuilder<ProviderAvailability>.Build(_context.ProviderAvailabilities, spec);
+        }
         private IQueryable<Provider> ApplySpecification(ISpecifications<Provider> spec)
         {
             return SpecificationBuilder<Provider>.Build(_context.Provider, spec);
         }
 
-        public async Task<object> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
-        {
-            var availability = _context.ProviderAvailabilities.FirstOrDefault(a => a.ProviderAvailabilityID == availabilityId);
+       
 
-            var slot = new TimeSlot
-            {
-                ProviderAvailabilityID = availability.ProviderAvailabilityID,
-                StartTime = slotDto.StartTime,
-                EndTime = slotDto.EndTime,
-                enable = true,
-
-            };
-
-
-            _context.Slots.Add(slot);
-            return slot;
-
-        }
+          
 
         public async Task<ICollection<Provider>> GetProvidersRegistrationRequest()
         {
@@ -209,6 +168,8 @@ namespace Sarvicny.Infrastructure.Persistence
 
             return providers;
         }
+
+        
     }
 
 }

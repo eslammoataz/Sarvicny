@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sarvicny.Domain.Entities.Avaliabilities;
+using System.Text.Json.Serialization;
 
 namespace Sarvicny.Domain.Entities
 {
@@ -32,6 +33,9 @@ namespace Sarvicny.Domain.Entities
         public List<TimeSlot> Slots { get; set; }
 
         [ForeignKey("ServiceProviderID")]
+        [JsonIgnore]
+     
         public Provider ServiceProvider { get; set; }
+
     }
 }

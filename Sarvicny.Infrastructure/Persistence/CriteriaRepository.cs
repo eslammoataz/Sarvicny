@@ -11,12 +11,12 @@ namespace Sarvicny.Infrastructure.Persistence;
 public class CriteriaRepository : ICriteriaRepository
 {
     private readonly AppDbContext _context;
-    private readonly IUnitOfWork _unitOfWork;
+   
 
-    public CriteriaRepository(AppDbContext context, IUnitOfWork unitOfWork)
+    public CriteriaRepository(AppDbContext context)
     {
         _context = context;
-        _unitOfWork = unitOfWork;
+       
     }
 
     private IQueryable<Criteria> ApplySpecification(ISpecifications<Criteria> spec)
@@ -53,7 +53,7 @@ public class CriteriaRepository : ICriteriaRepository
     public async Task<Criteria> AddCriteriaAsync(Criteria newCriteria)
     {
         await _context.Criterias.AddAsync(newCriteria);
-        _unitOfWork.Commit();
+       
         return newCriteria;
 
     }
@@ -66,7 +66,7 @@ public class CriteriaRepository : ICriteriaRepository
         criteria.Services.Add(service);
         service.Criteria = (criteria);
         service.Criteria.CriteriaID = criteriaId;
-        _unitOfWork.Commit();
+      
         return criteria;
     }
 }

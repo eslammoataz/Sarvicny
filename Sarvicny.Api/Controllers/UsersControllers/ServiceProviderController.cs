@@ -36,18 +36,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
 
-        [HttpPost]
-        [Route("SetAvailabilitySlots")]
-        public async Task<IActionResult> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
-        {
-            var Response = await _serviceProviderService.AddAvailabilitySlots(slotDto, availabilityId);
-            if (Response.isError)
-            {
-                return BadRequest(Response);
-            }
-            return Ok(Response);
-
-        }
+        
 
         [HttpGet("GetServiceProviderAvailability/{providerId}")]
         public async Task<IActionResult> GetServiceProviderAvailabilityAsync(string providerId)

@@ -37,15 +37,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
             provider.isVerified = true;
 
-            unitOfWork.Commit();
-
-            //Add Token to Verify the email....
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
-
-
-            var message = new EmailDto(provider.Email!, "Sarvicny: Worker Approved Successfully", "Congratulations you are accepted");
-
-            _emailService.SendEmail(message);
+          
 
             return provider;
         }
@@ -57,16 +49,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
             _context.Provider.Remove(provider);
 
-            unitOfWork.Commit();
-
-            //Add Token to Verify the email....
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
-
-
-            var message = new EmailDto(provider.Email!, "Sarvicny: Worker Rejected", "Sorry you are rejected");
-
-            _emailService.SendEmail(message);
-
+           
             return provider;
         }
     }

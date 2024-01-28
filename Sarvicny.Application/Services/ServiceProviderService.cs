@@ -1,5 +1,6 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Specifications.NewFolder;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
@@ -37,8 +38,8 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string workerId)
         {
-            var spec = new BaseSpecifications<Provider>();
-            var provider = _serviceProviderRepository.FindByIdAsync(spec);
+            var spec = new ProviderWithAvailabilitesSpecification(workerId);
+            var provider =  await _serviceProviderRepository.FindByIdAsync(spec);
             if (provider == null)
             {
                 return new Response<object>()
@@ -49,25 +50,39 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found"
                 };
             }
+
+            var availiabilities = await _serviceProviderRepository.AddAvailability(availabilityDto, spec);
+            provider.Availabilities.Add(availiabilities);
+            _unitOfWork.Commit();
+           var slots=  availiabilities.Slots.Select(s => new
+            {
+                s.StartTime,
+                s.EndTime
+            }).ToList();
+            object result = new 
+            {
+                availiabilities.AvailabilityDate,
+                availiabilities.DayOfWeek,
+                slots,
+                availiabilities.ServiceProviderID
+
+            };
             return new Response<object>()
 
             {
-                Payload = await _serviceProviderRepository.AddAvailability(availabilityDto, workerId),
+                isError = false,
+                Payload = result,
                 Message = "success"
             };
         }
 
-        public async Task<Response<ICollection<object>>> getAvailability(string workerId)
+        public async Task<Response<List<object>>> getAvailability(string workerId)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<Response<object>> AddAvailabilitySlots(TimeSlotDto slotDto, string availabilityId)
-        {
-            var avaliability = await _serviceProviderRepository.AddAvailabilitySlots(slotDto, availabilityId);
-            if (avaliability == null)
+            var spec = new ProviderWithAvailabilitesSpecification(workerId);
+            var provider = await _serviceProviderRepository.FindByIdAsync(spec);
+            if (provider == null)
             {
-                return new Response<object>()
+                return new Response<List<object>>()
 
                 {
                     isError = true,
@@ -75,18 +90,35 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found"
                 };
             }
-            else
+            var availability = await _serviceProviderRepository.getAvailability(spec);
+
+             var spec2 = new AvailaibiltyWithSlotsSpecification(workerId);
+            var slots = await _serviceProviderRepository.getAvailabilitySlots(spec2);
+            foreach(var val in availability)
             {
-                _unitOfWork.Commit();
-                return new Response<object>()
-
-                {
-                    Payload = avaliability,
-                    Message = "success"
-                };
-
+                val.Slots = slots;
             }
+
+            var avail = availability.Select(a => new
+            {
+                a.ProviderAvailabilityID,
+                a.AvailabilityDate,
+                a.DayOfWeek,
+                slots = a.Slots.Select(s => new { s.StartTime, s.EndTime }).ToList<object>(),
+
+            }).ToList<object>();
+            
+            return new Response<List<object>>()
+
+            {
+                isError = false,
+                Payload = avail,
+                Message = "Success"
+            };
         }
+
+
+       
 
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
@@ -217,15 +249,15 @@ namespace Sarvicny.Application.Services
         // }
 
 
-        public async Task<Response<ProviderService>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
+        public async Task<Response<List<Object>>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
         {
-            var spec1 = new ProviderWithServicesSpecification();
+            var spec1 = new ProviderWithServicesSpecification(workerId);
 
             var worker = await _serviceProviderRepository.FindByIdAsync(spec1);
             var spec = new ServiceWithProvidersSpecification(serviceId);
             var service = await _serviceRepository.GetServiceById(spec);
 
-            var response = new Response<ProviderService>();
+            var response = new Response<List<Object>>();
 
             if (worker == null)
             {
@@ -265,19 +297,29 @@ namespace Sarvicny.Application.Services
 
             var workerService = new ProviderService()
             {
-                ProviderID = workerId,
+                ProviderID = workerId, 
+                Provider=worker,
+                Service=service,
                 ServiceID = serviceId,
                 Price = price
             };
 
+
             await _serviceProviderRepository.AddProviderService(workerService);
             worker.ProviderServices.Add(workerService);
             service.ProviderServices.Add(workerService);
+            List<object> result = new List<object>
+            {
+                workerService.ProviderID,
+                workerService.ServiceID,
+                workerService.Price
+            };
+            _unitOfWork.Commit();
 
 
             response.Status = "Success";
             response.Message = "Action Done Successfully";
-            response.Payload = workerService;
+            response.Payload = result;
             return response;
 
         }

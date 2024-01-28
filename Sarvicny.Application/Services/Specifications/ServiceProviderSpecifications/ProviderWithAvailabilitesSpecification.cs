@@ -9,7 +9,13 @@ namespace Sarvicny.Application.Services.Specifications.ServiceProviderSpecificat
         {
 
 
-            Includes.Add(p => p.Availabilities.SelectMany(a => a.Slots));
+            Includes.Add(p => p.Availabilities);
+        }
+        public ProviderWithAvailabilitesSpecification( string providerId): base(p=> p.Id == providerId)
+        {
+
+
+            Includes.Add(p => p.Availabilities);
         }
     }
 }
