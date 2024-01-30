@@ -95,3 +95,5 @@ E:\Github Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infra
 E:\Github Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\ref\Sarvicny.Infrastructure.dll
 E:\Github Repos\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Infrastructure.runtimeconfig.json
 E:\Github Repos\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.genruntimeconfig.cache
+D:\Graduation Project\Sarvicny\Sarvicny.Infrastructure\bin\Debug\net7.0\Sarvicny.Infrastructure.runtimeconfig.json
+D:\Graduation Project\Sarvicny\Sarvicny.Infrastructure\obj\Debug\net7.0\Sarvicny.Infrastructure.genruntimeconfig.cache

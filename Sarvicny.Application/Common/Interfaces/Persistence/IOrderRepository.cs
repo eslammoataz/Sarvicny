@@ -16,6 +16,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<object> RejectOrder(ISpecifications<Order> spec);
         Task<object> CancelOrder(ISpecifications<Order> spec);
         Task<object> ShowOrderDetails(ISpecifications<Order> spec);
+        Task<Order> AddOrder(Order order);
+       Task<List<Order>> GetAllOrders(ISpecifications<Order> spec);
     }
 
 }

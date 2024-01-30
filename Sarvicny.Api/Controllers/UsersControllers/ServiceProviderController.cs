@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
@@ -130,7 +131,51 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
+        [HttpGet("getAllOrders")]
+        public async Task<IActionResult> getAllOrders(string providerID)
+        {
+            var response = await _serviceProviderService.getAllOrders(providerID);
 
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+
+
+            return Ok(response);
+
+        }
+
+        [HttpGet("getAllApprovedOrders")]
+        public async Task<IActionResult> getAllApprovedOrders(string providerID)
+        {
+            var response = await _serviceProviderService.getAllApprovedOrders(providerID);
+
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+
+
+            return Ok(response);
+
+        }
+
+        [HttpGet("getAllRequestededOrders")]
+        public async Task<IActionResult> getAllRequestededOrders(string providerID)
+        {
+            var response = await _serviceProviderService.getAllRequestedOrders(providerID);
+
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+
+
+            return Ok(response);
+
+        }
     }
+
 }
 

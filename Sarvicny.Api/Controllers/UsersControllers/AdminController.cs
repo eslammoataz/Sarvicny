@@ -78,4 +78,51 @@ public class AdminController : ControllerBase
         }
         else return Ok(response);
     }
+
+    [HttpGet("getAllOrders")]
+    public async Task<IActionResult> GetAllOrders()
+    {
+        var response = await _adminService.getAllOrders();
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+       
+        
+            return Ok(response);
+        
+    }
+
+    [HttpGet("getAllApprovedOrders")]
+    public async Task<IActionResult> getAllApprovedOrders()
+    {
+        var response = await _adminService.getAllApprovededOrders();
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+
+
+        return Ok(response);
+
+    }
+
+    [HttpGet("getAllRequestedOrders")]
+    public async Task<IActionResult> getAllRequestedOrders()
+    {
+        var response = await _adminService.getAllRequestedOrders();
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+
+
+        return Ok(response);
+
+    }
+
+
 }

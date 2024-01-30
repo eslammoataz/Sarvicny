@@ -134,6 +134,7 @@ namespace Sarvicny.Application.Services
                     isError = true,
                     Payload = null,
                     Message = "Order Not Found",
+                    Errors = new List<string>() { "Error with order" },
 
                 };
 
@@ -152,7 +153,8 @@ namespace Sarvicny.Application.Services
             return new Response<object>()
             {
                 Payload =output ,
-                Message = "Success"
+                Message = "Success",
+                isError = false,
             };
         }
 
@@ -360,6 +362,199 @@ namespace Sarvicny.Application.Services
                 };
             }
 
+
+        }
+
+        public async Task<Response<List<object>>> getAllOrders(String workerId)
+        {
+            var spec = new OrderWithCustomers_Carts();
+            var orders =await _orderRepository.GetAllOrders(spec);
+            var provider = await _userRepository.GetUserByIdAsync(workerId);
+            if (provider == null)
+            {
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "Provider Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            };
+
+            List<object> result = new List<object>();
+            foreach (var order in orders)
+            {
+                if(order.Customer.Cart.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
+                {
+                    var ordersAsobject = new
+                    {
+                        orderId = order.OrderID,
+                        customerId = order.Customer.Id,
+                        customerFN = order.Customer.FirstName,
+                        orderStatus = order.OrderStatus.StatusName,
+                        orderPrice = order.TotalPrice,
+
+
+                    };
+                    result.Add(ordersAsobject);
+                }
+                else
+                {
+                    continue;
+                }
+               
+            }
+            
+            if(result.Count == 0)
+            {
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "No Orders Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+           
+            return new Response<List<object>>()
+            {
+                Status = "Success",
+                Message = "Action Done Successfully",
+                Payload = result,
+
+            };
+
+        }
+
+        public async Task<Response<List<object>>> getAllApprovedOrders(string workerId)
+        {
+            var spec = new OrderWithCustomers_Carts();
+            var orders = await _orderRepository.GetAllOrders(spec);
+            var provider = await _userRepository.GetUserByIdAsync(workerId);
+            if (provider == null)
+            {
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "Provider Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            };
+
+            List<object> result = new List<object>();
+            foreach (var order in orders)
+            {
+                if (order.OrderStatusID == "2") //2 means approved (3awzem n seed elklam da)
+                {
+                    if (order.Customer.Cart.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
+                    {
+                        var ordersAsobject = new
+                        {
+                            orderId = order.OrderID,
+                            customerId = order.Customer.Id,
+                            customerFN = order.Customer.FirstName,
+                            orderStatus = order.OrderStatus.StatusName,
+                            orderPrice = order.TotalPrice,
+
+
+                        };
+                        result.Add(ordersAsobject);
+                    }
+
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else { continue; }
+
+            }
+
+            if (result.Count == 0)
+            {
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "No Orders Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+
+            return new Response<List<object>>()
+            {
+                Status = "Success",
+                Message = "Action Done Successfully",
+                Payload = result,
+
+            };
+
+        }
+
+        public async Task<Response<List<object>>> getAllRequestedOrders(string workerId)
+        {
+            var spec = new OrderWithCustomers_Carts();
+            var orders = await _orderRepository.GetAllOrders(spec);
+            var provider = await _userRepository.GetUserByIdAsync(workerId);
+            if (provider == null)
+            {
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "Provider Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            };
+
+            List<object> result = new List<object>();
+            foreach (var order in orders)
+            {
+                if (order.OrderStatusID == "1") // 1 means request
+                {
+                    if (order.Customer.Cart.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
+                    {
+                        var ordersAsobject = new
+                        {
+                            orderId = order.OrderID,
+                            customerId = order.Customer.Id,
+                            customerFN = order.Customer.FirstName,
+                            orderStatus = order.OrderStatus.StatusName,
+                            orderPrice = order.TotalPrice,
+
+
+                        };
+                        result.Add(ordersAsobject);
+                    }
+
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else { continue; }
+
+            }
+
+            if (result.Count == 0)
+            {
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "No Orders Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+
+            return new Response<List<object>>()
+            {
+                Status = "Success",
+                Message = "Action Done Successfully",
+                Payload = result,
+
+            };
 
         }
     }

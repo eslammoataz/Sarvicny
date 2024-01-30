@@ -38,7 +38,10 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return SpecificationBuilder<Customer>.Build(_context.Customers, spec);
         }
-        
-        
+
+        public  async Task RemoveRequest(ServiceRequest specificRequest)
+        {
+            _context.ServiceRequests.Remove(specificRequest);
+        }
     }
 }

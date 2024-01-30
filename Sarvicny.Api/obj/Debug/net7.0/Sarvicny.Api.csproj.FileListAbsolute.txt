@@ -302,3 +302,8 @@ E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.EntityFramework
 E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
 E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Mono.TextTemplating.dll
 E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.CodeDom.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Humanizer.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Mono.TextTemplating.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.CodeDom.dll

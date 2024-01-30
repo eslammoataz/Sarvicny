@@ -7,6 +7,7 @@ using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Application.Services.Specifications.NewFolder;
+using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
@@ -25,17 +26,19 @@ namespace Sarvicny.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomerRepository _customerRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IOrderRepository _orderRepository; 
 
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository, IOrderRepository orderRepository)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
             _serviceRepository = serviceRepository;
             _customerRepository = customerRepository;
             _userRepository = userRepository;
+            _orderRepository = orderRepository;
         }
 
         // public async Task<Response<string>> RequestService(RequestServiceDto requestServiceDto, string customerId)
@@ -194,8 +197,9 @@ namespace Sarvicny.Application.Services
                 { isError = false, Message = "Service Request is added successfully to the cart" };
         }
 
-        public async Task<Response<string>> CancelRequestService(string customerId, string requestId)
+        public async Task<Response<object>> CancelRequestService(string customerId, string requestId)
         {
+           
             // var customer = context.Customers
             //   .Include(c => c.Cart)
             //    .ThenInclude(ca => ca.ServiceRequests)
@@ -256,9 +260,62 @@ namespace Sarvicny.Application.Services
             return null;
         }
 
-        public async Task<Response<string>> OrderService(string customerId)
+        public async Task<Response<object>> OrderCart(string customerId)
         {
-            throw new NotImplementedException();
+            var spec = new CustomerWithCartSpecification(customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<object>() {
+                    Payload = null,
+                    Message = "Customer is not found",
+                     isError = true,
+                     Errors = new List<string> { "Error with customer" },
+                };
+            }
+            var cart =customer.Cart;
+            if(cart == null)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Cart is not found",
+                    Errors = new List<string> { "Error with cart" },
+                    isError = true
+
+                };
+            }
+            var order = new Order
+            {
+                Customer = customer,
+                CustomerID = customerId,
+                OrderStatusID = "1", //value (status name)=set
+                
+            };
+            var totalPrice =cart.ServiceRequests.Sum(s => s.providerService.Price);
+            order.TotalPrice = totalPrice;
+            var order1 = await _orderRepository.AddOrder(order);
+            _unitOfWork.Commit();
+
+            var result = new
+            {
+                order1.OrderID,
+                order1.CustomerID,
+                order1.OrderStatusID,
+                order1.OrderStatus.StatusName,
+                order1.TotalPrice,
+             
+            };
+
+
+            return new Response<object>()
+            {
+                Payload = result ,
+                Message = "Success",
+                isError = false
+
+            };
         }
+
     }
 }

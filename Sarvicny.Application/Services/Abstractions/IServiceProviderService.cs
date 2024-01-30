@@ -12,14 +12,16 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<List<object>>> getAvailability(string workerId); //done
 
-        Task<Response<Object>> ShowOrderDetails(string orderId); //done //na2s 7ta fy elspecification
+        Task<Response<Object>> ShowOrderDetails(string orderId); //done 
 
         Task<Response<object>> ApproveOrder(string orderId); //done
         Task<Response<object>> RejectOrder(string orderId); //done
         Task<Response<object>> CancelOrder(string orderId); //done
         Task<Response<ICollection<Object>>> GetAllServiceProviders(); //done
 
+        Task<Response<List<object>>> getAllOrders(string workerId);
 
-
+        Task<Response<List<object>>> getAllApprovedOrders(string workerId);
+        Task<Response<List<object>>> getAllRequestedOrders(string workerId);
     }
 }

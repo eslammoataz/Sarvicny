@@ -15,5 +15,6 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<Customer?> GetCustomerById(ISpecifications<Customer> specifications);
         Task AddRequest(ServiceRequest newRequest);
+        Task RemoveRequest(ServiceRequest specificRequest);
     }
 }

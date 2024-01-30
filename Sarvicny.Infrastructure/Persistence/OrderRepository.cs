@@ -3,6 +3,7 @@ using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Emails;
+using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 
@@ -14,7 +15,7 @@ namespace Sarvicny.Infrastructure.Persistence
         private readonly IEmailService _emailService;
 
 
-        public OrderRepository(AppDbContext context,IEmailService emailService)
+        public OrderRepository(AppDbContext context, IEmailService emailService)
         {
             _context = context;
             _emailService = emailService;
@@ -64,7 +65,7 @@ namespace Sarvicny.Infrastructure.Persistence
             //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
             order.OrderStatusID = "3";
             order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Rejected");
-            
+
 
             var message = new EmailDto(customer.Email!, "Sarvicny: Rejected", "Your order is Rejected ");
 
@@ -117,7 +118,7 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync();
         }
-        
+
 
         public async Task<object> RejectOrder(ISpecifications<Order> spec)
         {
@@ -132,6 +133,26 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<object> ShowOrderDetails(ISpecifications<Order> spec)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Order> AddOrder(Order order)
+        {
+          
+            var orderStatus = _context.OrderStatuses;
+            order.OrderStatus = orderStatus.FirstOrDefault(o => o.OrderStatusID == "1");
+
+
+           
+            _context.Orders.Add(order);
+            return order;
+        }
+
+        public async Task<List<Order>> GetAllOrders(ISpecifications<Order> spec)
+        {
+
+            var orders = await ApplySpecification(spec).ToListAsync();
+            return orders;
+
         }
     }
 }
