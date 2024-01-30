@@ -19,6 +19,7 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
 
 
 
+
         }
         public OrderWithCustomers_Carts(string orderId) : base(o=> o.OrderID==orderId) 
         {

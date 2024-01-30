@@ -367,7 +367,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<List<object>>> getAllOrders(String workerId)
         {
-            var spec = new OrderWithCustomers_Carts();
+            var spec = new OrderWithProviderServiceSpecification();
             var orders =await _orderRepository.GetAllOrders(spec);
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
@@ -393,6 +393,14 @@ namespace Sarvicny.Application.Services
                         customerFN = order.Customer.FirstName,
                         orderStatus = order.OrderStatus.StatusName,
                         orderPrice = order.TotalPrice,
+                        orderService= order.Customer.Cart.ServiceRequests.Select(s=>new
+                        {
+                            s.SlotID,
+                           // s.Slot.StartTime,
+                            s.providerService.Service.ServiceID,
+                            s.providerService.Service.ServiceName,
+                            
+                        }).ToList<object>()
 
 
                     };
@@ -428,7 +436,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<List<object>>> getAllApprovedOrders(string workerId)
         {
-            var spec = new OrderWithCustomers_Carts();
+            var spec = new OrderWithProviderServiceSpecification();
             var orders = await _orderRepository.GetAllOrders(spec);
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
@@ -456,6 +464,14 @@ namespace Sarvicny.Application.Services
                             customerFN = order.Customer.FirstName,
                             orderStatus = order.OrderStatus.StatusName,
                             orderPrice = order.TotalPrice,
+                            orderService = order.Customer.Cart.ServiceRequests.Select(s => new
+                            {
+                                s.SlotID,
+                               // s.Slot.StartTime,
+                                s.providerService.Service.ServiceID,
+                                s.providerService.Service.ServiceName,
+
+                            }).ToList<object>()
 
 
                         };
@@ -494,7 +510,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<List<object>>> getAllRequestedOrders(string workerId)
         {
-            var spec = new OrderWithCustomers_Carts();
+            var spec = new OrderWithProviderServiceSpecification();
             var orders = await _orderRepository.GetAllOrders(spec);
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
@@ -522,6 +538,16 @@ namespace Sarvicny.Application.Services
                             customerFN = order.Customer.FirstName,
                             orderStatus = order.OrderStatus.StatusName,
                             orderPrice = order.TotalPrice,
+                            orderservice = order.Customer.Cart.ServiceRequests.Select( s => new
+                            {
+
+                                s.SlotID,
+                               // s.Slot.StartTime,
+                                s.providerService.Service.ServiceID,
+                                s.providerService.Service.ServiceName,
+
+                            }).ToList<object>(),
+     
 
 
                         };

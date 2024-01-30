@@ -141,8 +141,10 @@ namespace Sarvicny.Infrastructure.Persistence
             var orderStatus = _context.OrderStatuses;
             order.OrderStatus = orderStatus.FirstOrDefault(o => o.OrderStatusID == "1");
 
-
            
+
+      
+
             _context.Orders.Add(order);
             return order;
         }

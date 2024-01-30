@@ -38,10 +38,25 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return SpecificationBuilder<Customer>.Build(_context.Customers, spec);
         }
+        private IQueryable<ServiceRequest> ApplySpecificationS(ISpecifications<ServiceRequest> spec)
+        {
+            return SpecificationBuilder<ServiceRequest>.Build(_context.ServiceRequests, spec);
+        }
 
         public  async Task RemoveRequest(ServiceRequest specificRequest)
         {
             _context.ServiceRequests.Remove(specificRequest);
+        }
+
+        public async Task RemoveCart(Cart cart)
+        {
+           _context.Carts.Remove(cart);
+        }
+
+        public async Task<ServiceRequest> GetServiceRequestById(ISpecifications<ServiceRequest> spec)
+        {
+            return await ApplySpecificationS(spec).FirstOrDefaultAsync();
+
         }
     }
 }

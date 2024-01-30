@@ -307,3 +307,8 @@ D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.EntityFra
 D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
 D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Mono.TextTemplating.dll
 D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.CodeDom.dll
+C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Humanizer.dll
+C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.Design.dll
+C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
+C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Mono.TextTemplating.dll
+C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.CodeDom.dll

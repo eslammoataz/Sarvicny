@@ -9,6 +9,7 @@ using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Application.Services.Specifications.NewFolder;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
+using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
@@ -167,6 +168,17 @@ namespace Sarvicny.Application.Services
                     Status = "Error", 
                     Message = "An Error Occured",
                 };
+            if (slotExist.enable == false)
+            {
+                return new Response<string>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Error with Date or Slot" },
+                    Status = "Error",
+                    Message = "Slot is not available",
+                };
+            }
+            
 
             if (customer.Cart is null)
             {
@@ -199,33 +211,91 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> CancelRequestService(string customerId, string requestId)
         {
-           
-            // var customer = context.Customers
-            //   .Include(c => c.Cart)
-            //    .ThenInclude(ca => ca.ServiceRequests)
-            //     .FirstOrDefault(p => p.Id == customerId);
-            // if (customer == null)
-            // {
-            //     return new Response<string> { isError = true, Message = "Customer Not Found" };
-            // }
-            //
-            // var cart = context.Carts.FirstOrDefault(c => customerId == c.CustomerID);
-            // if (cart == null)
-            // {
-            //     return new Response<string> { isError = true, Message = " This Customer has no Cart" };
-            // }
-            //
-            // var request = context.ServiceRequests.FirstOrDefault(s => s.ServiceRequestID == requestId);
-            // if (request == null)
-            // {
-            //     return new Response<string> { isError = true, Message = " Request Not found" };
-            //
-            // }
-            // customer.Cart.ServiceRequests.Remove(request);
-            // context.SaveChanges();
-            // return new Response<string> { isError = false, Message = " Request is removed succesfully" };
+            var spec = new CustomerWithCartSpecification(customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Customer is not found",
+                    isError = true,
+                    Errors = new List<string> { "Error with customer" },
+                };
+            }
+            var cart = customer.Cart;
+            if (cart == null)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Cart is not found",
+                    Errors = new List<string> { "Error with cart" },
+                    isError = true
 
-            return null;
+                };
+            }
+            var spec2 = new ServiceRequestWithSlotSpecification(requestId);
+            var serviceRequest=await _customerRepository.GetServiceRequestById(spec2);
+            if (serviceRequest == null)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Service is not found",
+                    Errors = new List<string> { "Error with service requested" },
+                    isError = true
+
+                };
+            }
+            var requestInCart = cart.ServiceRequests;
+
+            if(requestInCart.Any(s=>s.ServiceRequestID== requestId))
+            {
+                var requestAsObject = new
+                {
+                    ServiceRequestID = requestId,
+                    SlotID=serviceRequest.SlotID,
+                    AddedTime=serviceRequest.AddedTime
+
+
+                };
+                await _customerRepository.RemoveRequest(serviceRequest);
+                
+
+                serviceRequest.Slot.enable = true;
+
+
+                _unitOfWork.Commit();
+
+                
+
+                return new Response<object>()
+                {
+                    Payload = requestAsObject,
+                    Message = "Sucess",
+                    isError = false
+
+                };
+            }
+            else
+            {
+                return new Response<object>()
+                {
+                    Payload =null ,
+                    Message = "Request is not found in the cart",
+                    Errors = new List<string> { "Error with cart" },
+                    isError = true
+
+                };
+
+            }
+
+
+
+           
+
+
         }
 
         public async Task<Response<List<object>>> GetCustomerCart(string customerId)
@@ -285,16 +355,23 @@ namespace Sarvicny.Application.Services
 
                 };
             }
+            var serviceRequests=cart.ServiceRequests;
+
+            var totalPrice = serviceRequests.Sum(s => s.providerService.Price);
             var order = new Order
             {
                 Customer = customer,
                 CustomerID = customerId,
                 OrderStatusID = "1", //value (status name)=set
-                
+                TotalPrice = totalPrice
             };
-            var totalPrice =cart.ServiceRequests.Sum(s => s.providerService.Price);
-            order.TotalPrice = totalPrice;
+
+
             var order1 = await _orderRepository.AddOrder(order);
+
+            await _customerRepository.RemoveCart(cart);
+
+
             _unitOfWork.Commit();
 
             var result = new

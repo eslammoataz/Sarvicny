@@ -62,6 +62,33 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
 
         }
+        [HttpPost]
+        [Route("removeFromCart")]
+        public async Task<IActionResult> RemoveFromCart(string customerId,string requestId)
+        {
+            var Response = await _customerService.CancelRequestService(customerId, requestId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+            return Ok(Response);
+
+        }
+
+        [HttpPost]
+        [Route("orderCart")]
+        public async Task<IActionResult> OrderCart( string customerId)
+        {
+            var Response = await _customerService.OrderCart( customerId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+            return Ok(Response);
+
+        }
 
 
     }

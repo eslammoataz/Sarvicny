@@ -201,6 +201,8 @@ public class AdminService : IAdminService
                 s.providerService.Provider.LastName,
                 s.providerService.Service.ServiceID,
                 s.providerService.Service.ServiceName,
+                s.SlotID,
+                //s.Slot.StartTime
 
             }).ToList<object>(),
             o.TotalPrice,
@@ -247,7 +249,8 @@ public class AdminService : IAdminService
                             s.providerService.Provider.LastName,
                             s.providerService.Service.ServiceID,
                             s.providerService.Service.ServiceName,
-
+                            s.SlotID,
+                            //s.Slot.StartTime
                         }).ToList<object>(),
 
                     };
@@ -311,7 +314,8 @@ public class AdminService : IAdminService
                         s.providerService.Provider.LastName,
                         s.providerService.Service.ServiceID,
                         s.providerService.Service.ServiceName,
-
+                        s.SlotID,
+                        //s.Slot.StartTime
                     }).ToList<object>(),
 
                 };
