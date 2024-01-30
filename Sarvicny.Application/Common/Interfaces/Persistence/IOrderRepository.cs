@@ -11,8 +11,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 {
     public interface IOrderRepository
     {
-        Task<Order> GetOrderById(ISpecifications<Order> specifications);
-        Task<object> ApproveOrder(ISpecifications<Order> spec);
+        Task<Order?> GetOrder(ISpecifications<Order> specifications);
+        Task<Order> ApproveOrder(ISpecifications<Order> spec);
         Task<object> RejectOrder(ISpecifications<Order> spec);
         Task<object> CancelOrder(ISpecifications<Order> spec);
         Task<object> ShowOrderDetails(ISpecifications<Order> spec);

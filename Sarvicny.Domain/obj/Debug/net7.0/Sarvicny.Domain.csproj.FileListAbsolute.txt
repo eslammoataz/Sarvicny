@@ -47,3 +47,15 @@ C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.D
 C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\refint\Sarvicny.Domain.dll
 C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.pdb
 C:\Users\Karen\Source\Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\ref\Sarvicny.Domain.dll
+E:\Github Repos\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.deps.json
+E:\Github Repos\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.dll
+E:\Github Repos\Sarvicny\Sarvicny.Domain\bin\Debug\net7.0\Sarvicny.Domain.pdb
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.csproj.AssemblyReference.cache
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.GeneratedMSBuildEditorConfig.editorconfig
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.AssemblyInfoInputs.cache
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.AssemblyInfo.cs
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.csproj.CoreCompileInputs.cache
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.dll
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\refint\Sarvicny.Domain.dll
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.pdb
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\ref\Sarvicny.Domain.dll

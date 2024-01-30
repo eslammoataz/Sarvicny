@@ -51,7 +51,7 @@ public class ServiceRepository : IServiceRepository
 
     private IQueryable<ProviderService> ApplySpecificationPS(ISpecifications<ProviderService> spec)
     {
-        return SpecificationBuilder<ProviderService>.Build(_context.providerServices, spec);
+        return SpecificationBuilder<ProviderService>.Build(_context.ProviderServices, spec);
     }
 
     public Task<ICollection<Provider>> GetServiceById(string serviceId)

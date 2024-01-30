@@ -10,6 +10,15 @@ namespace Sarvicny.Infrastructure.Data
 {
     public class AppDbContext : IdentityDbContext<User>
     {
+        public AppDbContext()
+        {
+
+        }
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+
+        }
+
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Provider> Provider { get; set; }
 
@@ -17,23 +26,19 @@ namespace Sarvicny.Infrastructure.Data
         public DbSet<Consultant> Consultants { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Criteria> Criterias { get; set; }
+
         public DbSet<Service> Services { get; set; }
 
-        public DbSet<Admin> Admins { get; set; }
-
-        public DbSet<ProviderService> providerServices { get; set; }
-
+        public DbSet<ProviderService> ProviderServices { get; set; }
         public DbSet<ProviderAvailability> ProviderAvailabilities { get; set; }
-        public DbSet<Order> Orders { get; set; }
-
-        public DbSet<OrderStatus> OrderStatuses { get; set; }
-        public DbSet<Cart> Carts { get; set; }
         public DbSet<TimeSlot> Slots { get; set; }
 
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<ServiceRequest> ServiceRequests { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderStatus> OrderStatuses { get; set; }
+        public DbSet<Admin> Admins { get; set; }
 
-        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

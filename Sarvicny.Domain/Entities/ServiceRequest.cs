@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Sarvicny.Domain.Entities.Avaliabilities;
 
 namespace Sarvicny.Domain.Entities
 {
@@ -21,6 +22,10 @@ namespace Sarvicny.Domain.Entities
 
         public ProviderService providerService { get; set; }
         public DateTime? AddedTime { get; set; }
+        
+        public string SlotID { get; set; }
+
+        public TimeSlot Slot;
 
     }
 }

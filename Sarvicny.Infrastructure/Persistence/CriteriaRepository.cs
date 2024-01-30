@@ -65,7 +65,7 @@ public class CriteriaRepository : ICriteriaRepository
 
         criteria.Services.Add(service);
         service.Criteria = (criteria);
-        service.Criteria.CriteriaID = criteriaId;
+        service.CriteriaID = criteriaId;
       
         return criteria;
     }

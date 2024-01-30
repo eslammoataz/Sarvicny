@@ -30,12 +30,13 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task AddProviderService(ProviderService workerservice)
         {
-            _context.providerServices.Add(workerservice);
+            _context.ProviderServices.Add(workerservice);
            
         }
         public async Task<Provider> FindByIdAsync(ISpecifications<Provider> specifications)
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync();
+            
         }
 
 
@@ -86,46 +87,47 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<ProviderAvailability> AddAvailability(AvailabilityDto availabilityDto, ISpecifications<Provider> specifications)
         {
             var provider = await ApplySpecification(specifications).FirstOrDefaultAsync();
-            //if (provider == null)
-            //{
-            //    throw new Exception("Provider Not Found");
 
-            //}
-            var availability = new ProviderAvailability
+            var providerAvailability = new ProviderAvailability
             {
-                ServiceProviderID = provider.Id,
+                ServiceProviderID = provider.Id, 
                 DayOfWeek = availabilityDto.DayOfWeek,
-                AvailabilityDate = DateTime.Now,
+                AvailabilityDate = availabilityDto.AvailabilityDate,
                 ServiceProvider = provider
             };
 
-            List<TimeSlot> timeSlots = await ConverttoTimeSlot(availabilityDto.Slots, availability);
-            availability.Slots = timeSlots;
-            _context.ProviderAvailabilities.Add(availability);
+            List<TimeSlot> timeSlots = await ConvertToTimeSlot(availabilityDto.Slots, providerAvailability);
+            providerAvailability.Slots = timeSlots;
+            _context.ProviderAvailabilities.Add(providerAvailability);
 
-            provider.Availabilities.Add(availability);
+            provider.Availabilities.Add(providerAvailability);
 
-            return availability;
+            return providerAvailability;
 
         }
 
-        public async Task<List<TimeSlot>> ConverttoTimeSlot(List<TimeRange> timeRanges, ProviderAvailability providerAvailability)
-
+        private async Task<List<TimeSlot>> ConvertToTimeSlot(List<TimeRange> timeRanges, ProviderAvailability providerAvailability)
         {
             List<TimeSlot> timeSlots = new List<TimeSlot>();
 
             foreach (var timeRange in timeRanges)
             {
-                var timeslot = new TimeSlot
-                {
-                    StartTime = TimeSpan.Parse(timeRange.startTime),
-                    EndTime = TimeSpan.Parse(timeRange.endTime),
-                    enable = true,
-                    ProviderAvailabilityID = providerAvailability.ProviderAvailabilityID,
-                    ProviderAvailability = providerAvailability
-                };
-                timeSlots.Add(timeslot);
+                TimeSpan startTime = TimeSpan.Parse(timeRange.startTime);
+                TimeSpan endTime = TimeSpan.Parse(timeRange.endTime);
 
+                // Iterate over 1-hour intervals within the time range
+                for (TimeSpan currentHour = startTime; currentHour < endTime; currentHour = currentHour.Add(TimeSpan.FromHours(1)))
+                {
+                    var timeSlot = new TimeSlot
+                    {
+                        StartTime = currentHour,
+                        EndTime = currentHour.Add(TimeSpan.FromHours(1)),
+                        enable = true,
+                        ProviderAvailabilityID = providerAvailability.ProviderAvailabilityID,
+                        ProviderAvailability = providerAvailability
+                    };
+                    timeSlots.Add(timeSlot);
+                }
             }
 
             return timeSlots;
@@ -134,13 +136,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<List<ProviderAvailability>> getAvailability( ISpecifications<Provider> spec)
         {
             var provider = await ApplySpecification(spec).FirstOrDefaultAsync( );
-
-
-
-           
             return provider.Availabilities;
-
-
         }
         public async Task<List<TimeSlot>> getAvailabilitySlots(ISpecifications<ProviderAvailability> spec)
         {

@@ -8,25 +8,16 @@ using Sarvicny.Infrastructure.Data;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
-    public class OrderRepositry : IOrderRepository
+    public class OrderRepository : IOrderRepository
     {
         private readonly AppDbContext _context;
-
-        private readonly IUnitOfWork unitOfWork;
         private readonly IEmailService _emailService;
 
 
-        public OrderRepositry(AppDbContext context, IUnitOfWork unitOfWork, IEmailService emailService)
+        public OrderRepository(AppDbContext context,IEmailService emailService)
         {
             _context = context;
-            this.unitOfWork = unitOfWork;
             _emailService = emailService;
-        }
-
-        public async Task<Order> GetOrderById(string OrderId, ISpecifications<Order> specifications)
-        {
-
-            return await ApplySpecification(specifications).FirstOrDefaultAsync(o => o.OrderID == OrderId);
         }
 
 
@@ -52,29 +43,15 @@ namespace Sarvicny.Infrastructure.Persistence
             return response;
         }
 
-        public async Task<object> ApproveOrder(string orderId, ISpecifications<Order> spec)
+        public async Task<Order> ApproveOrder(ISpecifications<Order> spec)
         {
-            var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
-
-            //if (order == null)
-            //{
-            //    throw new Exception("Order Not Found");
-
-            //}
+            var order = await ApplySpecification(spec).FirstOrDefaultAsync();
 
             var customer = order.Customer;
 
             //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
             order.OrderStatusID = "2";
             order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Approved");
-
-
-            unitOfWork.Commit();
-
-            var message = new EmailDto(customer.Email!, "Sarvicny: Approved", "Your order is approved seccessfully");
-
-            _emailService.SendEmail(message);
-            unitOfWork.Commit();
             return order;
         }
 
@@ -87,12 +64,11 @@ namespace Sarvicny.Infrastructure.Persistence
             //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
             order.OrderStatusID = "3";
             order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Rejected");
-            unitOfWork.Commit();
+            
 
             var message = new EmailDto(customer.Email!, "Sarvicny: Rejected", "Your order is Rejected ");
 
             _emailService.SendEmail(message);
-            unitOfWork.Commit();
             ///ReAsignnnnnn??
             return order;
 
@@ -126,8 +102,6 @@ namespace Sarvicny.Infrastructure.Persistence
 
             _emailService.SendEmail(message);
 
-            unitOfWork.Commit();
-
             ///ReAsignnnnnn??
             return order;
 
@@ -139,15 +113,11 @@ namespace Sarvicny.Infrastructure.Persistence
         }
 
 
-        public async Task<Order> GetOrderById(ISpecifications<Order> specifications)
+        public async Task<Order?> GetOrder(ISpecifications<Order> specifications)
         {
-            throw new NotImplementedException();
+            return await ApplySpecification(specifications).FirstOrDefaultAsync();
         }
-
-        public async Task<object> ApproveOrder(ISpecifications<Order> spec)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public async Task<object> RejectOrder(ISpecifications<Order> spec)
         {

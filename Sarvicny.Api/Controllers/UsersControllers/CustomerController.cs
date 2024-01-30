@@ -2,6 +2,7 @@
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services;
 using Sarvicny.Contracts.Authentication.Registers;
+using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities.Users;
 
 namespace Sarvicny.Api.Controllers.UsersControllers
@@ -13,14 +14,14 @@ namespace Sarvicny.Api.Controllers.UsersControllers
     public class CustomerController : ControllerBase
     {
 
-        private readonly IAuthenticationService authenticationService;
+        private readonly IAuthenticationService _authenticationService;
+        private readonly ICustomerService _customerService;
 
 
-        public CustomerController(IAuthenticationService authenticationService)
+        public CustomerController(IAuthenticationService authenticationService , ICustomerService customerService)
         {
-
-            this.authenticationService = authenticationService;
-
+            _authenticationService = authenticationService;
+            _customerService = customerService;
         }
 
 
@@ -38,11 +39,26 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 FirstName = registrationDto.FirstName,
             };
 
-            var Response = await authenticationService.Register(user, role, registrationDto.Password);
+            var Response = await _authenticationService.Register(user, role, registrationDto.Password);
 
             if (Response.isError)
                 return BadRequest(Response);
 
+            return Ok(Response);
+
+        }
+        
+        
+        [HttpPost]
+        [Route("addtocart")]
+        public async Task<IActionResult> AddToCart(RequestServiceDto requestServiceDto, string customerId)
+        {
+            var Response = await _customerService.RequestService(requestServiceDto, customerId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
             return Ok(Response);
 
         }

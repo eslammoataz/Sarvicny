@@ -11,10 +11,7 @@ namespace Sarvicny.Domain.Entities
 {
     public class Cart
     {
-        public Cart()
-        {
-            ServiceRequests = new List<ServiceRequest>();
-        }
+        
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string CartID { get; set; }
@@ -22,9 +19,7 @@ namespace Sarvicny.Domain.Entities
 
         public string CustomerID { get; set; }
 
-        public List<ServiceRequest> ServiceRequests { get; set; }
-
-        public List<ProviderService> WorkerServices = new List<ProviderService>();
+        public List<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
 
         //public DateTime? AddedTime { get; set; }
 

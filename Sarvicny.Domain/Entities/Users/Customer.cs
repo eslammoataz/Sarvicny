@@ -4,7 +4,6 @@ namespace Sarvicny.Domain.Entities.Users
 {
     public class Customer : User
     {
-
         public string Address { get; set; }
         public string? CartID { get; set; }
 

@@ -36,10 +36,10 @@ public static class DependencyInjection
         services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<ICriteriaRepository, CriteriaRepository>();
         services.AddScoped<IServiceProviderRepository, ServiceProviderRepository>();
-        services.AddScoped<IOrderRepository, OrderRepositry>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IAdminRepository, AdminRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
 
         services.AddAuthentication(); // UserManager / SigninManager / RoleManager
 

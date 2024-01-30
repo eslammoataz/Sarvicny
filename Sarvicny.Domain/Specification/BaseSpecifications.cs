@@ -21,5 +21,10 @@ public class BaseSpecifications<T> : ISpecifications<T> where T : class
     {
         Includes.Add(includeExpression);
     }
+    
+    protected virtual void AddInclude(string includeString)
+    {
+        IncludeStrings.Add(includeString);
+    }
 
 }

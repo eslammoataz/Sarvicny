@@ -166,11 +166,13 @@ public class CriteriaService : ICriteriaService
                 isError = true,
             };
         }
+
+        var output = await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId);
         _unitOfWork.Commit();
         return new Response<Criteria>()
         {
             Message = "Sucess",
-            Payload = await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId),
+            Payload = output,
             isError = false,
         };
 

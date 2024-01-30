@@ -38,6 +38,9 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string workerId)
         {
+           
+            availabilityDto.AvailabilityDate = availabilityDto.AvailabilityDate.Value.Date;
+
             var spec = new ProviderWithAvailabilitesSpecification(workerId);
             var provider =  await _serviceProviderRepository.FindByIdAsync(spec);
             if (provider == null)
@@ -65,7 +68,6 @@ namespace Sarvicny.Application.Services
                 availiabilities.DayOfWeek,
                 slots,
                 availiabilities.ServiceProviderID
-
             };
             return new Response<object>()
 
@@ -117,13 +119,13 @@ namespace Sarvicny.Application.Services
             };
         }
 
-
-       
-
+        
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
+            
             var spec = new OrderWithCustomerSpecification();
-            var order = _orderRepository.GetOrderById(spec);
+            var order = await _orderRepository.GetOrder(spec);
+            
             if (order == null)
             {
                 return new Response<object>()
@@ -136,10 +138,20 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            return new Response<object>()
 
+            var result = await _orderRepository.ApproveOrder(spec);
+            var output = new
             {
-                Payload = await _orderRepository.ApproveOrder(spec),
+                result.OrderID,
+                result.OrderStatusID,
+                result.OrderStatus.StatusName,
+                result.CustomerID,
+            };
+            
+            _unitOfWork.Commit();
+            return new Response<object>()
+            {
+                Payload =output ,
                 Message = "Success"
             };
         }
@@ -147,7 +159,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> CancelOrder(string orderId)
         {
             var spec = new OrderWithCustomerSpecification();
-            var order = _orderRepository.GetOrderById(spec);
+            var order = _orderRepository.GetOrder(spec);
             if (order == null)
             {
                 return new Response<object>()
@@ -200,29 +212,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        // public async Task<Response<ICollection<object>>> getAvailability(string providerId)
-        // {
-        //     var spec = new ProviderWithAvailabilitesSpecification();
-        //     var provider= _serviceProviderRepository.FindByIdWithSpecificationAsync(providerId, spec);
-        //
-        //     if (provider == null)
-        //     {
-        //         return new Response<ICollection<object>>()
-        //         {
-        //             isError = true,
-        //             Message = "Provider Not found",
-        //             Payload= null
-        //         };
-        //     }
-        //
-        //     return new Response<ICollection<object>>()
-        //     {
-        //         
-        //         Message = "success",
-        //         Payload = await _serviceProviderRepository.getAvailability(providerId,spec)
-        //     };
-        //
-        // }
+       
 
         // public async Task<Response<ICollection<object>>> GetRegisteredServices(string workerId)
         // {
@@ -249,15 +239,15 @@ namespace Sarvicny.Application.Services
         // }
 
 
-        public async Task<Response<List<Object>>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
+        public async Task<Response<object>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
         {
-            var spec1 = new ProviderWithServicesSpecification(workerId);
+            var spec1 = new ProviderWithServicesAndAvailabilitiesSpecification(workerId);
 
             var worker = await _serviceProviderRepository.FindByIdAsync(spec1);
             var spec = new ServiceWithProvidersSpecification(serviceId);
             var service = await _serviceRepository.GetServiceById(spec);
 
-            var response = new Response<List<Object>>();
+            var response = new Response<object>();
 
             if (worker == null)
             {
@@ -308,7 +298,7 @@ namespace Sarvicny.Application.Services
             await _serviceProviderRepository.AddProviderService(workerService);
             worker.ProviderServices.Add(workerService);
             service.ProviderServices.Add(workerService);
-            List<object> result = new List<object>
+            var result = new
             {
                 workerService.ProviderID,
                 workerService.ServiceID,
@@ -327,7 +317,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> RejectOrder(string orderId)
         {
             var spec = new OrderWithCustomerSpecification();
-            var order = _orderRepository.GetOrderById(spec);
+            var order = _orderRepository.GetOrder(spec);
             if (order == null)
             {
                 return new Response<object>()

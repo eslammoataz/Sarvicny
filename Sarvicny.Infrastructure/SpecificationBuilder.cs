@@ -18,6 +18,9 @@ public static class SpecificationBuilder<T> where T : class
 
         query = spec.Includes.Aggregate(query,
             (currentQuery, includeExpressions) => currentQuery.Include(includeExpressions));
+        
+        query = spec.IncludeStrings.Aggregate(query, (current, includeString) => current.Include(includeString));
+
 
         return query;
     }
