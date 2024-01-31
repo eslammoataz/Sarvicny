@@ -11,20 +11,14 @@ public class CustomerWithCartSpecification : BaseSpecifications<Customer>
     {
         Includes.Add(c => c.Cart);
         Includes.Add(c => c.Cart.ServiceRequests);
-        
-
-
-
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}");
     }
 
     public CustomerWithCartSpecification(string customerId) : base(c => c.Id == customerId)
     {
         Includes.Add(c => c.Cart);
         Includes.Add(c => c.Cart.ServiceRequests);
-        
-
-
-
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}");
     }
 
 }

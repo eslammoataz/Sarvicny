@@ -57,11 +57,11 @@ public class ServiceController : ControllerBase
         {
             ServiceName = serviceDto.ServiceName,
             Description = serviceDto.Description,
-            Price = serviceDto.Price,
             AvailabilityStatus = serviceDto.AvailabilityStatus,
         };
 
         var response = await _servicesService.AddServiceAsync(newService);
+        
         if (response.isError)
         {
             return BadRequest(response);

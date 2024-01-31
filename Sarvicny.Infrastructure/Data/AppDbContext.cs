@@ -81,9 +81,6 @@ namespace Sarvicny.Infrastructure.Data
                 .HasForeignKey(s => s.ParentServiceID)
                 .OnDelete(DeleteBehavior.Restrict); // Choose the appropriate delete behavior
 
-
-            SeedOrderStatusData(builder);
-
             // Define your relationships here using Fluent API
 
             builder.Entity<Order>()
@@ -107,7 +104,7 @@ namespace Sarvicny.Infrastructure.Data
                 .HasForeignKey(ts => ts.ProviderAvailabilityID);
 
             builder.Entity<ProviderService>()
-       .HasKey(ws => new { ws.ProviderID, ws.ServiceID });
+       .HasKey(ws => ws.ProviderServiceID);
 
             builder.Entity<ProviderService>()
                 .HasOne(ws => ws.Provider)
@@ -143,17 +140,6 @@ namespace Sarvicny.Infrastructure.Data
 
 
 
-        }
-        private static void SeedOrderStatusData(ModelBuilder builder)
-        {
-            builder.Entity<OrderStatus>().HasData(
-                 new OrderStatus
-                 {
-                     OrderStatusID = "1", // Adjust the ID as needed
-                     StatusName = "Set"
-
-                 }
-             );
         }
 
 

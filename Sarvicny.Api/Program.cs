@@ -71,7 +71,6 @@ var app = builder.Build();
             var userManager = Services.GetRequiredService<UserManager<User>>();
             var roleManager = Services.GetRequiredService<RoleManager<IdentityRole>>();
             var context = Services.GetRequiredService<AppDbContext>();
-            var LoggerFactory = Services.GetRequiredService<ILoggerFactory>();
 
             context.Database.EnsureCreated();
 

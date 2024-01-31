@@ -11,8 +11,8 @@ using Sarvicny.Infrastructure.Data;
 namespace Sarvicny.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240129205132_EditingColumns")]
-    partial class EditingColumns
+    [Migration("20240131183758_editigProviderServiceColumns")]
+    partial class editigProviderServiceColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -252,13 +252,6 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.HasKey("OrderStatusID");
 
                     b.ToTable("OrderStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            OrderStatusID = "1",
-                            StatusName = "Set"
-                        });
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderAvailability", b =>
@@ -295,6 +288,10 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("ProviderServiceID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("longtext");
 
                     b.HasKey("ProviderID", "ServiceID");
 
@@ -350,6 +347,10 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<string>("CartID")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ProviderServiceID")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("SlotID")
                         .IsRequired()

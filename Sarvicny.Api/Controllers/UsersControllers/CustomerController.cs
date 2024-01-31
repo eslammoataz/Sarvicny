@@ -89,6 +89,20 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
 
         }
+        
+        [HttpGet]
+        [Route("getCart")]
+        public async Task<IActionResult> GetCart(string customerId)
+        {
+            var response = await _customerService.GetCustomerCart(customerId);
+
+            if (response.isError)
+            {
+                return BadRequest("dsad");
+            }
+            return Ok(response);
+
+        }
 
 
     }

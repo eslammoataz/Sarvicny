@@ -36,8 +36,8 @@ public class AdminController : ControllerBase
     }
 
 
-    [HttpGet("getRequests")]
-    public async Task<IActionResult> GetRequests()
+    [HttpGet("GetServiceProvidersRegistrationRequests")]
+    public async Task<IActionResult> GetServiceProvidersRegistrationRequests()
     {
         var response = await _adminService.GetServiceProvidersRegistrationRequests();
 

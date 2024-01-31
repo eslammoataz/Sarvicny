@@ -20,12 +20,14 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("CartID")]
         public Cart Cart { get; set; }
 
+        public string ProviderServiceID { get; set; }
         public ProviderService providerService { get; set; }
         public DateTime? AddedTime { get; set; }
         
         public string SlotID { get; set; }
 
-        public TimeSlot Slot;
+        [ForeignKey("SlotID")]
+        public TimeSlot Slot { get; set; }
 
     }
 }

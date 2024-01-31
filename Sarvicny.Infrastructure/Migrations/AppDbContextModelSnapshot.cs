@@ -249,13 +249,6 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.HasKey("OrderStatusID");
 
                     b.ToTable("OrderStatuses");
-
-                    b.HasData(
-                        new
-                        {
-                            OrderStatusID = "1",
-                            StatusName = "Set"
-                        });
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderAvailability", b =>
@@ -292,6 +285,10 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("ProviderServiceID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("longtext");
 
                     b.HasKey("ProviderID", "ServiceID");
 
@@ -347,6 +344,10 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<string>("CartID")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ProviderServiceID")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("SlotID")
                         .IsRequired()
