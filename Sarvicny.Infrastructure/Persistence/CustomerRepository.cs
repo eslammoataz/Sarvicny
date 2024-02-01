@@ -48,9 +48,9 @@ namespace Sarvicny.Infrastructure.Persistence
             _context.ServiceRequests.Remove(specificRequest);
         }
 
-        public async Task RemoveCart(Cart cart)
+        public async Task EmptyCart(Cart cart)
         {
-           _context.Carts.Remove(cart);
+            cart.ServiceRequests.Clear();
         }
 
         public async Task<ServiceRequest> GetServiceRequestById(ISpecifications<ServiceRequest> spec)

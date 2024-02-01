@@ -18,6 +18,6 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<ServiceRequest> GetServiceRequestById(ISpecifications<ServiceRequest> spec);
         Task AddRequest(ServiceRequest newRequest);
         Task RemoveRequest(ServiceRequest specificRequest);
-        Task RemoveCart(Cart cart);
+        Task EmptyCart(Cart cart);
     }
 }

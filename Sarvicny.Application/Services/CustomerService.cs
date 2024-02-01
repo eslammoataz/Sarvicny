@@ -335,7 +335,7 @@ namespace Sarvicny.Application.Services
 
             var order1 = await _orderRepository.AddOrder(order);
 
-            await _customerRepository.RemoveCart(cart);
+            await _customerRepository.EmptyCart(cart);
 
 
             _unitOfWork.Commit();
