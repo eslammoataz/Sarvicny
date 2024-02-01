@@ -12,5 +12,8 @@ namespace Sarvicny.Application.Services.Abstractions
         public Task<Response<object>> GetCustomerCart(string customerId);
 
         public Task<Response<object>> OrderCart(string customerId);
+
+
+
     }
 }

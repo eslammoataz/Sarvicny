@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sarvicny.Domain.Entities;
+﻿using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 
@@ -19,5 +14,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task AddRequest(ServiceRequest newRequest);
         Task RemoveRequest(ServiceRequest specificRequest);
         Task EmptyCart(Cart cart);
+
+        bool CreateCart(string customerID);
     }
 }

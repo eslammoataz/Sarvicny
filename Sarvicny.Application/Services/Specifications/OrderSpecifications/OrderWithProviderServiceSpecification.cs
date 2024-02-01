@@ -11,27 +11,29 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
 {
     public class OrderWithProviderServiceSpecification : BaseSpecifications<Order>
     {
-        public OrderWithProviderServiceSpecification() {
+        public OrderWithProviderServiceSpecification()
+        {
             Includes.Add(o => o.OrderStatus);
             Includes.Add(o => o.Customer);
-            Includes.Add(o => o.Customer.Cart);
-            Includes.Add(o => o.Customer.Cart.ServiceRequests);
-           // AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
-            AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-            AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}");
+            AddInclude(
+                $"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
+            AddInclude(
+                $"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
+            AddInclude(
+                $"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}");
         }
+
         public OrderWithProviderServiceSpecification(string orderId) : base(o => o.OrderID == orderId)
         {
             Includes.Add(o => o.OrderStatus);
             Includes.Add(o => o.Customer);
-            Includes.Add(o => o.Customer.Cart);
-            Includes.Add(o => o.Customer.Cart.ServiceRequests);
-            //AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
-            AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-            AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}");
 
-
-
+            AddInclude(
+                $"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
+            AddInclude(
+                $"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
+            AddInclude(
+                $"{nameof(Order.Customer)}.{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}");
         }
     }
 }

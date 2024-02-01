@@ -205,7 +205,7 @@ public class AdminService : IAdminService
                 s.providerService.Service.ServiceID,
                 s.providerService.Service.ServiceName,
                 s.SlotID,
-                //s.Slot.StartTime
+                s.Slot.StartTime
 
             }).ToList<object>(),
             o.TotalPrice,
@@ -292,8 +292,7 @@ public class AdminService : IAdminService
     {
         var spec = new OrderWithProviderServiceSpecification();
         var orders = await _orderRepository.GetAllOrders(spec);
-
-
+        
 
         List<object> result = new List<object>();
         foreach (var order in orders)

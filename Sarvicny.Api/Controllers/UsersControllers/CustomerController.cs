@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Application.Services;
 using Sarvicny.Contracts.Authentication.Registers;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities.Users;
@@ -18,7 +17,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         private readonly ICustomerService _customerService;
 
 
-        public CustomerController(IAuthenticationService authenticationService , ICustomerService customerService)
+        public CustomerController(IAuthenticationService authenticationService, ICustomerService customerService)
         {
             _authenticationService = authenticationService;
             _customerService = customerService;
@@ -47,8 +46,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
 
         }
-        
-        
+
+
         [HttpPost]
         [Route("addtocart")]
         public async Task<IActionResult> AddToCart(RequestServiceDto requestServiceDto, string customerId)
@@ -64,7 +63,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
         [HttpPost]
         [Route("removeFromCart")]
-        public async Task<IActionResult> RemoveFromCart(string customerId,string requestId)
+        public async Task<IActionResult> RemoveFromCart(string customerId, string requestId)
         {
             var Response = await _customerService.CancelRequestService(customerId, requestId);
 
@@ -78,9 +77,9 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         [HttpPost]
         [Route("orderCart")]
-        public async Task<IActionResult> OrderCart( string customerId)
+        public async Task<IActionResult> OrderCart(string customerId)
         {
-            var Response = await _customerService.OrderCart( customerId);
+            var Response = await _customerService.OrderCart(customerId);
 
             if (Response.isError)
             {
@@ -89,7 +88,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
 
         }
-        
+
         [HttpGet]
         [Route("getCart")]
         public async Task<IActionResult> GetCart(string customerId)
@@ -98,7 +97,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
             if (response.isError)
             {
-                return BadRequest("dsad");
+                return BadRequest(response);
             }
             return Ok(response);
 

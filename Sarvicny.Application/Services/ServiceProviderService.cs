@@ -214,32 +214,6 @@ namespace Sarvicny.Application.Services
 
         }
 
-       
-
-        // public async Task<Response<ICollection<object>>> GetRegisteredServices(string workerId)
-        // {
-        //     var spec = new ServiceProviderWithServiceSpecificationcs();
-        //     var provider = _serviceProviderRepository.FindByIdWithSpecificationAsync(workerId,spec);
-        //    
-        //     if (provider == null)
-        //     {
-        //         return new Response<ICollection<object>>()
-        //
-        //         {
-        //
-        //             Payload = null,
-        //             Message = "Provider is not found"
-        //         };
-        //     }
-        //
-        //     return new Response<ICollection<object>>()
-        //
-        //     {
-        //         Payload = await _serviceProviderRepository.GetRegisteredServices(workerId, spec),
-        //         Message = "Success"
-        //     };
-        // }
-
 
         public async Task<Response<object>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
         {

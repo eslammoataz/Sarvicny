@@ -13,14 +13,14 @@ public class CartRepository : ICartRepository
     {
         _context = context;
     }
-    
-    
+
+
     public async Task<Cart> GetCart(ISpecifications<Cart> specifications)
     {
         return await ApplySpecification(specifications).FirstOrDefaultAsync();
     }
-    
-    
+
+
     private IQueryable<Cart> ApplySpecification(ISpecifications<Cart> spec)
     {
         return SpecificationBuilder<Cart>.Build(_context.Carts, spec);

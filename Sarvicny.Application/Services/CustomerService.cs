@@ -7,7 +7,6 @@ using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
@@ -128,7 +127,8 @@ namespace Sarvicny.Application.Services
                 Slot = slotExist,
                 SlotID = slotExist.TimeSlotID,
                 CartID = customer.Cart.CartID,
-                Cart = customer.Cart
+                Cart = customer.Cart,
+                Price = providerService.Price
             };
 
             slotExist.enable = false;
@@ -147,7 +147,7 @@ namespace Sarvicny.Application.Services
             };
 
             return new Response<object>
-            { isError = false, Message = "Service Request is added successfully to the cart" , Payload = output};
+            { isError = false, Message = "Service Request is added successfully to the cart", Payload = output };
         }
 
         public async Task<Response<object>> CancelRequestService(string customerId, string requestId)
@@ -179,7 +179,7 @@ namespace Sarvicny.Application.Services
             var spec2 = new ServiceRequestWithSlotSpecification(requestId);
             var serviceRequest = await _customerRepository
                 .GetServiceRequestById(spec2);
-            
+
             if (serviceRequest == null)
             {
                 return new Response<object>()
@@ -191,7 +191,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            
+
             var requestInCart = cart.ServiceRequests;
 
             if (requestInCart.Any(s => s.ServiceRequestID == requestId))
@@ -200,7 +200,7 @@ namespace Sarvicny.Application.Services
                 {
                     ServiceRequestID = requestId,
                     serviceRequest.SlotID,
-                    serviceRequest.AddedTime 
+                    serviceRequest.AddedTime
 
 
                 };
@@ -244,7 +244,8 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> GetCustomerCart(string customerId)
         {
-            var customer = await _customerRepository.GetCustomerById(new BaseSpecifications<Customer>());
+
+            var customer = await _customerRepository.GetCustomerById(new CustomerWithCartSpecification(customerId));
 
             if (customer == null)
             {
@@ -256,9 +257,9 @@ namespace Sarvicny.Application.Services
                     Errors = new List<string> { "Error with customer" },
                 };
             }
-            
+
             var cart = await _cartRepository.GetCart(new CartWithServiceRequestsSpecification(customer.CartID));
-            
+
             if (cart == null)
             {
                 customer.Cart = new Cart
@@ -269,7 +270,7 @@ namespace Sarvicny.Application.Services
                 };
                 _unitOfWork.Commit();
             }
-            
+
             var requestedServices = cart.ServiceRequests.Select(s => s.providerService)
                                 .Select(ps => new
                                 {
@@ -288,7 +289,7 @@ namespace Sarvicny.Application.Services
 
             return new Response<object>()
             {
-                Payload =  CartAsObject ,
+                Payload = CartAsObject,
                 Message = "Success",
                 isError = false
 
@@ -324,6 +325,7 @@ namespace Sarvicny.Application.Services
             var serviceRequests = cart.ServiceRequests;
 
             var totalPrice = serviceRequests.Sum(s => s.providerService.Price);
+            
             var order = new Order
             {
                 Customer = customer,
@@ -331,10 +333,17 @@ namespace Sarvicny.Application.Services
                 OrderStatusID = "1", //value (status name)=set
                 TotalPrice = totalPrice
             };
-
-
+            
             var order1 = await _orderRepository.AddOrder(order);
 
+            foreach (var serviceRequest in serviceRequests)
+            {
+                serviceRequest.OrderId = order.OrderID;
+            }
+            // serviceRequests = await _orderRepository.SetOrderToServiceRequest(serviceRequests, order);
+            
+            order.ServiceRequests = serviceRequests;
+            
             await _customerRepository.EmptyCart(cart);
 
 
@@ -348,7 +357,7 @@ namespace Sarvicny.Application.Services
                 order1.OrderStatus.StatusName,
                 order1.TotalPrice,
             };
-            
+
             return new Response<object>()
             {
                 Payload = result,
@@ -357,6 +366,7 @@ namespace Sarvicny.Application.Services
 
             };
         }
+
 
     }
 }

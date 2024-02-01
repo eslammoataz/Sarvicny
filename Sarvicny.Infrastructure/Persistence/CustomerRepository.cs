@@ -8,7 +8,7 @@ using Sarvicny.Infrastructure.Data;
 namespace Sarvicny.Infrastructure.Persistence
 {
     public class CustomerRepository : ICustomerRepository
-    
+
     {
         private readonly AppDbContext _context;
 
@@ -30,7 +30,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task AddRequest(ServiceRequest newRequest)
         {
-             await _context.ServiceRequests.AddAsync(newRequest);
+            await _context.ServiceRequests.AddAsync(newRequest);
         }
 
 
@@ -43,7 +43,7 @@ namespace Sarvicny.Infrastructure.Persistence
             return SpecificationBuilder<ServiceRequest>.Build(_context.ServiceRequests, spec);
         }
 
-        public  async Task RemoveRequest(ServiceRequest specificRequest)
+        public async Task RemoveRequest(ServiceRequest specificRequest)
         {
             _context.ServiceRequests.Remove(specificRequest);
         }
@@ -57,6 +57,27 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return await ApplySpecificationS(spec).FirstOrDefaultAsync();
 
+        }
+
+
+        public bool CreateCart(string customerId)
+        {
+            var customer = _context.Customers.FirstOrDefault(c => c.Id == customerId);
+            if (customer == null)
+            {
+                return false;
+            }
+
+            var cart = new Cart
+            {
+                CustomerID = customerId,
+                LastChangeTime = DateTime.UtcNow,
+                Customer = customer
+            };
+
+            customer.Cart = cart;
+            customer.CartID = cart.CartID;
+            return true;
         }
     }
 }

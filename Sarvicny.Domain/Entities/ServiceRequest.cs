@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Sarvicny.Domain.Entities.Avaliabilities;
 
 namespace Sarvicny.Domain.Entities
@@ -20,14 +15,21 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("CartID")]
         public Cart Cart { get; set; }
 
+        [ForeignKey("ProviderServiceID")]
         public string ProviderServiceID { get; set; }
         public ProviderService providerService { get; set; }
         public DateTime? AddedTime { get; set; }
-        
+
         public string SlotID { get; set; }
 
         [ForeignKey("SlotID")]
         public TimeSlot Slot { get; set; }
+
+        [ForeignKey("OrderId")]
+        public string? OrderId { get; set; }
+
+        public decimal Price { get; set; }
+
 
     }
 }

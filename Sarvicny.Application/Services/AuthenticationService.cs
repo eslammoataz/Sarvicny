@@ -26,14 +26,14 @@ namespace Sarvicny.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<AuthenticationService> _logger;
+        private readonly ICustomerRepository _customerRepository;
 
 
 
         public AuthenticationService(IConfiguration config, IEmailService emailService,
                 IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator,
                 IJwtTokenGenerator jwtTokenGenerator, IRoleRepository roleRepository, IUserRepository userRepository
-                , IUnitOfWork unitOfWork, ILogger<AuthenticationService> logger)
+                , IUnitOfWork unitOfWork, ILogger<AuthenticationService> logger, ICustomerRepository customerRepository)
         {
             JwtTokenGenerator = jwtTokenGenerator;
             _config = config;
@@ -43,7 +43,7 @@ namespace Sarvicny.Application.Services
             _roleRepository = roleRepository;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
-            _logger = logger;
+            _customerRepository = customerRepository;
         }
 
 
@@ -72,6 +72,7 @@ namespace Sarvicny.Application.Services
             }
 
 
+
             // it stores the password hashed already without using bcrypt
             IdentityResult result = await _userRepository.AddUserAsync(user, password);
 
@@ -84,6 +85,19 @@ namespace Sarvicny.Application.Services
                 return response;
             }
             await _userRepository.AddUserToRoleAsync(user, role);
+
+            if (role == "Customer")
+            {
+                var created = _customerRepository.CreateCart(user.Id);
+                if (!created)
+                {
+                    response.Status = "Failed";
+                    response.isError = true;
+                    response.Errors.Add("Failed to create Cart");
+                    return response;
+                }
+                _unitOfWork.Commit();
+            }
 
 
             List<Claim> claims = new()
@@ -130,7 +144,7 @@ namespace Sarvicny.Application.Services
                 return response;
             }
 
-            
+
             var roles = await _userRepository.GetRolesAsync(user);
 
             List<Claim> claims = new()
@@ -139,7 +153,7 @@ namespace Sarvicny.Application.Services
                 new Claim("role", roles.FirstOrDefault()!)
 
             };
-            
+
             var tokenString = JwtTokenGenerator.GenerateToken(claims, _config);
             SetAuthenticationCookie(tokenString);
 
@@ -156,31 +170,31 @@ namespace Sarvicny.Application.Services
             response.Payload = payload;
             return response;
         }
-        
-        public async Task<Response<string>> ConfirmEmailAsync (string token, string email)
+
+        public async Task<Response<string>> ConfirmEmailAsync(string token, string email)
         {
             var user = await _userRepository.GetUserByEmailAsync(email);
             var response = new Response<string>();
-            
+
             if (user != null)
             {
                 var result = await _userRepository.ConfirmEmailAsync(user, token);
                 if (result.Succeeded)
                 {
-                   
-                    response.Status= "Success";
+
+                    response.Status = "Success";
                     response.Message = "Email Verified Successfully";
                     return response;
                 }
             }
-            
+
             response.isError = true;
             response.Errors.Add("This User Does not exist!");
             return response;
         }
-        
-        
-        
+
+
+
         private void SetAuthenticationCookie(string tokenString)
         {
             _httpContextAccessor.HttpContext?.Response.Headers.Add("x-Authorization", $"Bearer {tokenString}");

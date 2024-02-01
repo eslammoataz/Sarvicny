@@ -156,5 +156,14 @@ namespace Sarvicny.Infrastructure.Persistence
             return orders;
 
         }
+
+        public async Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest> serviceRequests , Order order)
+        {
+            foreach (var serviceRequest in serviceRequests)
+            {
+                serviceRequest.OrderId = order.OrderID;
+            }
+            return serviceRequests;
+        }
     }
 }

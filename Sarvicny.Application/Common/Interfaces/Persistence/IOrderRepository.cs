@@ -18,6 +18,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<object> ShowOrderDetails(ISpecifications<Order> spec);
         Task<Order> AddOrder(Order order);
        Task<List<Order>> GetAllOrders(ISpecifications<Order> spec);
+       
+       Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest>serviceRequests , Order order);
     }
 
 }

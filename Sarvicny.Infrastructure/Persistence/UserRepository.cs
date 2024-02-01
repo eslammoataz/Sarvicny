@@ -11,11 +11,13 @@ public class UserRepository : IUserRepository
 {
     private readonly UserManager<User> _userManager;
     private readonly AppDbContext _context;
+    private readonly ICustomerRepository _customerRepository;
 
-    public UserRepository(UserManager<User> userManager, AppDbContext context)
+    public UserRepository(UserManager<User> userManager, AppDbContext context, ICustomerRepository customerRepository)
     {
         _context = context;
         _userManager = userManager;
+        _customerRepository = customerRepository;
     }
 
     public async Task<User?> GetUserByIdAsync(string id)
@@ -39,6 +41,7 @@ public class UserRepository : IUserRepository
     public async Task<IdentityResult> AddUserAsync(User user, string password)
     {
         var result = await _userManager.CreateAsync(user, password);
+
         return result;
     }
 

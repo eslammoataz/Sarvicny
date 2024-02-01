@@ -131,13 +131,13 @@ namespace Sarvicny.Infrastructure.Data
             builder.Entity<Cart>()
                 .HasMany(sr => sr.ServiceRequests)
                 .WithOne(c => c.Cart)
-                .HasForeignKey(c => c.CartID);
+                .HasForeignKey(c => c.CartID)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Customer>()
                    .HasOne(c => c.Cart)
                    .WithOne(c => c.Customer)
                    .HasForeignKey<Customer>(c => c.CartID);
-
 
 
         }

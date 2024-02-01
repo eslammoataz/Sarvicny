@@ -16,7 +16,8 @@ namespace Sarvicny.Domain.Entities
         public string OrderID { get; set; }
         public string CustomerID { get; set; }
         public string OrderStatusID { get; set; }
-
+        
+        public List<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
         public decimal? TotalPrice { get; set; }
 
         //public DateTime? OrderDate { get; set; }
