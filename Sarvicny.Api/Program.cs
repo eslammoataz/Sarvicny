@@ -22,6 +22,21 @@ var builder = WebApplication.CreateBuilder(args);
 
     var Configuration = builder.Configuration;
 
+    // allowing CORS
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy",
+            builder =>
+            {
+                builder.WithOrigins("http://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .WithExposedHeaders("x-Authorization") // Expose custom headers if needed
+                    .SetIsOriginAllowed(_ => true)
+                    .WithHeaders("Content-Type"); // Allow Content-Type header
+            });
+    });
 
 
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -50,15 +65,14 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddControllers().AddJsonOptions(options =>
     {
-      //  options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-      //  options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;  
+        //  options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        //  options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;  
     });
 
 
     builder.Services.AddSingleton(Configuration);
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(Configuration);
-
 }
 
 var app = builder.Build();
@@ -89,6 +103,8 @@ var app = builder.Build();
             Logger.LogError(ex, ex.Message); // Logging the error
         }
     }
+
+
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -97,7 +113,7 @@ var app = builder.Build();
     }
 
     app.UseHttpsRedirection();
-
+    app.UseCors("CorsPolicy");
     app.UseAuthorization();
 
     app.MapControllers();

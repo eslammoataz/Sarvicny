@@ -22,14 +22,16 @@ public class AdminService : IAdminService
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public AdminService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository)
+    public AdminService(UserManager<User>userManager ,IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService)
     {
+        _userManager = userManager;
         _serviceRepository = serviceRepository;
         _userRepository = userRepository;
         _providerRepository = serviceProviderRepositor;
         _adminRepository = adminRepository;
         _unitOfWork = unitOfWork;
         _orderRepository = orderRepository;
+        _emailService = emailService;
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -113,12 +115,13 @@ public class AdminService : IAdminService
             };
 
         }
-        _unitOfWork.Commit();
+        
 
         //Add Token to Verify the email....
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
-
-
+        var output = await _adminRepository.ApproveServiceProviderRegister(workerId);
+        _unitOfWork.Commit();
+        
         var message = new EmailDto(provider.Email!, "Sarvicny: Worker Approved Successfully", "Congratulations you are accepted");
 
         _emailService.SendEmail(message);
@@ -126,7 +129,7 @@ public class AdminService : IAdminService
         {
             Status = "Success",
             Message = "Worker Approved Successfully , Verification Email sent to provider's email ",
-            Payload = await _adminRepository.ApproveServiceProviderRegister(workerId),
+            Payload =output ,
 
         };
 
