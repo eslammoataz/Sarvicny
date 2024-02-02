@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
+using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
@@ -22,7 +24,9 @@ public class AdminService : IAdminService
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public AdminService(UserManager<User>userManager ,IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService)
+    private readonly IOrderService _orderService;
+
+    public AdminService(UserManager<User>userManager ,IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService,IOrderService orderService)
     {
         _userManager = userManager;
         _serviceRepository = serviceRepository;
@@ -32,6 +36,7 @@ public class AdminService : IAdminService
         _unitOfWork = unitOfWork;
         _orderRepository = orderRepository;
         _emailService = emailService;
+        _orderService = orderService;
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -57,7 +62,8 @@ public class AdminService : IAdminService
 
     public async Task<Response<ICollection<object>>> GetAllServiceProviders()
     {
-        var serviceProviders = await _userRepository.GetAllServiceProviders();
+        var spec = new ServiceProviderWithServiceSpecificationcs();
+        var serviceProviders = await _providerRepository.GetAllServiceProviders(spec);
 
         var serviceProvidersAsObjects = serviceProviders.Select(c => new
         {
@@ -65,7 +71,14 @@ public class AdminService : IAdminService
             c.FirstName,
             c.LastName,
             c.Email,
-            c.isVerified
+            c.isVerified,
+            services = c.ProviderServices.Select(p => new
+            {
+                p.ServiceID,
+                p.Service.ServiceName
+
+            }).ToList<object>(),
+
         }).ToList<object>();
 
         return new Response<ICollection<object>>()
@@ -74,8 +87,8 @@ public class AdminService : IAdminService
             Message = "Action Done Successfully",
             Payload = serviceProvidersAsObjects
         };
-    }
 
+    }
     public async Task<Response<ICollection<object>>> GetAllServices()
     {
         var spec = new ServiceWithCriteriaSpecification();
@@ -169,15 +182,43 @@ public class AdminService : IAdminService
         };
     }
 
-    public async Task<Response<ICollection<Provider>>> GetServiceProvidersRegistrationRequests()
+    public async Task<Response<List<object>>> GetServiceProvidersRegistrationRequests()
     {
-        var unHandledProviders = await _providerRepository.GetProvidersRegistrationRequest();
+        var spec = new ServiceProviderWithServiceSpecificationcs();
+        var unHandledProviders = await _providerRepository.GetProvidersRegistrationRequest(spec);
 
-        var response = new Response<ICollection<Provider>>()
+        var unHandeledProvidersAsObjects = unHandledProviders.Select(p => new
+        {
+
+            p.Id,
+            p.FirstName,
+            p.LastName,
+            p.UserName,
+            p.Email,
+            p.PasswordHash,
+            p.PhoneNumber,
+            p.isVerified,
+            services = p.ProviderServices.Select(s => new
+            {
+                s.ServiceID,
+                s.Service.ServiceName,
+
+                s.Service.ParentServiceID,
+                parentServiceName=s.Service.ParentService?.ServiceName,
+                s.Service.CriteriaID,
+                s.Service.Criteria?.CriteriaName
+            }).ToList()
+
+
+
+        }).ToList<object>();
+
+
+        var response = new Response<List<object>>()
         {
             Status = "Success",
             Message = "Action Done Successfully",
-            Payload = unHandledProviders,
+            Payload = unHandeledProvidersAsObjects,
             isError = false
         };
 
@@ -186,46 +227,46 @@ public class AdminService : IAdminService
 
     public async Task<Response<List<object>>> getAllOrders()
     {
-        var spec = new OrderWithProviderServiceSpecification();
+        var spec = new OrderWithRequestsSpecification();
         var orders = await _orderRepository.GetAllOrders(spec);
 
 
-        var ordersAsobject = orders.Select(o => new
+
+        List<object> result = new List<object>();
+        foreach (var order in orders)
         {
-            o.OrderID,
-            o.CustomerID,
-            o.Customer.FirstName,
-            o.OrderStatus.StatusName,
-            providerservice = o.Customer.Cart.ServiceRequests.Select(async s => new
+            var orderDetails = await _orderService.ShowAllOrderDetails(order.OrderID);
+
+            result.Add(orderDetails);
+
+        }
+
+        if (result.Count == 0)
+        {
+            return new Response<List<object>>()
             {
-
-                s.providerService.ProviderID,
-                s.providerService.Provider.FirstName,
-                s.providerService.Provider.LastName,
-                s.providerService.Service.ServiceID,
-                s.providerService.Service.ServiceName,
-                s.SlotID,
-                s.Slot.StartTime
-
-            }).ToList<object>(),
-            o.TotalPrice,
-
-
-        }).ToList<object>();
+                Status = "failed",
+                Message = "No Orders Found",
+                Payload = null,
+                isError = true
+            };
+        }
 
         return new Response<List<object>>()
         {
             Status = "Success",
             Message = "Action Done Successfully",
-            Payload = ordersAsobject,
+            Payload = result,
 
         };
+
+
 
     }
 
     public async Task<Response<List<object>>> getAllRequestedOrders()
     {
-        var spec = new OrderWithProviderServiceSpecification();
+        var spec = new OrderWithRequestsSpecification();
         var orders = await _orderRepository.GetAllOrders(spec);
        
        
@@ -236,31 +277,13 @@ public class AdminService : IAdminService
             if (order.OrderStatusID == "1") // 1 means set
             {
 
-                
-                    var ordersAsobject = new
-                    {
-                        orderId = order.OrderID,
-                        customerId = order.Customer.Id,
-                        customerFN = order.Customer.FirstName,
-                        orderStatus = order.OrderStatus.StatusName,
-                        orderPrice = order.TotalPrice,
-                        providerservice = order.Customer.Cart.ServiceRequests.Select(s => new
-                        {
 
-                            s.providerService.Provider.Id,
-                            s.providerService.Provider.FirstName,
-                            s.providerService.Provider.LastName,
-                            s.providerService.Service.ServiceID,
-                            s.providerService.Service.ServiceName,
-                            s.SlotID,
-                            //s.Slot.StartTime
-                        }).ToList<object>(),
+                var orderDetails = await _orderService.ShowAllOrderDetails(order.OrderID);
 
-                    };
-                    result.Add(ordersAsobject);
+                result.Add(orderDetails);
 
 
-                
+
             }
             else { continue; }
 
@@ -290,7 +313,7 @@ public class AdminService : IAdminService
 
     public  async Task<Response<List<object>>> getAllApprovededOrders()
     {
-        var spec = new OrderWithProviderServiceSpecification();
+        var spec = new OrderWithRequestsSpecification();
         var orders = await _orderRepository.GetAllOrders(spec);
         
 
@@ -300,28 +323,9 @@ public class AdminService : IAdminService
             if (order.OrderStatusID == "2") // 2 means approved
             {
 
+                var orderDetails = await _orderService.ShowAllOrderDetails(order.OrderID);
 
-                var ordersAsobject = new
-                {
-                    orderId = order.OrderID,
-                    customerId = order.Customer.Id,
-                    customerFN = order.Customer.FirstName,
-                    orderStatus = order.OrderStatus.StatusName,
-                    orderPrice = order.TotalPrice,
-                    providerservice = order.Customer.Cart.ServiceRequests.Select(s => new
-                    {
-
-                        s.providerService.Provider.Id,
-                        s.providerService.Provider.FirstName,
-                        s.providerService.Provider.LastName,
-                        s.providerService.Service.ServiceID,
-                        s.providerService.Service.ServiceName,
-                        s.SlotID,
-                        //s.Slot.StartTime
-                    }).ToList<object>(),
-
-                };
-                result.Add(ordersAsobject);
+                result.Add(orderDetails);
 
 
 

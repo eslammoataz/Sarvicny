@@ -83,19 +83,19 @@ namespace Sarvicny.Infrastructure.Data
                 Description = "Home Criteria description"
             };
 
-            var providerService = new ProviderService()
-            {   
-                ProviderID = workerData.Id,
-                ServiceID = serviceData.ServiceID,
-                Price = 99.99M,
-                Provider = workerData,
-                Service = serviceData
-            };
-            
-            workerData.ProviderServices.Add(providerService);
-            
-            await context.ProviderServices.AddAsync(providerService);
-            
+            //var providerService = new ProviderService()
+            //{
+            //    ProviderID = workerData.Id,
+            //    ServiceID = serviceData.ServiceID,
+            //    Price = 99.99M,
+            //    Provider = workerData,
+            //    Service = serviceData
+            //};
+
+            //workerData.ProviderServices.Add(providerService);
+
+            //await context.ProviderServices.AddAsync(providerService);
+
             await context.Criterias.AddAsync(criteriaData);
             await context.Services.AddAsync(serviceData);
             

@@ -10,10 +10,10 @@ namespace Sarvicny.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string ServiceRequestID { get; set; }
 
-        public string CartID { get; set; }
+        public string? CartID { get; set; }
 
         [ForeignKey("CartID")]
-        public Cart Cart { get; set; }
+        public Cart? Cart { get; set; }
 
         [ForeignKey("ProviderServiceID")]
         public string ProviderServiceID { get; set; }

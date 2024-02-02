@@ -23,6 +23,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<IdentityResult> ConfirmEmailAsync(User user, string token);
         Task<ICollection<Customer>> GetAllCustomers();
 
-        Task<ICollection<Provider>> GetAllServiceProviders();
+        //Task<ICollection<Provider>> GetAllServiceProviders();         //// Fe service provider repo 3shan a7tgt spec
+        //Task<ICollection<Provider>> GetProvidersRegistrationRequest();
     }
 }

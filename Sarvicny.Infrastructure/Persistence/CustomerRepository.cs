@@ -4,6 +4,7 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
+using System.Linq;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
@@ -78,6 +79,14 @@ namespace Sarvicny.Infrastructure.Persistence
             customer.Cart = cart;
             customer.CartID = cart.CartID;
             return true;
+        }
+        public List<object> GetServiceRequests() { 
+            return  _context.ServiceRequests.Select(s=>new
+            {
+                s.Price,
+                s.SlotID,
+                s.ProviderServiceID
+            }).ToList<object>();
         }
     }
 }

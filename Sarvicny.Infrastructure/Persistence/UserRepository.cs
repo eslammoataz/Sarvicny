@@ -82,9 +82,17 @@ public class UserRepository : IUserRepository
         return customers;
     }
 
-    public async Task<ICollection<Provider>> GetAllServiceProviders()
-    {
-        var providers = await _context.Provider.ToListAsync();
-        return providers;
-    }
+    //public async Task<ICollection<Provider>> GetAllServiceProviders()
+    //{
+    //    var providers = await _context.Provider.ToListAsync();
+    //    return providers;
+    //}
+    //public async Task<ICollection<Provider>> GetProvidersRegistrationRequest()
+    //{
+    //    var providers = await _context.Provider
+    //        .Where(p => p.isVerified == false)
+    //        .ToListAsync();
+
+    //    return providers;
+    //}
 }

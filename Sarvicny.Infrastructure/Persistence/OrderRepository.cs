@@ -22,89 +22,49 @@ namespace Sarvicny.Infrastructure.Persistence
         }
 
 
-        public async Task<object> ShowOrderDetails(string orderId, ISpecifications<Order> spec)
+        //public async Task<object> ShowOrderDetails(string orderId, ISpecifications<Order> spec)
+        //{
+        //    var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
+
+        //    var customer = order.Customer;
+
+        //    var response = new
+        //    {
+        //        CustomerData = new
+        //        {
+        //            customer.FirstName,
+        //            customer.Address,
+        //            // Add other customer properties as needed
+        //        },
+        //        ServiceData = customer.Cart.ServiceRequests.Select(s => new
+        //        {
+        //            ServiceId = s.providerService.Service.ServiceName
+        //        }).ToList<object>(),
+        //    };
+        //    return response;
+        //}
+
+        public async Task ApproveOrder(Order order)
         {
-            var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
 
-            var customer = order.Customer;
-
-            var response = new
-            {
-                CustomerData = new
-                {
-                    customer.FirstName,
-                    customer.Address,
-                    // Add other customer properties as needed
-                },
-                ServiceData = customer.Cart.ServiceRequests.Select(s => new
-                {
-                    ServiceId = s.providerService.Service.ServiceName
-                }).ToList<object>(),
-            };
-            return response;
-        }
-
-        public async Task<Order> ApproveOrder(ISpecifications<Order> spec)
-        {
-            var order = await ApplySpecification(spec).FirstOrDefaultAsync();
-
-            var customer = order.Customer;
-
-            //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
             order.OrderStatusID = "2";
             order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Approved");
-            return order;
+           
         }
 
-        public async Task<object> RejectOrder(string orderId, ISpecifications<Order> spec)
+        public async Task RejectOrder(Order order)
         {
-            var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
-
-            var customer = order.Customer;
-
-            //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
+          
             order.OrderStatusID = "3";
             order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Rejected");
 
-
-            var message = new EmailDto(customer.Email!, "Sarvicny: Rejected", "Your order is Rejected ");
-
-            _emailService.SendEmail(message);
-            ///ReAsignnnnnn??
-            return order;
-
         }
 
-        public async Task<object> CancelOrder(string orderId, ISpecifications<Order> spec)
+        public async Task CancelOrder(Order order)
         {
-            var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
 
-            //// M7Taga t check al condition da fe al serviceeee
-            ///
-
-
-            if (order.OrderStatusID == "2") //Approved
-            {
-
-                //al a7sn yeb2a enum bs ana 7alian bzwdha fe al db
-                order.OrderStatusID = "4";
-                order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Canceled");
-            }
-
-
-            else
-            {
-                return null;
-                // throw new Exception("Order was not originally approved to be Canceled");
-            }
-            var customer = order.Customer;
-
-            var message = new EmailDto(customer.Email!, "Sarvicny: Canceled", "Unfortunally your order is canceled");
-
-            _emailService.SendEmail(message);
-
-            ///ReAsignnnnnn??
-            return order;
+            order.OrderStatusID = "4";
+            order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Canceled");
 
         }
 
@@ -130,10 +90,10 @@ namespace Sarvicny.Infrastructure.Persistence
             throw new NotImplementedException();
         }
 
-        public async Task<object> ShowOrderDetails(ISpecifications<Order> spec)
-        {
-            throw new NotImplementedException();
-        }
+        //public async Task<object> ShowOrderDetails(ISpecifications<Order> spec)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public async Task<Order> AddOrder(Order order)
         {
@@ -141,10 +101,7 @@ namespace Sarvicny.Infrastructure.Persistence
             var orderStatus = _context.OrderStatuses;
             order.OrderStatus = orderStatus.FirstOrDefault(o => o.OrderStatusID == "1");
 
-           
-
-      
-
+          
             _context.Orders.Add(order);
             return order;
         }

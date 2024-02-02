@@ -16,5 +16,6 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task EmptyCart(Cart cart);
 
         bool CreateCart(string customerID);
+        List<object> GetServiceRequests();
     }
 }

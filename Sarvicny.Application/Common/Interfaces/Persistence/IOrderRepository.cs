@@ -12,10 +12,10 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
     public interface IOrderRepository
     {
         Task<Order?> GetOrder(ISpecifications<Order> specifications);
-        Task<Order> ApproveOrder(ISpecifications<Order> spec);
-        Task<object> RejectOrder(ISpecifications<Order> spec);
-        Task<object> CancelOrder(ISpecifications<Order> spec);
-        Task<object> ShowOrderDetails(ISpecifications<Order> spec);
+        Task  ApproveOrder(Order order);
+        Task RejectOrder(Order order);
+        Task CancelOrder(Order order);
+        //Task<object> ShowOrderDetails(ISpecifications<Order> spec);
         Task<Order> AddOrder(Order order);
        Task<List<Order>> GetAllOrders(ISpecifications<Order> spec);
        

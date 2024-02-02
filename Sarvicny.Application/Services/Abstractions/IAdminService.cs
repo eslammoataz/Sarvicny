@@ -11,7 +11,7 @@ public interface IAdminService
     Task<Response<ICollection<object>>> GetAllServices();
     Task<Response<Provider>> ApproveServiceProviderRegister(string workerId);
     Task<Response<Provider>> RejectServiceProviderRegister(string workerId);
-    Task<Response<ICollection<Provider>>> GetServiceProvidersRegistrationRequests();
+    Task<Response<List<object>>> GetServiceProvidersRegistrationRequests();
     Task<Response<List<object>>> getAllOrders();
     Task<Response<List<object>>> getAllRequestedOrders();
 

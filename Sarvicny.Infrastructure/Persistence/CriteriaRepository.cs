@@ -58,7 +58,7 @@ public class CriteriaRepository : ICriteriaRepository
 
     }
 
-    public async Task<Criteria> AddServiceToCriteria(string criteriaId, string serviceId)
+    public async Task AddServiceToCriteria(string criteriaId, string serviceId)
     {
         var criteria = await _context.Criterias.FindAsync(criteriaId);
         var service = await _context.Services.FindAsync(serviceId);
@@ -67,6 +67,6 @@ public class CriteriaRepository : ICriteriaRepository
         service.Criteria = (criteria);
         service.CriteriaID = criteriaId;
       
-        return criteria;
+        
     }
 }

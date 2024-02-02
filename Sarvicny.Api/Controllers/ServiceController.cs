@@ -47,6 +47,19 @@ public class ServiceController : ControllerBase
 
         return Ok(response);
     }
+    [HttpGet]
+    [Route("GetAllChildForService")]
+    public async Task<IActionResult> GetAllChildsForService(string serviceId)
+    {
+        var response = await _servicesService.GetAllChildsForService(serviceId);
+
+        if (response.isError)
+        {
+            return BadRequest(response);
+        }
+
+        return Ok(response);
+    }
 
     [HttpPost]
     [Route("AddService")]
@@ -58,6 +71,7 @@ public class ServiceController : ControllerBase
             ServiceName = serviceDto.ServiceName,
             Description = serviceDto.Description,
             AvailabilityStatus = serviceDto.AvailabilityStatus,
+            ParentServiceID=serviceDto.ParentServiceID
         };
 
         var response = await _servicesService.AddServiceAsync(newService);

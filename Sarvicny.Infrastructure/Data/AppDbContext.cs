@@ -128,11 +128,11 @@ namespace Sarvicny.Infrastructure.Data
                 .WithMany(pa => pa.Slots)
                 .HasForeignKey(ts => ts.ProviderAvailabilityID);
 
-            builder.Entity<Cart>()
-                .HasMany(sr => sr.ServiceRequests)
-                .WithOne(c => c.Cart)
-                .HasForeignKey(c => c.CartID)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.Entity<Cart>()
+            //    .HasMany(sr => sr.ServiceRequests)
+            //    .WithOne(c => c.Cart)
+            //    .HasForeignKey(c => c.CartID)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Customer>()
                    .HasOne(c => c.Cart)

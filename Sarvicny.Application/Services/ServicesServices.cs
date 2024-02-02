@@ -20,14 +20,21 @@ public class ServicesServices : IServicesService
         _serviceProviderRepository = serviceProviderRepository;
     }
 
-    public async Task<Response<ICollection<object>>> GetAllServices()
+    public async Task<Response<List<object>>> GetAllServices()
     {
         var spec = new ServiceWithCriteriaSpecification();
         var services = await _serviceRepository.GetAllServices(spec);
 
-        var servicesAsObjects = services.ToList<object>();
+        var servicesAsObjects = services.Select(s=>new
+        {
+            s.ServiceID,
+            s.ServiceName,
+            s.CriteriaID,
+            s.Criteria?.CriteriaName,
+            s.Criteria?.Description
+        }).ToList<object>();
 
-        var response = new Response<ICollection<object>>();
+        var response = new Response<List<object>>();
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = servicesAsObjects;
@@ -47,10 +54,7 @@ public class ServicesServices : IServicesService
         return response;
     }
 
-    public async Task<Response<Service>> GetServiceById(string serviceId, ISpecifications<Service> specifications)
-    {
-        throw new NotImplementedException();
-    }
+
 
     public async Task<Response<Service>> UpdateService(Service service)
     {
@@ -64,9 +68,18 @@ public class ServicesServices : IServicesService
 
     public async Task<Response<Service>> AddServiceAsync(Service newService)
     {
-        var response = new Response<Service>();
+        if(newService.ParentServiceID != null)
+        {
+            var spec = new ServiceWithParentAndChilds_CriteriaSpecification(newService.ParentServiceID);
+            var parent = await _serviceRepository.GetServiceById(spec);
+            newService.ParentService = parent;
+            parent.ChildServices.Add(newService);
+            
+        }
         await _serviceRepository.AddServiceAsync(newService);
         _unitOfWork.Commit();
+        var response = new Response<Service>();
+
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = newService;
@@ -75,9 +88,9 @@ public class ServicesServices : IServicesService
     }
 
 
-    public async Task<Response<ICollection<object>>> GetAllWorkersForService(string serviceId)
+    public async Task<Response<object>> GetAllWorkersForService(string serviceId)
     {
-        var response = new Response<ICollection<object>>();
+        var response = new Response<object>();
 
         var spec = new ServiceWithProvidersSpecification(serviceId);
 
@@ -92,42 +105,118 @@ public class ServicesServices : IServicesService
             return response;
         }
 
-        var providers = new List<object>();
 
-        foreach (var p in service.ProviderServices)
+        var providers = service.ProviderServices.Select(p => new
         {
-            var spec3 = new BaseSpecifications<Provider>(pr => pr.Id == p.ProviderID);
-            var provider = await _serviceProviderRepository.FindByIdAsync(spec3);
-            var serviceProvidersAsObjects = new
-            {
-                provider.Id,
-                provider.FirstName,
-                provider.LastName,
-                provider.Email,
-                provider.PhoneNumber,
-                provider.isVerified,
-            };
+            p.Provider.Id,
+            p.Provider.FirstName, p.Provider.LastName,
+            p.Provider.Email,
+            availabilities=p.Provider.Availabilities.Select(a => new {
+                a.DayOfWeek,
+               slots= a.Slots.Select(s => new {
+                   s.StartTime, s.EndTime
+               }).ToList<object>(),
+            }).ToList<object>(),
+            
 
-            providers.Add(serviceProvidersAsObjects);
-        }
-
-        if (providers.Count == 0)
+        });
+        if (providers==null)
         {
-            return new Response<ICollection<object>>()
+            return new Response<object>()
             {
                 Status = "Fail",
                 Message = "No Providers Found",
-                Payload = providers,
+                Payload = null,
                 isError = false,
             };
         }
 
-        return new Response<ICollection<object>>()
+        //var providers = new List<object>();
+
+        //foreach (var p in service.ProviderServices)
+        //{
+        //    //var spec3 = new BaseSpecifications<Provider>(pr => pr.Id == p.ProviderID);
+        //    //var provider = await _serviceProviderRepository.FindByIdAsync(spec3);
+
+
+        //    var serviceProvidersAsObjects = new
+        //    {
+        //        provider.Id,
+        //        provider.FirstName,
+        //        provider.LastName,
+        //        provider.Email,
+        //        provider.PhoneNumber,
+        //        provider.isVerified,
+        //    };
+
+        //    providers.Add(serviceProvidersAsObjects);
+        //}
+
+
+
+        return new Response<object>()
         {
             Message = "Action Done Successfully",
             Payload = providers,
             isError = false,
         };
+
+
+    }
+
+    public async Task<Response<object>> GetAllChildsForService(string serviceId)
+    {
+        var spec = new ServiceWithParentAndChilds_CriteriaSpecification(serviceId);
+        var service= await _serviceRepository.GetServiceById(spec);
+
+        var response = new Response<object>();
+
+        if (service == null)
+        {
+            response.Status = "Fail";
+            response.isError = true;
+            response.Message = "Service Not found";
+            response.Payload = null;
+
+        }
+        if (service.ChildServices.Count()==0)
+        {
+            response.Status = "Fail";
+            response.isError = true;
+            response.Message = "Service Has No Children";
+            response.Payload = null;
+
+
+        }
+
+        var servicesAsObjects = new
+        {
+            serviceId=service.ServiceID,
+            serviceName=service.ServiceName,
+            criteriaID=service.CriteriaID,
+            criteriaName=service.Criteria?.CriteriaName,
+
+            parentServiceId=service.ParentServiceID,
+            parentServiceName=service.ParentService?.ServiceName,
+
+            children=service.ChildServices?.Select(ch=> new
+            {
+                childServiceID= ch.ServiceID,
+                childServiceName=ch.ServiceName,
+
+            }).ToList<object>()
+        };
+
+       
+        response.Status = "Success";
+        response.Message = "Action Done Successfully";
+        response.Payload = servicesAsObjects;
+        response.isError=false;
+
+
+        return response;
+
+
 
 
     }

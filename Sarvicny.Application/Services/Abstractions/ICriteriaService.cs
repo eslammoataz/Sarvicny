@@ -11,6 +11,6 @@ public interface ICriteriaService
     Task<Response<Criteria>> DeleteCriteria(string criteriaId);
     Task<Response<Criteria>> AddCriteriaAsync(Criteria newCriteria);
 
-    Task<Response<Criteria>> AddServiceToCriteria(string criteriaId, string serviceId);
+    Task<Response<object>> AddServiceToCriteria(string criteriaId, string serviceId);
 
 }

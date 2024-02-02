@@ -648,7 +648,7 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.HasOne("Sarvicny.Domain.Entities.Cart", "Cart")
                         .WithMany("ServiceRequests")
                         .HasForeignKey("CartID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Sarvicny.Domain.Entities.Order", null)

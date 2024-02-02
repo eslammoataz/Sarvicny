@@ -2,6 +2,7 @@
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.CartSpecifications;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
+using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
@@ -323,10 +324,21 @@ namespace Sarvicny.Application.Services
                 };
             }
             var serviceRequests = cart.ServiceRequests;
+            if(serviceRequests.Count()==0)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Cart is empty",
+                    Errors = new List<string> { "Error with cart" },
+                    isError = true
+
+                };
+            }
 
             var totalPrice = serviceRequests.Sum(s => s.providerService.Price);
             
-            var order = new Order
+            var newOrder = new Order
             {
                 Customer = customer,
                 CustomerID = customerId,
@@ -334,28 +346,68 @@ namespace Sarvicny.Application.Services
                 TotalPrice = totalPrice
             };
             
-            var order1 = await _orderRepository.AddOrder(order);
+            var order = await _orderRepository.AddOrder(newOrder);
 
+            var orderRequests = new List<ServiceRequest>();
+            var newRequest = new ServiceRequest();
             foreach (var serviceRequest in serviceRequests)
             {
-                serviceRequest.OrderId = order.OrderID;
+                newRequest.ProviderServiceID = serviceRequest.ProviderServiceID;
+                newRequest.providerService = serviceRequest.providerService;
+                newRequest.Price= serviceRequest.Price;
+                newRequest.Slot = serviceRequest.Slot;
+                newRequest.SlotID = serviceRequest.SlotID;
+                newRequest.AddedTime = serviceRequest.AddedTime;
+                newRequest.OrderId = order.OrderID;
+                newRequest.CartID = null;
+                newRequest.Cart = null;
+
+                await _customerRepository.AddRequest(newRequest);
+                orderRequests.Add(newRequest);
+
+                await _customerRepository.RemoveRequest(serviceRequest);
+                
             }
             // serviceRequests = await _orderRepository.SetOrderToServiceRequest(serviceRequests, order);
-            
-            order.ServiceRequests = serviceRequests;
-            
+
+
+            order.ServiceRequests = orderRequests;
             await _customerRepository.EmptyCart(cart);
 
+            cart.ServiceRequests = null;
 
             _unitOfWork.Commit();
 
+            var spec2 = new OrderWithRequestsSpecification(order.OrderID);
+
+            var orders = await _orderRepository.GetOrder(spec2);
+
+  
             var result = new
             {
-                order1.OrderID,
-                order1.CustomerID,
-                order1.OrderStatusID,
-                order1.OrderStatus.StatusName,
-                order1.TotalPrice,
+                order.OrderID,
+                order.CustomerID,
+                order.OrderStatusID,
+                order.OrderStatus.StatusName,
+                order.TotalPrice,
+                details=order.ServiceRequests.Select(s => new
+                {
+                    s.ServiceRequestID,
+                    s.SlotID,
+                    s.Slot.StartTime,
+                    s.providerService.Provider.Id,
+                    Provider=s.providerService.Provider.FirstName,
+                    s.providerService.Service.ServiceID,
+                    s.providerService.Service.ServiceName,
+                    s.Price,
+                    
+ 
+                }),
+                
+           
+
+                
+
             };
 
             return new Response<object>()

@@ -5,8 +5,9 @@ namespace Sarvicny.Application.Services.Abstractions;
 
 public interface IServicesService
 {
-    Task<Response<ICollection<object>>> GetAllServices();
+    Task<Response<List<object>>> GetAllServices();
+    Task<Response<object>> GetAllChildsForService(string serviceId);
     Task<Response<Service>> GetServiceById(string serviceId);
     Task<Response<Service>> AddServiceAsync(Service newService);
-    Task<Response<ICollection<object>>> GetAllWorkersForService(string serviceId);
+    Task<Response<object>> GetAllWorkersForService(string serviceId);
 }

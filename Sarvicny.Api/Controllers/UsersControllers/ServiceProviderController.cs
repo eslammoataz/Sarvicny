@@ -15,9 +15,11 @@ namespace Sarvicny.Api.Controllers.UsersControllers
     {
 
         private readonly IServiceProviderService _serviceProviderService;
-        public ServiceProviderController(IServiceProviderService serviceProviderService)
+        private readonly IOrderService _orderService;
+        public ServiceProviderController(IServiceProviderService serviceProviderService, IOrderService orderService)
         {
             _serviceProviderService = serviceProviderService;
+            _orderService = orderService;
         }
 
 
@@ -93,10 +95,10 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
 
-        [HttpGet("ShowOrders")]
+        [HttpGet("ShowOrderDetails")]
         public async Task<IActionResult> ShowOrderDetails(string orderId)
         {
-            var Response = await _serviceProviderService.ShowOrderDetails(orderId);
+            var Response = await _orderService.ShowOrderDetailsForProvider(orderId);
 
             if (Response.isError)
             {
@@ -105,17 +107,17 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
         }
 
-        [HttpGet("GetProviders")]
-        public async Task<IActionResult> GetAllServiceProviders()
-        {
-            var Response = await _serviceProviderService.GetAllServiceProviders();
+        //[HttpGet("GetProviders")]
+        //public async Task<IActionResult> GetAllServiceProviders()
+        //{
+        //    var Response = await _serviceProviderService.GetAllServiceProviders();
 
-            if (Response.isError)
-            {
-                return BadRequest(Response);
-            }
-            return Ok(Response);
-        }
+        //    if (Response.isError)
+        //    {
+        //        return BadRequest(Response);
+        //    }
+        //    return Ok(Response);
+        //}
 
         [HttpPost]
         [Route("RegisterService")]

@@ -10,5 +10,5 @@ public interface ICriteriaRepository
     Task<Criteria> UpdateCriteria(Criteria criteria);
     Task<Criteria> DeleteCriteria(string criteriaId);
     Task<Criteria> AddCriteriaAsync(Criteria newCriteria);
-    Task<Criteria> AddServiceToCriteria(string criteriaId, string serviceId);
+    Task AddServiceToCriteria(string criteriaId, string serviceId);
 }

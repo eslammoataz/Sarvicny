@@ -12,12 +12,15 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<List<object>>> getAvailability(string workerId); //done
 
-        Task<Response<Object>> ShowOrderDetails(string orderId); //done 
+        //Task<Response<Object>> ShowOrderDetails(string orderId); //done  //b2t fe orderService
 
         Task<Response<object>> ApproveOrder(string orderId); //done
         Task<Response<object>> RejectOrder(string orderId); //done
         Task<Response<object>> CancelOrder(string orderId); //done
-        Task<Response<ICollection<Object>>> GetAllServiceProviders(); //done
+
+
+
+        ////Task<Response<ICollection<Object>>> GetAllServiceProviders(); b2t fe al admin bs
 
         Task<Response<List<object>>> getAllOrders(string workerId);
 

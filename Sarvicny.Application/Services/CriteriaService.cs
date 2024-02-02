@@ -1,6 +1,7 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.NewFolder;
+using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 
@@ -115,7 +116,7 @@ public class CriteriaService : ICriteriaService
         };
     }
 
-    public async Task<Response<Criteria>> AddServiceToCriteria(string criteriaId, string serviceId)
+    public async Task<Response<object>> AddServiceToCriteria(string criteriaId, string serviceId)
     {
 
         var spec = new CriteriaWithServicesSpecification(criteriaId);
@@ -123,7 +124,7 @@ public class CriteriaService : ICriteriaService
 
         if (criteria == null)
         {
-            return new Response<Criteria>()
+            return new Response<object>()
             {
                 Status = "Fail",
                 Message = "Criteria Not Found",
@@ -132,12 +133,12 @@ public class CriteriaService : ICriteriaService
             };
         }
 
-        var spec1 = new ServiceWithCriteriaSpecification(serviceId);
+        var spec1 = new ServiceWithParentAndChilds_CriteriaSpecification(serviceId);
         var service = await _serviceRepository.GetServiceById(spec1);
 
         if (service == null)
         {
-            return new Response<Criteria>()
+            return new Response<object>()
             {
                 Status = "Fail",
                 Message = "Service Not Found",
@@ -150,7 +151,7 @@ public class CriteriaService : ICriteriaService
         {
             if (service.Criteria == criteria)
             {
-                return new Response<Criteria>()
+                return new Response<object>()
                 {
                     Status = "Fail",
                     Message = "Service is already found in this Criteria",
@@ -158,7 +159,7 @@ public class CriteriaService : ICriteriaService
                     isError = true,
                 };
             }
-            return new Response<Criteria>()
+            return new Response<object>()
             {
                 Status = "Fail",
                 Message = "Service is already assigned to another criteria",
@@ -167,12 +168,29 @@ public class CriteriaService : ICriteriaService
             };
         }
 
-        var output = await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId);
-        _unitOfWork.Commit();
-        return new Response<Criteria>()
+        await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId);
+
+        if (service.ChildServices.Count()!=0) //law al service de 3ndha childs yeb2a kolhom ta7t al criteria de
         {
-            Message = "Sucess",
-            Payload = output,
+            foreach(var childService in service.ChildServices)
+            {
+                await _criteriaRepository.AddServiceToCriteria(criteriaId, childService.ServiceID);
+            }
+            
+        }
+        _unitOfWork.Commit();
+
+        var criteriaAsObject = new
+        {
+            criteria.CriteriaID,
+            criteria.CriteriaName,
+            criteria.Description,
+
+        };
+        return new Response<object>()
+        {
+            Message = "Service and its child added successfully to criteria",
+            Payload = criteriaAsObject,
             isError = false,
         };
 

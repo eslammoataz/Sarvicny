@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Sarvicny.Application.Common.Interfaces.Authentication;
 using Sarvicny.Application.Common.Interfaces.Persistence;
+using Sarvicny.Application.Services;
+using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Infrastructure.Authentication;
 using Sarvicny.Infrastructure.Data;
@@ -41,7 +43,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
-
+        services.AddScoped<IOrderService,OrderService>();
         services.AddAuthentication(); // UserManager / SigninManager / RoleManager
 
 
