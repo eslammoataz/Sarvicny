@@ -29,7 +29,9 @@ namespace Sarvicny.Application.Services
                 {
                     Status = "failed",
                     Message = "Order Not Found",
-                    Payload = null
+                    Payload = null,
+                    isError = true
+
                 };
             }
 
@@ -66,6 +68,54 @@ namespace Sarvicny.Application.Services
             };
         }  //feha tfasel provider
 
+        public async Task<Response<object>> ShowAllOrderDetailsForCustomer(string orderId)
+        {
+            var spec = new OrderWithRequestsSpecification(orderId);
+            var order = await _orderRepository.GetOrder(spec);
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+
+            var orderAsObject = new
+            {
+                orderId = order.OrderID,
+                orderStatus = order.OrderStatus.StatusName,
+                orderPrice = order.TotalPrice,
+                orderService = order.ServiceRequests.Select(s => new
+                {
+                    s.providerService.Provider.Id,
+                    s.providerService.Provider.FirstName,
+                    s.providerService.Provider.LastName,
+                    s.providerService.Service.ServiceID,
+                    s.providerService.Service.ServiceName,
+                    s.providerService.Service.ParentServiceID,
+                    parentServiceName = s.providerService.Service.ParentService?.ServiceName,
+                    s.providerService.Service.CriteriaID,
+                    s.providerService.Service.Criteria?.CriteriaName,
+                    s.SlotID,
+                    s.Slot.StartTime,
+                    s.Price
+                }).ToList<object>(),
+            };
+
+            return new Response<object>()
+            {
+                Status = "Success",
+                Message = "Action Done Successfully",
+                Payload = orderAsObject
+            };
+        } //mfhash customer
+    
+
+
         public async Task<Response<object>> ShowOrderDetailsForProvider(string orderId) //feha tfasel customer
         {
             var spec = new OrderWithRequestsSpecification(orderId);
@@ -76,7 +126,8 @@ namespace Sarvicny.Application.Services
                 {
                     Status = "failed",
                     Message = "Order Not Found",
-                    Payload = null
+                    Payload = null,
+                    isError=true,
                 };
             }
 
@@ -112,6 +163,33 @@ namespace Sarvicny.Application.Services
                 Message = "Action Done Successfully",
                 Payload = orderAsObject
             };
+        }
+
+        public async Task<Response<object>> ShowOrderStatus(string orderId)
+        {
+            var spec = new OrderWithRequestsSpecification(orderId);
+
+            var order = await _orderRepository.GetOrder(spec);
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null
+                };
+            
+            }
+            var status = order.OrderStatus.StatusName;
+
+            return new Response<object>()
+            {
+                Status = "succes",
+                Message = "success",
+                Payload = status,
+                isError = false
+            };
+
         }
     }
 }

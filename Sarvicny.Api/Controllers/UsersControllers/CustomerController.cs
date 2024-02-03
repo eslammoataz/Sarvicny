@@ -15,12 +15,13 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         private readonly IAuthenticationService _authenticationService;
         private readonly ICustomerService _customerService;
+        private readonly IOrderService _orderService;
 
-
-        public CustomerController(IAuthenticationService authenticationService, ICustomerService customerService)
+        public CustomerController(IAuthenticationService authenticationService, ICustomerService customerService, IOrderService orderService)
         {
             _authenticationService = authenticationService;
             _customerService = customerService;
+            _orderService = orderService;
         }
 
 
@@ -94,6 +95,45 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         public async Task<IActionResult> GetCart(string customerId)
         {
             var response = await _customerService.GetCustomerCart(customerId);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
+        }
+        [HttpGet]
+        [Route("getOrderStatus")]
+        public async Task<IActionResult> GetOrderStatus(string orderId)
+        {
+            var response = await _orderService.ShowOrderStatus(orderId);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
+        }
+        [HttpGet]
+        [Route("getCustomerProfile")]
+        public async Task<IActionResult> ShowCustomerProfile(string customerId)
+        {
+            var response = await _customerService.ShowCustomerProfile(customerId);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
+        }
+        [HttpGet]
+        [Route("getCustomerOrdersLog")]
+        public async Task<IActionResult> getCustomerOrdersLog(string customerId)
+        {
+            var response = await _customerService.ViewLogRequest(customerId);
 
             if (response.isError)
             {

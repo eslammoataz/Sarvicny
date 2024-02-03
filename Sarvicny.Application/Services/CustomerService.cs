@@ -8,6 +8,7 @@ using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
@@ -21,11 +22,13 @@ namespace Sarvicny.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly ICartRepository _cartRepository;
+        
+        private readonly IOrderService _orderService;
 
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository)
+            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository,IOrderService orderService)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -34,6 +37,7 @@ namespace Sarvicny.Application.Services
             _userRepository = userRepository;
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
+            _orderService = orderService;
         }
         public async Task<Response<object>> RequestService(RequestServiceDto requestServiceDto, string customerId)
         {
@@ -429,6 +433,92 @@ namespace Sarvicny.Application.Services
             };
         }
 
+        public async Task<Response<object>> ShowCustomerProfile(string customerId)
+        {
+            var spec = new BaseSpecifications<Customer>(c=>c.Id==customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Customer Not Found",
+                    Payload = null,
+                    isError = true
 
+                };
+            }
+            var profile = new
+            {
+                customer.FirstName,
+                customer.LastName,
+                customer.UserName,
+                customer.Email,
+                customer.Address
+
+            };
+            return new Response<object>()
+            {
+                Payload = profile,
+                isError = false,
+                Message = "Success"
+
+            };
+     
+
+        }
+
+        public async Task<Response<object>> ViewLogRequest(string customerId)
+        {
+            var spec= new CustomerWithOrdersSpecification(customerId);
+            var customer= await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<object>()
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Customer Not found",
+                    Status = "Failed"
+
+                };
+
+            }
+            var orders= customer.Orders;
+            if (orders == null)
+            {
+                return new Response<object>()
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "No Orders found",
+                    Status = "Failed"
+
+                };
+            }
+
+            List<object> details = new List<object>();
+
+            foreach (var order in orders)
+            {
+
+                var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(order.OrderID);
+                details.Add(orderDetails);
+            };
+            return new Response<object>()
+            {
+                Payload = details,
+                isError = false,
+                Status = "success",
+                Message = "success"
+
+
+            };
+
+
+
+
+
+        }
     }
 }

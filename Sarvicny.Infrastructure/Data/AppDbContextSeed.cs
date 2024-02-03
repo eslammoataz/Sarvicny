@@ -53,7 +53,8 @@ namespace Sarvicny.Infrastructure.Data
                 LastName = "WORKER",
                 PhoneNumber = "WORKER",
                 NationalID = "WORKER",
-                CriminalRecord = "WORKER"
+                CriminalRecord = "WORKER",
+                IsVerified=true,
             };
             
 

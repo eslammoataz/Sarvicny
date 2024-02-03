@@ -13,6 +13,9 @@ namespace Sarvicny.Application.Services.Abstractions
 
         public Task<Response<object>> OrderCart(string customerId);
 
+        public Task<Response<object>> ShowCustomerProfile(string customerId);
+        public Task<Response<object>> ViewLogRequest(string customerId); // kol al orders ali tlbha ya3ni
+
 
 
     }

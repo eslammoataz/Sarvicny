@@ -44,12 +44,14 @@ public class AdminService : IAdminService
     {
         var customers = await _userRepository.GetAllCustomers();
 
+
         var customersAsObjects = customers.Select(c => new
         {
             c.Id,
             c.FirstName,
             c.LastName,
-            c.Email
+            c.Email,
+            c.Address
         }).ToList<object>();
 
 

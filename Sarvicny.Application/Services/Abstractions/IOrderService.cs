@@ -9,7 +9,9 @@ namespace Sarvicny.Application.Services.Abstractions
 {
     public interface IOrderService
     {
-        Task<Response<Object>> ShowOrderDetailsForProvider(string orderId);
+        Task<Response<object>> ShowOrderDetailsForProvider(string orderId);
         Task<Response<object>> ShowAllOrderDetails(string orderId);
+        Task<Response<object>> ShowAllOrderDetailsForCustomer(string orderId);
+        Task<Response<object>> ShowOrderStatus(string orderId);
     }
 }
