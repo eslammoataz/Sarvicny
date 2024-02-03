@@ -7,7 +7,9 @@ public abstract class Provider : User
         // Availabilities = new List<ProviderAvailability>();
         // ProviderServices = new List<ProviderService>();
     }
-    public bool isVerified { get; set; }
+
+    public bool IsVerified { get; set; } = false;
+    public bool IsBlocked { get; set; } = false;
 
 
     public List<ProviderService> ProviderServices { get; set; }

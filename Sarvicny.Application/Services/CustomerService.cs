@@ -129,7 +129,8 @@ namespace Sarvicny.Application.Services
                 SlotID = slotExist.TimeSlotID,
                 CartID = customer.Cart.CartID,
                 Cart = customer.Cart,
-                Price = providerService.Price
+                Price = providerService.Price,
+                ProblemDescription = requestServiceDto.ProblemDescription
             };
 
             slotExist.enable = false;
@@ -144,7 +145,8 @@ namespace Sarvicny.Application.Services
                 RequestTime = slotExist.StartTime,
                 ServiceName = service.ServiceName,
                 ProviderName = provider.FirstName + " " + provider.LastName,
-                Price = providerService.Price
+                Price = providerService.Price,
+                ProblemDescription = requestServiceDto.ProblemDescription
             };
 
             return new Response<object>
@@ -272,14 +274,22 @@ namespace Sarvicny.Application.Services
                 _unitOfWork.Commit();
             }
 
-            var requestedServices = cart.ServiceRequests.Select(s => s.providerService)
-                                .Select(ps => new
-                                {
-                                    ps.ProviderID,
-                                    ps.ServiceID,
-                                    ps.Price
-                                });
+            // var requestedServices = cart.ServiceRequests.Select(s => s.providerService)
+            //     .Select(ps => new
+            //     {
+            //         ps.ProviderID,
+            //         ps.ServiceID,
+            //         ps.Price
+            //     });
 
+            var requestedServices = cart.ServiceRequests.Select(sr => new
+            {
+                sr.ServiceRequestID,
+                sr.providerService.ProviderID,
+                sr.providerService.ServiceID,
+                sr.providerService.Price,
+            });
+            
 
             var CartAsObject = new
             {

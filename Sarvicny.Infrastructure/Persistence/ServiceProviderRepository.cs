@@ -158,7 +158,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<ICollection<Provider>> GetProvidersRegistrationRequest(ISpecifications<Provider> spec)
         {
-            return await ApplySpecification(spec).Where(p => p.isVerified == false).ToListAsync();
+            return await ApplySpecification(spec).Where(p => p.IsVerified == false).ToListAsync();
         }
 
         public async Task<ICollection<Provider>> GetAllServiceProviders(ISpecifications<Provider> spec)

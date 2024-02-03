@@ -14,6 +14,7 @@ public interface IAdminService
     Task<Response<List<object>>> GetServiceProvidersRegistrationRequests();
     Task<Response<List<object>>> getAllOrders();
     Task<Response<List<object>>> getAllRequestedOrders();
-
     Task<Response<List<object>>> getAllApprovededOrders();
+    Task<Response<bool>> BlockServiceProvider(string workerId);
+    Task<Response<bool>> UnBlockServiceProvider(string workerId);
 }

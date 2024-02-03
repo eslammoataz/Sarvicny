@@ -4,16 +4,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Sarvicny.Api.Middlewares;
 using Sarvicny.Application;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Infrastructure;
 using Sarvicny.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
 {
-    // Add services to the container.
+    builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
 
+    // Add services to the container.
     builder.Services.AddControllers();
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -69,6 +71,7 @@ var builder = WebApplication.CreateBuilder(args);
         //  options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;  
     });
 
+    
 
     builder.Services.AddSingleton(Configuration);
     builder.Services.AddApplication();
@@ -77,6 +80,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
+    app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+    
     using (var scope = app.Services.CreateScope())
     {
         try
@@ -85,6 +90,7 @@ var app = builder.Build();
             var userManager = Services.GetRequiredService<UserManager<User>>();
             var roleManager = Services.GetRequiredService<RoleManager<IdentityRole>>();
             var context = Services.GetRequiredService<AppDbContext>();
+            var serviceProviderRepository = Services.GetRequiredService<IServiceProviderRepository>();
 
             context.Database.EnsureCreated();
 
@@ -94,7 +100,7 @@ var app = builder.Build();
                 //dbContext.Database.Migrate(); // Apply pending migrations
             }
 
-            await AppDbContextSeed.SeedData(userManager, roleManager, context);
+            await AppDbContextSeed.SeedData(userManager, roleManager, context , serviceProviderRepository);
         }
         catch (Exception ex)
         {

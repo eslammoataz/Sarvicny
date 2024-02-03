@@ -1,7 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
+using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
+using Sarvicny.Domain.Specification;
 
 
 namespace Sarvicny.Infrastructure.Data
@@ -9,15 +14,15 @@ namespace Sarvicny.Infrastructure.Data
     public static class AppDbContextSeed
     {
         public static async Task SeedData(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
-            AppDbContext context)
+            AppDbContext context , IServiceProviderRepository serviceProviderRepository)
         {
-            await SeedAdmin(userManager, context);
             await SeedRoles(roleManager);
             await SeedOrderStatus(context);
-            await SeedData(context, userManager, roleManager);
+            await SeedAdmin(userManager, context , roleManager);
+            await SeedData(context, userManager, serviceProviderRepository);
         }
 
-        private static async Task SeedAdmin(UserManager<User> userManager, AppDbContext context)
+        private static async Task SeedAdmin(UserManager<User> userManager, AppDbContext context , RoleManager<IdentityRole> roleManager)
         {
             if (!context.Admins.Any())
             {
@@ -30,14 +35,16 @@ namespace Sarvicny.Infrastructure.Data
                     NormalizedEmail = "ADMIN@EXAMPLE.COM",
                     EmailConfirmed = true,
                 };
-
                 await userManager.CreateAsync(admin, "Admin123#");
+                await userManager.AddToRoleAsync(admin, "Admin");
             }
         }
 
-        private static async Task SeedData(AppDbContext context , UserManager<User>userManager , RoleManager<IdentityRole>roleManager)
+        private static async Task SeedData(AppDbContext context, UserManager<User> userManager,
+            IServiceProviderRepository serviceProviderRepository)
+       
         {
-            
+            // Seed Worker data
             var workerData = new Worker
             {
                 UserName = "WORKER",
@@ -49,6 +56,7 @@ namespace Sarvicny.Infrastructure.Data
                 CriminalRecord = "WORKER"
             };
             
+
             // Seed Customer data
             var customerData = new Customer
             {
@@ -59,12 +67,41 @@ namespace Sarvicny.Infrastructure.Data
                 PhoneNumber = "Customer",
                 Address = "Customer"
             };
-            
-            await userManager.CreateAsync(workerData, "Worker123#");
-            await userManager.CreateAsync(customerData, "Customer123#");
-            
-            await userManager.AddToRoleAsync(workerData, "ServiceProvider");
-            await userManager.AddToRoleAsync(customerData, "Customer");
+
+            if (!context.Workers.Any())
+            {
+                await userManager.CreateAsync(workerData, "Worker123#");
+                await userManager.AddToRoleAsync(workerData, "ServiceProvider");
+            }
+
+            if (!context.Customers.Any())
+            {
+                var cart = new Cart
+                {
+                    CustomerID = customerData.Id,
+                    Customer = customerData,
+                    LastChangeTime = DateTime.Now
+                };
+                
+                customerData.Cart = cart;
+                customerData.CartID = cart.CartID;
+                
+                await userManager.CreateAsync(customerData, "Customer123#");
+                await userManager.AddToRoleAsync(customerData, "Customer");
+            }
+
+            // Seed Criteria data
+            var criteriaData = new Criteria
+            {
+                CriteriaName = "Home Criteria",
+                Description = "Home Criteria description"
+            };
+
+            if (!context.Criterias.Any())
+            {
+                await context.Criterias.AddAsync(criteriaData);
+                await context.SaveChangesAsync();
+            }
 
 
             // Seed Service data
@@ -75,30 +112,53 @@ namespace Sarvicny.Infrastructure.Data
                 Price = 99.99M,
                 AvailabilityStatus = "Available"
             };
-            
-            // Seed Criteria data
-            var criteriaData = new Criteria
+
+            if (!context.Services.Any())
             {
-                CriteriaName = "Home Criteria",
-                Description = "Home Criteria description"
+                if (context.Criterias.Any())
+                    serviceData.CriteriaID = context.Criterias.FirstOrDefault()?.CriteriaID;
+
+                await context.Services.AddAsync(serviceData);
+            }
+
+
+            if (!context.ProviderServices.Any())
+            {
+                var providerService = new ProviderService()
+                {
+                    ProviderID = workerData.Id,
+                    ServiceID = serviceData.ServiceID,
+                    Price = 99.99M,
+                    Provider = workerData,
+                    Service = serviceData
+                };
+                await context.ProviderServices.AddAsync(providerService);
+
+                serviceData.ProviderServices.Add(providerService);
+                workerData.ProviderServices.Add(providerService);
+            }
+
+            var avail = new AvailabilityDto
+            {
+                DayOfWeek = "Saturday",
+                AvailabilityDate = DateTime.Now,
+                Slots = new List<TimeRange>
+                {
+                    new TimeRange
+                    {
+                        startTime = "03:00:00",
+                         endTime= "08:00:00"
+                    }
+                }
             };
-
-            //var providerService = new ProviderService()
-            //{
-            //    ProviderID = workerData.Id,
-            //    ServiceID = serviceData.ServiceID,
-            //    Price = 99.99M,
-            //    Provider = workerData,
-            //    Service = serviceData
-            //};
-
-            //workerData.ProviderServices.Add(providerService);
-
-            //await context.ProviderServices.AddAsync(providerService);
-
-            await context.Criterias.AddAsync(criteriaData);
-            await context.Services.AddAsync(serviceData);
             
+            if (!context.ProviderAvailabilities.Any())
+            {
+                var providerAvailability = await serviceProviderRepository.AddAvailability(avail, new BaseSpecifications<Provider>());
+                workerData.Availabilities.Add(providerAvailability);
+            }
+
+
             await context.SaveChangesAsync();
         }
 

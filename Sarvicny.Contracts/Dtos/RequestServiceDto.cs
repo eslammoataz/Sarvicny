@@ -20,5 +20,7 @@ namespace Sarvicny.Contracts.Dtos
         
         [Required(ErrorMessage = "Day of Request is Required")] 
         public DateTime RequestDay { get; set; } 
+        
+        public string? ProblemDescription { get; set; }
     }
 }

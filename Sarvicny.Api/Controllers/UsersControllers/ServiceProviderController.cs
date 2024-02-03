@@ -5,17 +5,15 @@ using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 
 
-
-
 namespace Sarvicny.Api.Controllers.UsersControllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class ServiceProviderController : ControllerBase
     {
-
         private readonly IServiceProviderService _serviceProviderService;
         private readonly IOrderService _orderService;
+
         public ServiceProviderController(IServiceProviderService serviceProviderService, IOrderService orderService)
         {
             _serviceProviderService = serviceProviderService;
@@ -27,19 +25,16 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("SetAvailability")]
         public async Task<IActionResult> AddAvailability(AvailabilityDto availabilityDto, string workerID)
         {
-
             var Response = await _serviceProviderService.AddAvailability(availabilityDto, workerID);
 
             if (Response.isError)
             {
                 return BadRequest(Response);
             }
-            return Ok(Response);
 
+            return Ok(Response);
         }
 
-
-        
 
         [HttpGet("GetServiceProviderAvailability/{providerId}")]
         public async Task<IActionResult> GetServiceProviderAvailabilityAsync(string providerId)
@@ -65,6 +60,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             {
                 return BadRequest(Response);
             }
+
             return Ok(Response);
         }
 
@@ -78,6 +74,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             {
                 return BadRequest(Response);
             }
+
             return Ok(Response);
         }
 
@@ -91,6 +88,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             {
                 return BadRequest(Response);
             }
+
             return Ok(Response);
         }
 
@@ -104,6 +102,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             {
                 return BadRequest(Response);
             }
+
             return Ok(Response);
         }
 
@@ -129,8 +128,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             {
                 return BadRequest(response);
             }
-            return Ok(response);
 
+            return Ok(response);
         }
 
         [HttpGet("getAllOrders")]
@@ -145,7 +144,6 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
             return Ok(response);
-
         }
 
         [HttpGet("getAllApprovedOrders")]
@@ -160,7 +158,6 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
             return Ok(response);
-
         }
 
         [HttpGet("getAllRequestededOrders")]
@@ -175,9 +172,19 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
             return Ok(response);
+        }
 
+        [HttpGet("getRegisteredServices")]
+        public async Task<IActionResult> getRegisteredServices(string providerID)
+        {
+            var response = await _serviceProviderService.getRegisteredServices(providerID);
+
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
     }
 
 }
-

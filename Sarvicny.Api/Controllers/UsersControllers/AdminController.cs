@@ -118,11 +118,32 @@ public class AdminController : ControllerBase
         {
             return NotFound(response);
         }
-
-
         return Ok(response);
 
     }
+    
+    [HttpPost("BlockServiceProvider")]
+    public async Task<IActionResult> BlockServiceProvider(string workerId)
+    {
+        var response = await _adminService.BlockServiceProvider(workerId);
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+        return Ok(response);
+    }
+    
+    [HttpPost("UnBlockServiceProvider")]
+    public async Task<IActionResult> UnBlockServiceProvider(string workerId)
+    {
+        var response = await _adminService.UnBlockServiceProvider(workerId);
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+        return Ok(response);
+    }
+    
 
 
 }

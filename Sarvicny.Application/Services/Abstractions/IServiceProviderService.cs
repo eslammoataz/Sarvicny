@@ -1,4 +1,5 @@
 ﻿using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 
 namespace Sarvicny.Application.Services.Abstractions
@@ -26,5 +27,6 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<List<object>>> getAllApprovedOrders(string workerId);
         Task<Response<List<object>>> getAllRequestedOrders(string workerId);
+        Task<Response<object>> getRegisteredServices(string providerId);
     }
 }

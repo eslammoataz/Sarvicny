@@ -9,6 +9,7 @@ using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
+using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services;
 
@@ -71,7 +72,8 @@ public class AdminService : IAdminService
             c.FirstName,
             c.LastName,
             c.Email,
-            c.isVerified,
+            c.IsVerified,
+            c.IsBlocked,
             services = c.ProviderServices.Select(p => new
             {
                 p.ServiceID,
@@ -197,7 +199,7 @@ public class AdminService : IAdminService
             p.Email,
             p.PasswordHash,
             p.PhoneNumber,
-            p.isVerified,
+            isVerified = p.IsVerified,
             services = p.ProviderServices.Select(s => new
             {
                 s.ServiceID,
@@ -353,5 +355,63 @@ public class AdminService : IAdminService
 
         };
 
+    }
+
+    public async Task<Response<bool>> BlockServiceProvider(string workerId)
+    {
+        var provider = await _providerRepository.FindByIdAsync(new BaseSpecifications<Provider>(p=>p.Id == workerId));
+        
+        if (provider == null)
+        {
+            return new Response<bool>()
+            {
+                Status = "Fail",
+                Message = "Provider Not Found",
+                Payload = false,
+                isError = true,
+                Errors = new List<string>() { "Provider Not Found" }
+
+            };
+        }
+        
+        provider.IsBlocked = true;
+        _unitOfWork.Commit();
+        return new Response<bool>()
+        {
+            Status = "Success",
+            Message = "Provider Blocked Successfully",
+            Payload = true,
+            isError = false
+
+        };
+    }
+
+    public async Task<Response<bool>> UnBlockServiceProvider(string workerId)
+    {
+        var provider = await _providerRepository.FindByIdAsync(new BaseSpecifications<Provider>(p => p.Id == workerId));
+
+        if (provider == null)
+        {
+            return new Response<bool>()
+            {
+                Status = "Fail",
+                Message = "Provider Not Found",
+                Payload = false,
+                isError = true,
+                Errors = new List<string>() { "Provider Not Found" }
+
+            };
+        }
+
+        provider.IsBlocked = false;
+        _unitOfWork.Commit();
+        return new Response<bool>()
+        {
+            Status = "Success",
+            Message = "Provider UnBlocked Successfully",
+            Payload = true,
+            isError = false
+
+        };
     }
 }

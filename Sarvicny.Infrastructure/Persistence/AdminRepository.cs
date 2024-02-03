@@ -35,7 +35,7 @@ namespace Sarvicny.Infrastructure.Persistence
             var provider = _context.Provider.FirstOrDefault(p => p.Id == providerId);
 
 
-            provider.isVerified = true;
+            provider.IsVerified = true;
 
           
 
@@ -44,7 +44,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<Provider> RejectServiceProviderRegister(string providerId)
         {
-            var provider = _context.Provider.FirstOrDefault(p => p.isVerified == false);
+            var provider = _context.Provider.FirstOrDefault(p => p.IsVerified == false);
 
 
             _context.Provider.Remove(provider);

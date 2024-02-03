@@ -136,7 +136,7 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found"
                 };
             }
-            if (provider.isVerified == false)
+            if (provider.IsVerified == false)
             {
                 return new Response<object>()
 
@@ -471,12 +471,8 @@ namespace Sarvicny.Application.Services
 
                     result.Add(orderDetails);
                 }
-                else
-                {
-                    continue;
-                }
-               
             }
+            
             
             if(result.Count == 0)
             {
@@ -614,6 +610,38 @@ namespace Sarvicny.Application.Services
 
             };
 
+        }
+
+        public async Task<Response<object>> getRegisteredServices(string providerId)
+        {
+            var response = new Response<object>();
+
+            var provider =
+                await _serviceProviderRepository.FindByIdAsync(
+                    new ServiceProviderWithServiceSpecificationcs(providerId));
+            if (provider == null)
+            {
+                response.isError = true;
+                response.Status = "failed";
+                response.Message = "Provider Not Found";
+                response.Errors.Add("Provider Not Found");
+                return response;
+            }
+            
+            var services = provider.ProviderServices.Select(s => new
+            {
+                s.ServiceID,
+                s.Service.ServiceName,
+                s.Service.CriteriaID,
+                criteriaName = s.Service.Criteria?.CriteriaName,
+                s.Price
+            }).ToList<object>();
+            
+            response.Status = "Success";
+            response.Message = "Action Done Successfully";
+            response.Payload = services;
+            return response;
+            
         }
     }
 }
