@@ -187,9 +187,9 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         [HttpGet]
         [Route("ShowProviderProfile")]
-        public async Task<IActionResult> ShowProviderProfile(string workerId)
+        public async Task<IActionResult> ShowProviderProfile(string providerId)
         {
-            var response = await _serviceProviderService.ShowProviderProfile(workerId);
+            var response = await _serviceProviderService.ShowProviderProfile(providerId);
 
             if (response.isError)
             {

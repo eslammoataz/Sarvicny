@@ -35,8 +35,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 PhoneNumber = registrationDto.PhoneNumber,
                 LastName = registrationDto.LastName,
                 FirstName = registrationDto.FirstName,
-                //CriminalRecord = registrationDto.CriminalRecord,
-                //NationalID = registrationDto.NationalID,
+                CriminalRecord = registrationDto.CriminalRecord,
+                NationalID = registrationDto.NationalID,
                 IsVerified = false,
                 //photos
             };
