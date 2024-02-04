@@ -9,6 +9,8 @@ namespace Sarvicny.Contracts.Authentication.Registers
 
         [Required(ErrorMessage = "Criminal Record is Required")]
         public string CriminalRecord { get; set; }
+        
+        
         //image (fesh we tashbeh)
         //service  
 

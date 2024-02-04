@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Collections;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 
@@ -25,5 +27,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         //Task<ICollection<Provider>> GetAllServiceProviders();         //// Fe service provider repo 3shan a7tgt spec
         //Task<ICollection<Provider>> GetProvidersRegistrationRequest();
+        Task AddUserClaims(User user, List<Claim> claims);
+        Task<ICollection<Claim>> GetClaims(User user);
     }
 }

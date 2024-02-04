@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities;
@@ -37,6 +38,7 @@ namespace Sarvicny.Infrastructure.Data
                 };
                 await userManager.CreateAsync(admin, "Admin123#");
                 await userManager.AddToRoleAsync(admin, "Admin");
+                await userManager.AddClaimAsync(admin, new Claim("UserType", "Admin"));
             }
         }
 
@@ -73,6 +75,8 @@ namespace Sarvicny.Infrastructure.Data
             {
                 await userManager.CreateAsync(workerData, "Worker123#");
                 await userManager.AddToRoleAsync(workerData, "ServiceProvider");
+                await userManager.AddClaimAsync(workerData, new Claim("UserType", "Worker"));
+
             }
 
             if (!context.Customers.Any())
@@ -89,6 +93,8 @@ namespace Sarvicny.Infrastructure.Data
                 
                 await userManager.CreateAsync(customerData, "Customer123#");
                 await userManager.AddToRoleAsync(customerData, "Customer");
+                await userManager.AddClaimAsync(customerData, new Claim("UserType", "Customer"));
+
             }
 
             // Seed Criteria data

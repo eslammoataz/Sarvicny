@@ -22,13 +22,13 @@ namespace Sarvicny.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly ICartRepository _cartRepository;
-        
+
         private readonly IOrderService _orderService;
 
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository,IOrderService orderService)
+            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -303,11 +303,11 @@ namespace Sarvicny.Application.Services
                 s.ProblemDescription
             });
 
-            
+
 
             var CartAsObject = new
             {
- 
+
                 cart.CartID,
                 requestedServices
             };
@@ -349,7 +349,7 @@ namespace Sarvicny.Application.Services
                 };
             }
             var serviceRequests = cart.ServiceRequests;
-            if(serviceRequests.Count()==0)
+            if (serviceRequests.Count() == 0)
             {
                 return new Response<object>()
                 {
@@ -362,16 +362,16 @@ namespace Sarvicny.Application.Services
             }
 
             var totalPrice = serviceRequests.Sum(s => s.providerService.Price);
-            
+
             var newOrder = new Order
             {
                 Customer = customer,
                 CustomerID = customerId,
                 OrderStatusID = "1", //value (status name)=set
                 TotalPrice = totalPrice,
-                OrderDate= DateTime.UtcNow
+                OrderDate = DateTime.UtcNow
             };
-            
+
             var order = await _orderRepository.AddOrder(newOrder);
 
             var orderRequests = new List<ServiceRequest>();
@@ -380,7 +380,7 @@ namespace Sarvicny.Application.Services
             {
                 newRequest.ProviderServiceID = serviceRequest.ProviderServiceID;
                 newRequest.providerService = serviceRequest.providerService;
-                newRequest.Price= serviceRequest.Price;
+                newRequest.Price = serviceRequest.Price;
                 newRequest.Slot = serviceRequest.Slot;
                 newRequest.SlotID = serviceRequest.SlotID;
                 newRequest.AddedTime = serviceRequest.AddedTime;
@@ -392,7 +392,7 @@ namespace Sarvicny.Application.Services
                 orderRequests.Add(newRequest);
 
                 await _customerRepository.RemoveRequest(serviceRequest);
-                
+
             }
             // serviceRequests = await _orderRepository.SetOrderToServiceRequest(serviceRequests, order);
 
@@ -408,7 +408,7 @@ namespace Sarvicny.Application.Services
 
             var orders = await _orderRepository.GetOrder(spec2);
 
-  
+
             var result = new
             {
                 order.OrderID,
@@ -416,21 +416,21 @@ namespace Sarvicny.Application.Services
                 order.OrderStatusID,
                 order.OrderStatus.StatusName,
                 order.TotalPrice,
-                details=order.ServiceRequests.Select(s => new
+                details = order.ServiceRequests.Select(s => new
                 {
                     s.ServiceRequestID,
                     s.SlotID,
                     s.Slot.StartTime,
                     s.providerService.Provider.Id,
-                    Provider=s.providerService.Provider.FirstName,
+                    Provider = s.providerService.Provider.FirstName,
                     s.providerService.Service.ServiceID,
                     s.providerService.Service.ServiceName,
                     s.Price,
-                    
- 
+
+
                 }),
-                
-           
+
+
             };
 
             return new Response<object>()
@@ -444,7 +444,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> ShowCustomerProfile(string customerId)
         {
-            var spec = new BaseSpecifications<Customer>(c=>c.Id==customerId);
+            var spec = new BaseSpecifications<Customer>(c => c.Id == customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
             if (customer == null)
             {
@@ -473,14 +473,14 @@ namespace Sarvicny.Application.Services
                 Message = "Success"
 
             };
-     
+
 
         }
 
         public async Task<Response<object>> ViewLogRequest(string customerId)
         {
-            var spec= new CustomerWithOrdersSpecification(customerId);
-            var customer= await _customerRepository.GetCustomerById(spec);
+            var spec = new CustomerWithOrdersSpecification(customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
             if (customer == null)
             {
                 return new Response<object>()
@@ -493,7 +493,7 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            var orders= customer.Orders;
+            var orders = customer.Orders;
             if (orders == null)
             {
                 return new Response<object>()

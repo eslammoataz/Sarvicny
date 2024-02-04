@@ -7,12 +7,9 @@ using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
-using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
-using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
 {
@@ -29,7 +26,7 @@ namespace Sarvicny.Application.Services
         private IOrderService _orderService;
 
 
-        public ServiceProviderService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IOrderRepository orderRepository,ICustomerRepository customerRepository,IOrderService orderService,IEmailService emailService)
+        public ServiceProviderService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IOrderRepository orderRepository, ICustomerRepository customerRepository, IOrderService orderService, IEmailService emailService)
         {
             _serviceRepository = serviceRepository;
             _userRepository = userRepository;
@@ -121,11 +118,11 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string workerId)
         {
-           
+
             availabilityDto.AvailabilityDate = availabilityDto.AvailabilityDate.Value.Date;
 
             var spec = new ProviderWithAvailabilitesSpecification(workerId);
-            var provider =  await _serviceProviderRepository.FindByIdAsync(spec);
+            var provider = await _serviceProviderRepository.FindByIdAsync(spec);
             if (provider == null)
             {
                 return new Response<object>()
@@ -146,17 +143,17 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Verified"
                 };
             }
-               
+
 
             var availiabilities = await _serviceProviderRepository.AddAvailability(availabilityDto, spec);
             provider.Availabilities.Add(availiabilities);
             _unitOfWork.Commit();
-           var slots=  availiabilities.Slots.Select(s => new
+            var slots = availiabilities.Slots.Select(s => new
             {
                 s.StartTime,
                 s.EndTime
             }).ToList();
-            object result = new 
+            object result = new
             {
                 availiabilities.AvailabilityDate,
                 availiabilities.DayOfWeek,
@@ -188,9 +185,9 @@ namespace Sarvicny.Application.Services
             }
             var availability = await _serviceProviderRepository.getAvailability(spec);
 
-             var spec2 = new AvailaibiltyWithSlotsSpecification(workerId);
+            var spec2 = new AvailaibiltyWithSlotsSpecification(workerId);
             var slots = await _serviceProviderRepository.getAvailabilitySlots(spec2);
-            foreach(var val in availability)
+            foreach (var val in availability)
             {
                 val.Slots = slots;
             }
@@ -203,7 +200,7 @@ namespace Sarvicny.Application.Services
                 slots = a.Slots.Select(s => new { s.StartTime, s.EndTime }).ToList<object>(),
 
             }).ToList<object>();
-            
+
             return new Response<List<object>>()
 
             {
@@ -213,13 +210,13 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        
+
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
-            
+
             var spec = new OrderWithRequestsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
-            
+
             if (order == null)
             {
                 return new Response<object>()
@@ -233,7 +230,7 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            if(order.OrderStatusID=="2")
+            if (order.OrderStatusID == "2")
             {
                 return new Response<object>()
 
@@ -263,7 +260,7 @@ namespace Sarvicny.Application.Services
                 isError = false,
                 Payload = details,
                 Message = "Order Approved Succesfully",
-                
+
 
             };
         }
@@ -313,7 +310,7 @@ namespace Sarvicny.Application.Services
             await _orderRepository.CancelOrder(order);
             _unitOfWork.Commit();
 
-            var customer=order.Customer;
+            var customer = order.Customer;
             var message = new EmailDto(customer.Email!, "Sarvicny: Canceled", "Unfortunally! Your order is Canceled ");  // akedd momkn yet7sn
 
             _emailService.SendEmail(message);
@@ -347,7 +344,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            if (order.OrderStatusID!="1") //if not pending
+            if (order.OrderStatusID != "1") //if not pending
             {
                 if (order.OrderStatusID == "2")
                 {
@@ -398,58 +395,11 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        //public async Task<Response<object>> ShowOrderDetails(string orderId)
-        //{
-        //    var spec = new OrderWithRequestsSpecification(orderId);
-        //    var order = await _orderRepository.GetOrder(spec);
-        //    if (order == null)
-        //    {
-        //        return new Response<object>()
-        //        {
-        //            Status = "failed",
-        //            Message = "Order Not Found",
-        //            Payload = null
-        //        };
-        //    }
-
-        //    var customer = await _userRepository.GetUserByIdAsync(order.CustomerID);
-        //    var orderAsObject = new
-        //    {
-        //        orderId = order.OrderID,
-        //        customerId = order.CustomerID,
-        //        customerFN = customer.FirstName,
-        //        orderStatus = order.OrderStatus.StatusName,
-        //        orderPrice = order.TotalPrice,
-        //        orderService = order.ServiceRequests.Select(s => new
-        //        {
-        //            s.providerService.Provider.Id,
-        //            s.providerService.Provider.FirstName,
-        //            s.providerService.Provider.LastName,
-        //            s.providerService.Service.ServiceID,
-        //            s.providerService.Service.ServiceName,
-        //            s.providerService.Service.ParentServiceID,
-        //            parentServiceName = s.providerService.Service.ParentService?.ServiceName,
-        //            s.providerService.Service.CriteriaID,
-        //            s.providerService.Service.Criteria?.CriteriaName,
-        //            s.SlotID,
-        //            s.Slot.StartTime,
-        //            s.Price
-        //        }).ToList<object>(),
-        //    };
-
-        //    return new Response<object>()
-        //    {
-        //        Status = "Success",
-        //        Message = "Action Done Successfully",
-        //        Payload = orderAsObject
-        //    };
-        //}
-
 
         public async Task<Response<List<object>>> getAllOrders(String workerId)
         {
             var spec = new OrderWithRequestsSpecification();
-            var orders =await _orderRepository.GetAllOrders(spec);
+            var orders = await _orderRepository.GetAllOrders(spec);
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
             {
@@ -465,16 +415,16 @@ namespace Sarvicny.Application.Services
             List<object> result = new List<object>();
             foreach (var order in orders)
             {
-                if(order.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
+                if (order.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
                 {
                     var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
 
                     result.Add(orderDetails);
                 }
             }
-            
-            
-            if(result.Count == 0)
+
+
+            if (result.Count == 0)
             {
                 return new Response<List<object>>()
                 {
@@ -484,7 +434,7 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-           
+
             return new Response<List<object>>()
             {
                 Status = "Success",
@@ -521,7 +471,7 @@ namespace Sarvicny.Application.Services
                         var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
 
                         result.Add(orderDetails);
-                        
+
                     }
                     else
                     {
@@ -627,7 +577,7 @@ namespace Sarvicny.Application.Services
                 response.Errors.Add("Provider Not Found");
                 return response;
             }
-            
+
             var services = provider.ProviderServices.Select(s => new
             {
                 s.ServiceID,
@@ -636,14 +586,84 @@ namespace Sarvicny.Application.Services
                 criteriaName = s.Service.Criteria?.CriteriaName,
                 s.Price
             }).ToList<object>();
-            
+
             response.Status = "Success";
             response.Message = "Action Done Successfully";
             response.Payload = services;
             return response;
-            
+
         }
 
-      
+        public async Task<Response<object>> ShowProviderProfile(string workerId)
+        {
+            var spec = new ProviderWithServicesAndAvailabilitiesSpecification(workerId);
+            var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
+            if (serviceProvider == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Provider Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+
+            var claims = await _userRepository.GetClaims(serviceProvider);
+
+            var isWorker = claims.FirstOrDefault(c => c.Type == "Worker");
+            var isConsultant = claims.FirstOrDefault(c => c.Type == "Consultant");
+            var isCompany = claims.FirstOrDefault(c => c.Type == "Company");
+
+
+
+            Worker workerInstance = serviceProvider as Worker;
+
+            Company companyInstance = serviceProvider as Company;
+
+
+
+            if (workerInstance is null)
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "is not worker",
+                    Payload = null,
+                    isError = true
+                };
+
+
+
+            var services = serviceProvider.ProviderServices.Select(p => p.Service);
+            var servicesAsObject = services.Select(s => new
+            {
+                s.ServiceID,
+                s.ServiceName,
+                s.ParentServiceID,
+                parentServiceName = s.ParentService?.ServiceName,
+                s.CriteriaID,
+                s.Criteria?.CriteriaName,
+            });
+
+            var profile = new
+            {
+                workerInstance.FirstName,
+                workerInstance.LastName,
+                workerInstance.UserName,
+                workerInstance.Email,
+                workerInstance.PhoneNumber,
+                workerInstance.NationalID,
+                workerInstance.CriminalRecord,
+                Services = servicesAsObject
+            };
+            return new Response<object>()
+            {
+                Payload = profile,
+                isError = false,
+                Message = "Success"
+
+            };
+        }
+
     }
 }

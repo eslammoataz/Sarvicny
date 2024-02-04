@@ -1,29 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Application.Services;
-using Sarvicny.Contracts.Authentication.Registers;
-using Sarvicny.Domain.Entities.Users;
-using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Contracts.Dtos;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 
 namespace Sarvicny.Api.Controllers.UsersControllers
 {
 
-   
+
     [Route("api/[controller]")]
     [ApiController]
     public class WorkerController : ControllerBase
     {
 
         private readonly IAuthenticationService authenticationService;
-        private readonly IWorkerService workerService;
+        // private readonly IWorkerService workerService;
 
 
-        public WorkerController(IAuthenticationService authenticationService, IWorkerService workerService)
+        public WorkerController(IAuthenticationService authenticationService)
         {
 
             this.authenticationService = authenticationService;
-            this.workerService = workerService;
+            // this.workerService = workerService;
         }
 
 
@@ -38,14 +35,13 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 PhoneNumber = registrationDto.PhoneNumber,
                 LastName = registrationDto.LastName,
                 FirstName = registrationDto.FirstName,
-                CriminalRecord = registrationDto.CriminalRecord,
-                NationalID = registrationDto.NationalID,
-                IsVerified = false
-                 
+                //CriminalRecord = registrationDto.CriminalRecord,
+                //NationalID = registrationDto.NationalID,
+                IsVerified = false,
                 //photos
             };
 
-            var Response = await authenticationService.Register(user, role, registrationDto.Password);
+            var Response = await authenticationService.Register(user, role, registrationDto.UserType, registrationDto.Password);
 
             if (Response.isError)
                 return BadRequest(Response);
@@ -54,19 +50,19 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
-        [HttpGet]
-        [Route("getWorkerProfile")]
-        public async Task<IActionResult> ShowWorkerProfile(string workerId)
-        {
-            var response = await workerService.ShowWorkerProfile(workerId);
-
-            if (response.isError)
-            {
-                return BadRequest(response);
-            }
-            return Ok(response);
-
-        }
+        // [HttpGet]
+        // [Route("getWorkerProfile")]
+        // public async Task<IActionResult> ShowWorkerProfile(string workerId)
+        // {
+        //     var response = await workerService.ShowWorkerProfile(workerId);
+        //
+        //     if (response.isError)
+        //     {
+        //         return BadRequest(response);
+        //     }
+        //     return Ok(response);
+        //
+        // }
 
 
     }

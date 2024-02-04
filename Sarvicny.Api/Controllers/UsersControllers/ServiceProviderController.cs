@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 
 
@@ -184,6 +182,21 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 return NotFound(response);
             }
             return Ok(response);
+        }
+
+
+        [HttpGet]
+        [Route("ShowProviderProfile")]
+        public async Task<IActionResult> ShowProviderProfile(string workerId)
+        {
+            var response = await _serviceProviderService.ShowProviderProfile(workerId);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
         }
     }
 

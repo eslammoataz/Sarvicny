@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities.Users;
@@ -80,6 +81,16 @@ public class UserRepository : IUserRepository
     {
         var customers = await _context.Customers.ToListAsync();
         return customers;
+    }
+
+    public async Task AddUserClaims(User user, List<Claim> claims)
+    {
+        await _userManager.AddClaimsAsync(user, claims);
+    }
+
+    public async Task<ICollection<Claim>> GetClaims(User user)
+    {
+        return await _userManager.GetClaimsAsync(user);
     }
 
     //public async Task<ICollection<Provider>> GetAllServiceProviders()

@@ -2,6 +2,6 @@
 
 public class Consultant : Worker
 {
-    private decimal salary {  get; set; }
+    public decimal salary { get; set; }
 
 }

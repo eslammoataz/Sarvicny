@@ -8,14 +8,15 @@ public class ProviderWithServicesAndAvailabilitiesSpecification : BaseSpecificat
 {
     public ProviderWithServicesAndAvailabilitiesSpecification()
     {
-        Includes.Add(p => p.ProviderServices);
-        Includes.Add(p=>p.Availabilities);
+        AddInclude($"{nameof(Provider.Availabilities)}.{nameof(ProviderAvailability.Slots)}");
+        AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
+        AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
     }
 
     public ProviderWithServicesAndAvailabilitiesSpecification(string providerId) : base(p => p.Id == providerId)
     {
-        Includes.Add(p => p.ProviderServices);
-        Includes.Add(p=>p.Availabilities);
         AddInclude($"{nameof(Provider.Availabilities)}.{nameof(ProviderAvailability.Slots)}");
+        AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
+        AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
     }
 }

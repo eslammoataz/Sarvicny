@@ -23,6 +23,9 @@ namespace Sarvicny.Contracts.Authentication.Registers
 
         [Required(ErrorMessage = "Phone number is Required")]
         public string PhoneNumber { get; set; }
+        
+        [Required(ErrorMessage = "UserType is Required")]
+        public string UserType { get; set; }
 
 
     }

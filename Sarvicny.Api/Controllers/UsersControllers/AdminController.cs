@@ -88,10 +88,10 @@ public class AdminController : ControllerBase
         {
             return NotFound(response);
         }
-       
-        
-            return Ok(response);
-        
+
+
+        return Ok(response);
+
     }
 
     [HttpGet("getAllApprovedOrders")]
@@ -121,7 +121,7 @@ public class AdminController : ControllerBase
         return Ok(response);
 
     }
-    
+
     [HttpPost("BlockServiceProvider")]
     public async Task<IActionResult> BlockServiceProvider(string workerId)
     {
@@ -132,7 +132,7 @@ public class AdminController : ControllerBase
         }
         return Ok(response);
     }
-    
+
     [HttpPost("UnBlockServiceProvider")]
     public async Task<IActionResult> UnBlockServiceProvider(string workerId)
     {
@@ -143,7 +143,7 @@ public class AdminController : ControllerBase
         }
         return Ok(response);
     }
-    
+
 
 
 }

@@ -47,7 +47,7 @@ namespace Sarvicny.Application.Services
         }
 
 
-        public async Task<Response<string>> Register(User user, string role, string password)
+        public async Task<Response<string>> Register(User user, string role, string userType, string password)
         {
             var userExist = await _userRepository.GetUserByEmailAsync(user.Email!);
 
@@ -71,10 +71,9 @@ namespace Sarvicny.Application.Services
                 return response;
             }
 
-
-
             // it stores the password hashed already without using bcrypt
             IdentityResult result = await _userRepository.AddUserAsync(user, password);
+
 
             // User Registered 
             if (!result.Succeeded)
@@ -84,8 +83,8 @@ namespace Sarvicny.Application.Services
                 response.Errors = result.Errors.Select(error => error.Description).ToList();
                 return response;
             }
-            await _userRepository.AddUserToRoleAsync(user, role);
 
+            await _userRepository.AddUserToRoleAsync(user, role);
             if (role == "Customer")
             {
                 var created = _customerRepository.CreateCart(user.Id);
@@ -97,6 +96,14 @@ namespace Sarvicny.Application.Services
                     return response;
                 }
                 _unitOfWork.Commit();
+            }
+            else
+            {
+                await _userRepository.AddUserClaims(user, new()
+                {
+                    new Claim("UserType", userType)
+                });
+
             }
 
 

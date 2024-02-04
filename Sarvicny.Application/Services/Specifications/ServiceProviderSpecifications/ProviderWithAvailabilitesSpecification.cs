@@ -11,7 +11,7 @@ namespace Sarvicny.Application.Services.Specifications.ServiceProviderSpecificat
 
             Includes.Add(p => p.Availabilities);
         }
-        public ProviderWithAvailabilitesSpecification( string providerId): base(p=> p.Id == providerId)
+        public ProviderWithAvailabilitesSpecification(string providerId) : base(p => p.Id == providerId)
         {
 
 

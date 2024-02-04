@@ -31,12 +31,12 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task AddProviderService(ProviderService workerservice)
         {
             _context.ProviderServices.Add(workerservice);
-           
+
         }
         public async Task<Provider> FindByIdAsync(ISpecifications<Provider> specifications)
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync();
-            
+
         }
 
 
@@ -90,7 +90,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
             var providerAvailability = new ProviderAvailability
             {
-                ServiceProviderID = provider.Id, 
+                ServiceProviderID = provider.Id,
                 DayOfWeek = availabilityDto.DayOfWeek,
                 AvailabilityDate = availabilityDto.AvailabilityDate,
                 ServiceProvider = provider
@@ -133,9 +133,9 @@ namespace Sarvicny.Infrastructure.Persistence
             return timeSlots;
         }
 
-        public async Task<List<ProviderAvailability>> getAvailability( ISpecifications<Provider> spec)
+        public async Task<List<ProviderAvailability>> getAvailability(ISpecifications<Provider> spec)
         {
-            var provider = await ApplySpecification(spec).FirstOrDefaultAsync( );
+            var provider = await ApplySpecification(spec).FirstOrDefaultAsync();
             return provider.Availabilities;
         }
         public async Task<List<TimeSlot>> getAvailabilitySlots(ISpecifications<ProviderAvailability> spec)
@@ -152,9 +152,9 @@ namespace Sarvicny.Infrastructure.Persistence
             return SpecificationBuilder<Provider>.Build(_context.Provider, spec);
         }
 
-       
 
-          
+
+
 
         public async Task<ICollection<Provider>> GetProvidersRegistrationRequest(ISpecifications<Provider> spec)
         {
@@ -163,7 +163,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<ICollection<Provider>> GetAllServiceProviders(ISpecifications<Provider> spec)
         {
-           return await ApplySpecification(spec) .ToListAsync();
+            return await ApplySpecification(spec).ToListAsync();
         }
     }
 

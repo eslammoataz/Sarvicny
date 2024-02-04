@@ -19,8 +19,7 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> RejectOrder(string orderId); //done
         Task<Response<object>> CancelOrder(string orderId); //done
 
-
-
+        
         ////Task<Response<ICollection<Object>>> GetAllServiceProviders(); b2t fe al admin bs
 
         Task<Response<List<object>>> getAllOrders(string workerId);
@@ -28,7 +27,8 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<List<object>>> getAllApprovedOrders(string workerId);
         Task<Response<List<object>>> getAllRequestedOrders(string workerId);
         Task<Response<object>> getRegisteredServices(string providerId);
+        Task<Response<object>> ShowProviderProfile(string workerId);
 
-        
+
     }
 }

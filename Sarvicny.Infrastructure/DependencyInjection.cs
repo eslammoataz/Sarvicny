@@ -44,8 +44,6 @@ public static class DependencyInjection
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IOrderService,OrderService>();
-        services.AddScoped<IWorkerService, WorkerService>();
-        services.AddScoped<IWorkerRepository, WorkerRepository>();
 
 
         services.AddAuthentication(); // UserManager / SigninManager / RoleManager
