@@ -28,5 +28,7 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("OrderStatusID")]
         public OrderStatus OrderStatus { get; set; }
 
+        public DateTime OrderDate { get; set; }
+
     }
 }

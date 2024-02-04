@@ -42,6 +42,8 @@ namespace Sarvicny.Application.Services
                 customerId = order.CustomerID,
                 customerFN = customer.FirstName,
                 orderStatus = order.OrderStatus.StatusName,
+                orderDate= order.OrderDate,
+                
                 orderPrice = order.TotalPrice,
                 orderService = order.ServiceRequests.Select(s => new
                 {
@@ -56,7 +58,8 @@ namespace Sarvicny.Application.Services
                     s.providerService.Service.Criteria?.CriteriaName,
                     s.SlotID,
                     s.Slot.StartTime,
-                    s.Price
+                    s.Price,
+                    s.ProblemDescription
                 }).ToList<object>(),
             };
 
@@ -89,6 +92,7 @@ namespace Sarvicny.Application.Services
                 orderId = order.OrderID,
                 orderStatus = order.OrderStatus.StatusName,
                 orderPrice = order.TotalPrice,
+                orderDate = order.OrderDate,
                 orderService = order.ServiceRequests.Select(s => new
                 {
                     s.providerService.Provider.Id,
@@ -102,7 +106,8 @@ namespace Sarvicny.Application.Services
                     s.providerService.Service.Criteria?.CriteriaName,
                     s.SlotID,
                     s.Slot.StartTime,
-                    s.Price
+                    s.Price,
+                    s.ProblemDescription
                 }).ToList<object>(),
             };
 
@@ -140,8 +145,10 @@ namespace Sarvicny.Application.Services
                 customerLN = customer.LastName,
                 Address=customer.Address,
 
+
                 orderStatus = order.OrderStatus.StatusName,
                 orderPrice = order.TotalPrice,
+                orderDate = order.OrderDate,
                 orderService = order.ServiceRequests.Select(s => new
                 {
                    
@@ -153,7 +160,8 @@ namespace Sarvicny.Application.Services
                     s.providerService.Service.Criteria?.CriteriaName,
                     s.SlotID,
                     s.Slot.StartTime,
-                    s.Price
+                    s.Price,
+                     s.ProblemDescription
                 }).ToList<object>(),
             };
 

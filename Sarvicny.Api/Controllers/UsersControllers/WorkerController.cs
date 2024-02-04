@@ -16,13 +16,14 @@ namespace Sarvicny.Api.Controllers.UsersControllers
     {
 
         private readonly IAuthenticationService authenticationService;
+        private readonly IWorkerService workerService;
 
 
-        public WorkerController(IAuthenticationService authenticationService)
+        public WorkerController(IAuthenticationService authenticationService, IWorkerService workerService)
         {
 
             this.authenticationService = authenticationService;
-
+            this.workerService = workerService;
         }
 
 
@@ -50,6 +51,20 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 return BadRequest(Response);
 
             return Ok(Response);
+
+        }
+
+        [HttpGet]
+        [Route("getWorkerProfile")]
+        public async Task<IActionResult> ShowWorkerProfile(string workerId)
+        {
+            var response = await workerService.ShowWorkerProfile(workerId);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
 
         }
 

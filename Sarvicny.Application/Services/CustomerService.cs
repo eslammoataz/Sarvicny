@@ -286,21 +286,32 @@ namespace Sarvicny.Application.Services
             //         ps.Price
             //     });
 
-            var requestedServices = cart.ServiceRequests.Select(sr => new
+            var requestedServices = cart.ServiceRequests.Select(s => new
             {
-                sr.ServiceRequestID,
-                sr.providerService.ProviderID,
-                sr.providerService.ServiceID,
-                sr.providerService.Price,
+                s.providerService.Provider.Id,
+                s.providerService.Provider.FirstName,
+                s.providerService.Provider.LastName,
+                s.providerService.Service.ServiceID,
+                s.providerService.Service.ServiceName,
+                s.providerService.Service.ParentServiceID,
+                parentServiceName = s.providerService.Service.ParentService?.ServiceName,
+                s.providerService.Service.CriteriaID,
+                s.providerService.Service.Criteria?.CriteriaName,
+                s.SlotID,
+                s.Slot.StartTime,
+                s.Price,
+                s.ProblemDescription
             });
+
             
 
             var CartAsObject = new
             {
-                cart.CustomerID,
+ 
                 cart.CartID,
                 requestedServices
             };
+
 
             return new Response<object>()
             {
@@ -357,7 +368,8 @@ namespace Sarvicny.Application.Services
                 Customer = customer,
                 CustomerID = customerId,
                 OrderStatusID = "1", //value (status name)=set
-                TotalPrice = totalPrice
+                TotalPrice = totalPrice,
+                OrderDate= DateTime.UtcNow
             };
             
             var order = await _orderRepository.AddOrder(newOrder);
@@ -419,9 +431,6 @@ namespace Sarvicny.Application.Services
                 }),
                 
            
-
-                
-
             };
 
             return new Response<object>()
