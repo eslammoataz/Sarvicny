@@ -312,3 +312,5 @@ C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Ent
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Mono.TextTemplating.dll
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.CodeDom.dll
+E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Newtonsoft.Json.dll
+E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\RestSharp.dll
