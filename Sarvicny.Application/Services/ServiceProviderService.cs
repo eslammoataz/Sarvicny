@@ -1,4 +1,5 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.NewFolder;
@@ -10,6 +11,11 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
+using System;
+using System.ComponentModel;
+using System.Dynamic;
+using System.Net.NetworkInformation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Sarvicny.Application.Services
 {
@@ -396,7 +402,7 @@ namespace Sarvicny.Application.Services
         }
 
 
-        public async Task<Response<List<object>>> getAllOrders(String workerId)
+        public async Task<Response<List<object>>> getAllOrders(string workerId)
         {
             var spec = new OrderWithRequestsSpecification();
             var orders = await _orderRepository.GetAllOrders(spec);
@@ -594,9 +600,9 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> ShowProviderProfile(string workerId)
+        public async Task<Response<object>> ShowProviderProfile(string providerId)
         {
-            var spec = new ProviderWithServicesAndAvailabilitiesSpecification(workerId);
+            var spec = new ProviderWithServicesAndAvailabilitiesSpecification(providerId);
             var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
             if (serviceProvider == null)
             {
@@ -608,29 +614,6 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-
-            var claims = await _userRepository.GetClaims(serviceProvider);
-
-            var isWorker = claims.FirstOrDefault(c => c.Type == "Worker");
-            var isConsultant = claims.FirstOrDefault(c => c.Type == "Consultant");
-            var isCompany = claims.FirstOrDefault(c => c.Type == "Company");
-
-
-
-            Worker workerInstance = serviceProvider as Worker;
-
-            Company companyInstance = serviceProvider as Company;
-
-
-
-            if (workerInstance is null)
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "is not worker",
-                    Payload = null,
-                    isError = true
-                };
 
 
 
@@ -645,17 +628,58 @@ namespace Sarvicny.Application.Services
                 s.Criteria?.CriteriaName,
             });
 
-            var profile = new
+            dynamic profile = new ExpandoObject();
+
+            profile.FirstName = serviceProvider.FirstName;
+            profile.LastName = serviceProvider.LastName;
+            profile.UserName = serviceProvider.UserName;
+            profile.Email = serviceProvider.Email;
+            profile.PhoneNumber = serviceProvider.PhoneNumber;
+            profile.Services = servicesAsObject;
+
+            var claims = await _userRepository.GetClaims(serviceProvider);
+
+            var isWorker = claims.FirstOrDefault(c => c.Value == "Worker") ;
+            var isConsultant = claims.FirstOrDefault(c => c.Value == "Consultant") ;
+            var isCompany = claims.FirstOrDefault(c => c.Value == "Company") ;
+
+            if (isWorker is not null)
             {
-                workerInstance.FirstName,
-                workerInstance.LastName,
-                workerInstance.UserName,
-                workerInstance.Email,
-                workerInstance.PhoneNumber,
-                workerInstance.NationalID,
-                workerInstance.CriminalRecord,
-                Services = servicesAsObject
-            };
+                Worker workerInstance = serviceProvider as Worker;
+                profile.NationalID = workerInstance.NationalID;
+                profile.CriminalRecord= workerInstance.CriminalRecord;
+                
+            }
+            else if (isConsultant is not null)
+            {
+                Consultant consultant = serviceProvider as Consultant;
+
+                profile.NationalID = consultant.NationalID;
+                profile.CriminalRecord = consultant.CriminalRecord;
+                profile.Salary = consultant.salary;
+
+
+            }
+            else if (isCompany is not null)
+            {
+                Company companyInstance = serviceProvider as Company;
+                profile.License = companyInstance.license;
+                
+            }
+
+            else
+            {
+
+                return new Response<object>()
+                {
+                    Payload = null,
+                    isError = true,
+                    Message = "false"
+
+                };
+            }
+
+
             return new Response<object>()
             {
                 Payload = profile,
@@ -665,5 +689,6 @@ namespace Sarvicny.Application.Services
             };
         }
 
+      
     }
 }
