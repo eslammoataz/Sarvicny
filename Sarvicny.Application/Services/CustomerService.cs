@@ -288,7 +288,8 @@ namespace Sarvicny.Application.Services
 
             var requestedServices = cart.ServiceRequests.Select(s => new
             {
-                s.providerService.Provider.Id,
+                s.ServiceRequestID,
+               providerId = s.providerService.Provider.Id,
                 s.providerService.Provider.FirstName,
                 s.providerService.Provider.LastName,
                 s.providerService.Service.ServiceID,
@@ -300,7 +301,9 @@ namespace Sarvicny.Application.Services
                 s.SlotID,
                 s.Slot.StartTime,
                 s.Price,
-                s.ProblemDescription
+                s.ProblemDescription,
+                
+                
             });
 
 
@@ -309,7 +312,7 @@ namespace Sarvicny.Application.Services
             {
 
                 cart.CartID,
-                requestedServices
+                requestedServices,
             };
 
 

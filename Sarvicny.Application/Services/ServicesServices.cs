@@ -114,7 +114,9 @@ public class ServicesServices : IServicesService
             availabilities=p.Provider.Availabilities.Select(a => new {
                 a.DayOfWeek,
                slots= a.Slots.Select(s => new {
-                   s.StartTime, s.EndTime
+                   s.TimeSlotID,
+                   s.StartTime,
+                   s.EndTime
                }).ToList<object>(),
             }).ToList<object>(),
             

@@ -689,6 +689,6 @@ namespace Sarvicny.Application.Services
             };
         }
 
-      
+        
     }
 }

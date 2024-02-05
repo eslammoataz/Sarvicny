@@ -29,6 +29,7 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<List<object>>> getAllRequestedOrders(string workerId);
         Task<Response<object>> getRegisteredServices(string providerId);
         Task<Response<object>> ShowProviderProfile(string workerId);
+       
 
 
 

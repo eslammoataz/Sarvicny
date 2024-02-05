@@ -165,6 +165,8 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return await ApplySpecification(spec).ToListAsync();
         }
+
+       
     }
 
 }
