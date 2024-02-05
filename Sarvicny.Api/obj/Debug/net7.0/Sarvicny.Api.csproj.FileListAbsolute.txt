@@ -316,3 +316,5 @@ E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Newtonsoft.Json.dll
 E:\Github Repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\RestSharp.dll
 D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Newtonsoft.Json.dll
 D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\RestSharp.dll
+C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Newtonsoft.Json.dll
+C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\RestSharp.dll

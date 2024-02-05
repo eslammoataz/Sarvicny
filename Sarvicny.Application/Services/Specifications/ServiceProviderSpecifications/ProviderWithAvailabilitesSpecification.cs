@@ -1,4 +1,5 @@
-﻿using Sarvicny.Domain.Entities.Users.ServicProviders;
+﻿using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications
@@ -9,13 +10,13 @@ namespace Sarvicny.Application.Services.Specifications.ServiceProviderSpecificat
         {
 
 
-            Includes.Add(p => p.Availabilities);
+            AddInclude($"{nameof(Provider.Availabilities)}.{nameof(ProviderAvailability.Slots)}");
         }
         public ProviderWithAvailabilitesSpecification(string providerId) : base(p => p.Id == providerId)
         {
 
 
-            Includes.Add(p => p.Availabilities);
+            AddInclude($"{nameof(Provider.Availabilities)}.{nameof(ProviderAvailability.Slots)}");
         }
     }
 }

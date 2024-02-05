@@ -104,6 +104,7 @@ namespace Sarvicny.Application.Services
                     new Claim("UserType", userType)
                 });
 
+
             }
 
 

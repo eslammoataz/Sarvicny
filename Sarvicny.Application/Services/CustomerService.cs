@@ -9,6 +9,7 @@ using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
@@ -24,11 +25,12 @@ namespace Sarvicny.Application.Services
         private readonly ICartRepository _cartRepository;
 
         private readonly IOrderService _orderService;
+        private readonly IServiceProviderService _serviceProvider;
 
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService)
+            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService,IServiceProviderService serviceProvider)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -38,6 +40,7 @@ namespace Sarvicny.Application.Services
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
             _orderService = orderService;
+            _serviceProvider= serviceProvider;
         }
         public async Task<Response<object>> RequestService(RequestServiceDto requestServiceDto, string customerId)
         {
@@ -114,8 +117,9 @@ namespace Sarvicny.Application.Services
                 };
             }
 
+            var cart = customer.Cart;
 
-            if (customer.Cart is null)
+            if ( cart is null)
             {
                 customer.Cart = new Cart
                 {
@@ -123,6 +127,23 @@ namespace Sarvicny.Application.Services
                     LastChangeTime = DateTime.UtcNow,
                     Customer = customer
                 };
+            }
+            var cartRequest= cart.ServiceRequests.ToList();
+            foreach (var request in cartRequest)  //check not already in cart
+            {
+
+
+                if(requestServiceDto.ServiceId== request.providerService.ServiceID && requestServiceDto.ProviderId== request.providerService.ProviderID && slotExist.TimeSlotID == request.SlotID)
+                {
+                    return new Response<object>
+                    {
+                        isError = true,
+                        
+                        Status = "Error",
+                        Message = "Request is already Found in the cart",
+                    };
+                }         
+
             }
 
             var newRequest = new ServiceRequest
@@ -137,7 +158,7 @@ namespace Sarvicny.Application.Services
                 ProblemDescription = requestServiceDto.ProblemDescription
             };
 
-            slotExist.enable = false;
+            //slotExist.enable = false;
 
             await _customerRepository.AddRequest(newRequest);
             _unitOfWork.Commit();
@@ -378,9 +399,10 @@ namespace Sarvicny.Application.Services
             var order = await _orderRepository.AddOrder(newOrder);
 
             var orderRequests = new List<ServiceRequest>();
-            var newRequest = new ServiceRequest();
+            
             foreach (var serviceRequest in serviceRequests)
             {
+                var newRequest = new ServiceRequest();
                 newRequest.ProviderServiceID = serviceRequest.ProviderServiceID;
                 newRequest.providerService = serviceRequest.providerService;
                 newRequest.Price = serviceRequest.Price;
@@ -390,9 +412,19 @@ namespace Sarvicny.Application.Services
                 newRequest.OrderId = order.OrderID;
                 newRequest.CartID = null;
                 newRequest.Cart = null;
+                newRequest.ProblemDescription = serviceRequest.ProblemDescription;
 
+                
                 await _customerRepository.AddRequest(newRequest);
                 orderRequests.Add(newRequest);
+
+                var specProvider = new ProviderWithAvailabilitesSpecification(serviceRequest.providerService.ProviderID);
+                var provider = await _providerRepository.FindByIdAsync(specProvider);
+
+                var slots = provider.Availabilities.SelectMany(p => p.Slots);
+
+                var slotExist = slots.SingleOrDefault(s => s.TimeSlotID == serviceRequest.SlotID);
+                slotExist.enable = false;
 
                 await _customerRepository.RemoveRequest(serviceRequest);
 
@@ -401,7 +433,9 @@ namespace Sarvicny.Application.Services
 
 
             order.ServiceRequests = orderRequests;
-            await _customerRepository.EmptyCart(cart);
+
+  
+            //await _customerRepository.EmptyCart(cart);
 
             cart.ServiceRequests = null;
 
@@ -429,9 +463,11 @@ namespace Sarvicny.Application.Services
                     s.providerService.Service.ServiceID,
                     s.providerService.Service.ServiceName,
                     s.Price,
+                    s.ProblemDescription,
 
 
                 }),
+                
 
 
             };

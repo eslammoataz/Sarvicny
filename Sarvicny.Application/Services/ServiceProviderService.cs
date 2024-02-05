@@ -191,12 +191,12 @@ namespace Sarvicny.Application.Services
             }
             var availability = await _serviceProviderRepository.getAvailability(spec);
 
-            var spec2 = new AvailaibiltyWithSlotsSpecification(workerId);
-            var slots = await _serviceProviderRepository.getAvailabilitySlots(spec2);
-            foreach (var val in availability)
-            {
-                val.Slots = slots;
-            }
+            //var spec2 = new AvailaibiltyWithSlotsSpecification(workerId);
+            //var slots = await _serviceProviderRepository.getAvailabilitySlots(spec2);
+            //foreach (var val in availability)
+            //{
+            //    val.Slots = slots;
+            //}
 
             var avail = availability.Select(a => new
             {
