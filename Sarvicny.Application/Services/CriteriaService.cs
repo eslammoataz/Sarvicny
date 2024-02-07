@@ -170,13 +170,13 @@ public class CriteriaService : ICriteriaService
 
         await _criteriaRepository.AddServiceToCriteria(criteriaId, serviceId);
 
-        if (service.ChildServices.Count()!=0) //law al service de 3ndha childs yeb2a kolhom ta7t al criteria de
+        if (service.ChildServices.Count() != 0) //law al service de 3ndha childs yeb2a kolhom ta7t al criteria de
         {
-            foreach(var childService in service.ChildServices)
+            foreach (var childService in service.ChildServices)
             {
                 await _criteriaRepository.AddServiceToCriteria(criteriaId, childService.ServiceID);
             }
-            
+
         }
         _unitOfWork.Commit();
 

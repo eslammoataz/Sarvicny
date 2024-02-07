@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Dynamic;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
-using Sarvicny.Application.Services.Specifications.NewFolder;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
@@ -11,11 +10,6 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
-using System;
-using System.ComponentModel;
-using System.Dynamic;
-using System.Net.NetworkInformation;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Sarvicny.Application.Services
 {
@@ -639,16 +633,16 @@ namespace Sarvicny.Application.Services
 
             var claims = await _userRepository.GetClaims(serviceProvider);
 
-            var isWorker = claims.FirstOrDefault(c => c.Value == "Worker") ;
-            var isConsultant = claims.FirstOrDefault(c => c.Value == "Consultant") ;
-            var isCompany = claims.FirstOrDefault(c => c.Value == "Company") ;
+            var isWorker = claims.FirstOrDefault(c => c.Value == "Worker");
+            var isConsultant = claims.FirstOrDefault(c => c.Value == "Consultant");
+            var isCompany = claims.FirstOrDefault(c => c.Value == "Company");
 
             if (isWorker is not null)
             {
                 Worker workerInstance = serviceProvider as Worker;
                 profile.NationalID = workerInstance.NationalID;
-                profile.CriminalRecord= workerInstance.CriminalRecord;
-                
+                profile.CriminalRecord = workerInstance.CriminalRecord;
+
             }
             else if (isConsultant is not null)
             {
@@ -664,7 +658,7 @@ namespace Sarvicny.Application.Services
             {
                 Company companyInstance = serviceProvider as Company;
                 profile.License = companyInstance.license;
-                
+
             }
 
             else
@@ -689,6 +683,6 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        
+
     }
 }

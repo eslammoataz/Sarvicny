@@ -22,7 +22,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            
+
             var problemDetails = new ProblemDetails
             {
                 Status = 500,
@@ -50,7 +50,7 @@ public class GlobalExceptionHandlingMiddleware : IMiddleware
             LogExceptionDetails(ex.InnerException);
         }
     }
-    
+
     private string GetExceptionDetails(Exception ex)
     {
         // Return a string with exception details including stack trace and inner exceptions
