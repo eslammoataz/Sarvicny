@@ -17,53 +17,21 @@ public class PaymentController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
-    [Route("GetAuthToken")]
-    public async Task<IActionResult> GetAuthToken()
-    {
-        try
-        {
-            var token = await _paymentService.GetAuthToken();
-            return Ok(token);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return StatusCode(500, "An error occurred while processing payment");
-        }
-    }
-
-    [HttpPost]
-    [Route("RegisterOrder")]
-    public async Task<IActionResult> RegisterOrder()
-    {
-        try
-        {
-            var order = await _paymentService.OrderRegistration();
-            return Ok(order);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return StatusCode(500, "An error occurred while registering order");
-        }
-    }
-
-    [HttpPost]
-    [Route("Pay")]
-    public async Task<IActionResult> Pay()
-    {
-        try
-        {
-            var payment = await _paymentService.Pay();
-            return Ok(payment);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-            return StatusCode(500, "An error occurred while processing payment");
-        }
-    }
+    //[HttpPost]
+    //[Route("Pay")]
+    //public async Task<IActionResult> Pay()
+    //{
+    //    try
+    //    {
+    //        var payment = await _paymentService.Pay();
+    //        return Ok(payment);
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        _logger.LogError(e.Message);
+    //        return StatusCode(500, "An error occurred while processing payment");
+    //    }
+    //}
 
 
     [HttpPost]

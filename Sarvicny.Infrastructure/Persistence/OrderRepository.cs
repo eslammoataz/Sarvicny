@@ -2,8 +2,6 @@
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Domain.Entities.Emails;
-using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 
@@ -49,12 +47,12 @@ namespace Sarvicny.Infrastructure.Persistence
 
             order.OrderStatusID = "2";
             order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Approved");
-           
+
         }
 
         public async Task RejectOrder(Order order)
         {
-          
+
             order.OrderStatusID = "3";
             order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Rejected");
 
@@ -97,11 +95,11 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<Order> AddOrder(Order order)
         {
-          
+
             var orderStatus = _context.OrderStatuses;
             order.OrderStatus = orderStatus.FirstOrDefault(o => o.OrderStatusID == "1");
 
-          
+
             _context.Orders.Add(order);
             return order;
         }
@@ -114,7 +112,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         }
 
-        public async Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest> serviceRequests , Order order)
+        public async Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest> serviceRequests, Order order)
         {
             foreach (var serviceRequest in serviceRequests)
             {
@@ -123,6 +121,10 @@ namespace Sarvicny.Infrastructure.Persistence
             return serviceRequests;
         }
 
-
+        public async Task ChangeToPaid(Order order)
+        {
+            order.IsPaid = true;
+            return;
+        }
     }
 }

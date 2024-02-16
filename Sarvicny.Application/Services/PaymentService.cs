@@ -10,16 +10,19 @@ using Sarvicny.Contracts;
 using Sarvicny.Contracts.Payment;
 using Sarvicny.Contracts.Payment.Request;
 using Sarvicny.Contracts.Payment.Response;
+using Sarvicny.Domain.Entities;
 
 namespace Sarvicny.Application.Services;
 
 public class PaymentService : IPaymentService
 {
     private readonly IConfiguration _config;
+    private readonly IHandlePayment _handlePayment;
 
-    public PaymentService(IConfiguration config)
+    public PaymentService(IConfiguration config, IHandlePayment handlePayment)
     {
         _config = config;
+        _handlePayment = handlePayment;
     }
     public async Task<string> GetAuthToken()
     {
@@ -46,7 +49,7 @@ public class PaymentService : IPaymentService
 
     }
 
-    public async Task<OrderResponse> OrderRegistration()
+    public async Task<OrderResponse> OrderRegistration(Order order)
     {
         var orderUrl = "https://accept.paymob.com/api/ecommerce/orders";
         var restClient = new RestClient(orderUrl);
@@ -56,12 +59,16 @@ public class PaymentService : IPaymentService
         restRequest.AddHeader("Content-Type", "application/json");
 
         string authToken = await GetAuthToken();
+
+        var orderPriceInCents = order.TotalPrice * 100;
+
         var orderRequest = new OrderRequest
         {
             AuthToken = authToken,
             DeliveryNeeded = true,
-            AmountCents = 100,
-            Items = new List<object>()
+            AmountCents = orderPriceInCents.ToString(),
+            Items = new List<object>(),
+            MerchantOrderId = order.OrderID
         };
 
         // Serialize the OrderRequest to JSON
@@ -77,11 +84,11 @@ public class PaymentService : IPaymentService
             return jsonResponse;
         }
 
-        return new OrderResponse(); ;
+        return new OrderResponse();
 
     }
 
-    public async Task<object> Pay()
+    public async Task<Response<object>> Pay(Order order)
     {
 
         var orderUrl = "https://accept.paymob.com/api/acceptance/payment_keys";
@@ -90,25 +97,35 @@ public class PaymentService : IPaymentService
         restRequest.AddHeader("Content-Type", "application/json");
 
 
-        var Order = await OrderRegistration();
+        var Order = await OrderRegistration(order);
 
         int integrationId;
         if (!int.TryParse(_config["PayMob:IntegrationId"], out integrationId))
         {
-            return "Integration ID is not a valid integer";
+            return new Response<object>
+            {
+                isError = true,
+                Errors = new List<string> { "Invalid Integration ID" },
+                Message = "Failed to get payment key"
+            };
         }
+
+        var customer = order.Customer;
+        var orderPriceInCents = order.TotalPrice * 100;
 
         var requestBody = new PaymentKeyRequest()
         {
             auth_token = await GetAuthToken(),
-            amount_cents = "100",
+            amount_cents = orderPriceInCents.ToString(),
             expiration = 3600,
             order_id = Order.OrderId,
             billing_data = new BillingData
             {
-                first_name = "John",
-                last_name = "Doe",
-                email = "customer@gmail.com"
+                first_name = customer.FirstName,
+                last_name = customer.LastName,
+                email = customer.Email,
+                phone_number = customer.PhoneNumber,
+                street = customer.Address,
             },
             currency = "EGP",
             integration_id = integrationId,
@@ -123,10 +140,23 @@ public class PaymentService : IPaymentService
 
             string paymentFrameUrl = _config["PayMob:Frame"];
             string paymentUrl = paymentFrameUrl.Replace("{payment_key_obtained_previously}", jsonResponse.Token);
-            return paymentUrl;
+            return new Response<object>
+            {
+                isError = false,
+                Message = "Success",
+                Payload = new
+                {
+                    PaymentUrl = paymentUrl
+                }
+            };
         }
 
-        return "Failed to get payment key";
+        return new Response<object>
+        {
+            isError = true,
+            Errors = new List<string> { "Failed to get payment key" },
+            Message = "Failed to get payment key"
+        };
 
     }
 
@@ -155,6 +185,10 @@ public class PaymentService : IPaymentService
                 Message = "Failed proccess"
             };
         }
+
+        var orderId = transaction.Obj.order.merchant_order_id;
+
+        await _handlePayment.validateOrder(orderId, transaction.Obj.success);
 
         return new Response<object>
         {
@@ -283,4 +317,5 @@ public class PaymentService : IPaymentService
 
         return dictionary;
     }
+
 }

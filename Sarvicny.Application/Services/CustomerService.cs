@@ -2,14 +2,12 @@
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.CartSpecifications;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
-using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
-using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
@@ -23,14 +21,14 @@ namespace Sarvicny.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly ICartRepository _cartRepository;
-
+        private readonly IPaymentService _paymentService;
         private readonly IOrderService _orderService;
         private readonly IServiceProviderService _serviceProvider;
 
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService,IServiceProviderService serviceProvider)
+            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -40,7 +38,8 @@ namespace Sarvicny.Application.Services
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
             _orderService = orderService;
-            _serviceProvider= serviceProvider;
+            _serviceProvider = serviceProvider;
+            _paymentService = paymentService;
         }
         public async Task<Response<object>> RequestService(RequestServiceDto requestServiceDto, string customerId)
         {
@@ -119,7 +118,7 @@ namespace Sarvicny.Application.Services
 
             var cart = customer.Cart;
 
-            if ( cart is null)
+            if (cart is null)
             {
                 customer.Cart = new Cart
                 {
@@ -128,21 +127,21 @@ namespace Sarvicny.Application.Services
                     Customer = customer
                 };
             }
-            var cartRequest= cart.ServiceRequests.ToList();
+            var cartRequest = cart.ServiceRequests.ToList();
             foreach (var request in cartRequest)  //check not already in cart
             {
 
 
-                if(requestServiceDto.ServiceId== request.providerService.ServiceID && requestServiceDto.ProviderId== request.providerService.ProviderID && slotExist.TimeSlotID == request.SlotID)
+                if (requestServiceDto.ServiceId == request.providerService.ServiceID && requestServiceDto.ProviderId == request.providerService.ProviderID && slotExist.TimeSlotID == request.SlotID)
                 {
                     return new Response<object>
                     {
                         isError = true,
-                        
+
                         Status = "Error",
                         Message = "Request is already Found in the cart",
                     };
-                }         
+                }
 
             }
 
@@ -310,7 +309,7 @@ namespace Sarvicny.Application.Services
             var requestedServices = cart.ServiceRequests.Select(s => new
             {
                 s.ServiceRequestID,
-               providerId = s.providerService.Provider.Id,
+                providerId = s.providerService.Provider.Id,
                 s.providerService.Provider.FirstName,
                 s.providerService.Provider.LastName,
                 s.providerService.Service.ServiceID,
@@ -323,8 +322,8 @@ namespace Sarvicny.Application.Services
                 s.Slot.StartTime,
                 s.Price,
                 s.ProblemDescription,
-                
-                
+
+
             });
 
 
@@ -348,6 +347,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> OrderCart(string customerId)
         {
+            #region validation_for_Data
             var spec = new CustomerWithCartSpecification(customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
             if (customer == null)
@@ -384,6 +384,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
+            #endregion
 
             var totalPrice = serviceRequests.Sum(s => s.providerService.Price);
 
@@ -397,88 +398,84 @@ namespace Sarvicny.Application.Services
             };
 
             var order = await _orderRepository.AddOrder(newOrder);
+            var orderRequests = serviceRequests;
 
-            var orderRequests = new List<ServiceRequest>();
-            
-            foreach (var serviceRequest in serviceRequests)
+            foreach (var request in orderRequests)
             {
-                var newRequest = new ServiceRequest();
-                newRequest.ProviderServiceID = serviceRequest.ProviderServiceID;
-                newRequest.providerService = serviceRequest.providerService;
-                newRequest.Price = serviceRequest.Price;
-                newRequest.Slot = serviceRequest.Slot;
-                newRequest.SlotID = serviceRequest.SlotID;
-                newRequest.AddedTime = serviceRequest.AddedTime;
-                newRequest.OrderId = order.OrderID;
-                newRequest.CartID = null;
-                newRequest.Cart = null;
-                newRequest.ProblemDescription = serviceRequest.ProblemDescription;
-
-                
-                await _customerRepository.AddRequest(newRequest);
-                orderRequests.Add(newRequest);
-
-                var specProvider = new ProviderWithAvailabilitesSpecification(serviceRequest.providerService.ProviderID);
-                var provider = await _providerRepository.FindByIdAsync(specProvider);
-
-                var slots = provider.Availabilities.SelectMany(p => p.Slots);
-
-                var slotExist = slots.SingleOrDefault(s => s.TimeSlotID == serviceRequest.SlotID);
-                slotExist.enable = false;
-
-                await _customerRepository.RemoveRequest(serviceRequest);
-
+                request.OrderId = order.OrderID;
             }
-            // serviceRequests = await _orderRepository.SetOrderToServiceRequest(serviceRequests, order);
-
 
             order.ServiceRequests = orderRequests;
 
-  
+            _unitOfWork.Commit();
+            var response = await _paymentService.Pay(order);
+
+            return response;
+
+            //foreach (var serviceRequest in serviceRequests)
+            //{
+            //    var newRequest = new ServiceRequest();
+            //    newRequest.ProviderServiceID = serviceRequest.ProviderServiceID;
+            //    newRequest.providerService = serviceRequest.providerService;
+            //    newRequest.Price = serviceRequest.Price;
+            //    newRequest.Slot = serviceRequest.Slot;
+            //    newRequest.SlotID = serviceRequest.SlotID;
+            //    newRequest.AddedTime = serviceRequest.AddedTime;
+            //    newRequest.OrderId = order.OrderID;
+            //    newRequest.CartID = null;
+            //    newRequest.Cart = null;
+            //    newRequest.ProblemDescription = serviceRequest.ProblemDescription;
+
+
+            //    await _customerRepository.AddRequest(newRequest);
+            //    orderRequests.Add(newRequest);
+
+            //    var specProvider = new ProviderWithAvailabilitesSpecification(serviceRequest.providerService.ProviderID);
+            //    var provider = await _providerRepository.FindByIdAsync(specProvider);
+
+            //    var slots = provider.Availabilities.SelectMany(p => p.Slots);
+
+            //    var slotExist = slots.SingleOrDefault(s => s.TimeSlotID == serviceRequest.SlotID);
+            //    slotExist.enable = false;
+
+            //    await _customerRepository.RemoveRequest(serviceRequest);
+
+            //}
+
+            // serviceRequests = await _orderRepository.SetOrderToServiceRequest(serviceRequests, order);
+
+
+
             //await _customerRepository.EmptyCart(cart);
 
-            cart.ServiceRequests = null;
-
-            _unitOfWork.Commit();
-
-            var spec2 = new OrderWithRequestsSpecification(order.OrderID);
-
-            var orders = await _orderRepository.GetOrder(spec2);
 
 
-            var result = new
-            {
-                order.OrderID,
-                order.CustomerID,
-                order.OrderStatusID,
-                order.OrderStatus.StatusName,
-                order.TotalPrice,
-                details = order.ServiceRequests.Select(s => new
-                {
-                    s.ServiceRequestID,
-                    s.SlotID,
-                    s.Slot.StartTime,
-                    s.providerService.Provider.Id,
-                    Provider = s.providerService.Provider.FirstName,
-                    s.providerService.Service.ServiceID,
-                    s.providerService.Service.ServiceName,
-                    s.Price,
-                    s.ProblemDescription,
+            //cart.ServiceRequests = null;
+            //var spec2 = new OrderWithRequestsSpecification(order.OrderID);
+
+            //var orders = await _orderRepository.GetOrder(spec2);
 
 
-                }),
-                
-
-
-            };
-
-            return new Response<object>()
-            {
-                Payload = result,
-                Message = "Success",
-                isError = false
-
-            };
+            //var result = new
+            //{
+            //    order.OrderID,
+            //    order.CustomerID,
+            //    order.OrderStatusID,
+            //    order.OrderStatus.StatusName,
+            //    order.TotalPrice,
+            //    details = order.ServiceRequests.Select(s => new
+            //    {
+            //        s.ServiceRequestID,
+            //        s.SlotID,
+            //        s.Slot.StartTime,
+            //        s.providerService.Provider.Id,
+            //        Provider = s.providerService.Provider.FirstName,
+            //        s.providerService.Service.ServiceID,
+            //        s.providerService.Service.ServiceName,
+            //        s.Price,
+            //        s.ProblemDescription,
+            //    }),
+            //};
         }
 
         public async Task<Response<object>> ShowCustomerProfile(string customerId)

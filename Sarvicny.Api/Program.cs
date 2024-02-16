@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +70,7 @@ var builder = WebApplication.CreateBuilder(args);
         //  options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;  
     });
 
-    
+
 
     builder.Services.AddSingleton(Configuration);
     builder.Services.AddApplication();
@@ -81,7 +80,7 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 {
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
-    
+
     using (var scope = app.Services.CreateScope())
     {
         try
@@ -100,7 +99,7 @@ var app = builder.Build();
                 //dbContext.Database.Migrate(); // Apply pending migrations
             }
 
-            await AppDbContextSeed.SeedData(userManager, roleManager, context , serviceProviderRepository);
+            await AppDbContextSeed.SeedData(userManager, roleManager, context, serviceProviderRepository);
         }
         catch (Exception ex)
         {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services;
+using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 
 namespace Sarvicny.Application;
@@ -18,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IServiceProviderService, ServiceProviderService>();
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IHandlePayment, HandlePayment>();
 
         return services;
     }

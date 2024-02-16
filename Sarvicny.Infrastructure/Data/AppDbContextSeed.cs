@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
@@ -15,15 +14,15 @@ namespace Sarvicny.Infrastructure.Data
     public static class AppDbContextSeed
     {
         public static async Task SeedData(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
-            AppDbContext context , IServiceProviderRepository serviceProviderRepository)
+            AppDbContext context, IServiceProviderRepository serviceProviderRepository)
         {
             await SeedRoles(roleManager);
             await SeedOrderStatus(context);
-            await SeedAdmin(userManager, context , roleManager);
+            await SeedAdmin(userManager, context, roleManager);
             await SeedData(context, userManager, serviceProviderRepository);
         }
 
-        private static async Task SeedAdmin(UserManager<User> userManager, AppDbContext context , RoleManager<IdentityRole> roleManager)
+        private static async Task SeedAdmin(UserManager<User> userManager, AppDbContext context, RoleManager<IdentityRole> roleManager)
         {
             if (!context.Admins.Any())
             {
@@ -44,7 +43,7 @@ namespace Sarvicny.Infrastructure.Data
 
         private static async Task SeedData(AppDbContext context, UserManager<User> userManager,
             IServiceProviderRepository serviceProviderRepository)
-       
+
         {
             // Seed Worker data
             var workerData = new Worker
@@ -56,9 +55,9 @@ namespace Sarvicny.Infrastructure.Data
                 PhoneNumber = "WORKER",
                 NationalID = "WORKER",
                 CriminalRecord = "WORKER",
-                IsVerified=true,
+                IsVerified = true,
             };
-            
+
 
             // Seed Customer data
             var customerData = new Customer
@@ -87,10 +86,10 @@ namespace Sarvicny.Infrastructure.Data
                     Customer = customerData,
                     LastChangeTime = DateTime.Now
                 };
-                
+
                 customerData.Cart = cart;
                 customerData.CartID = cart.CartID;
-                
+
                 await userManager.CreateAsync(customerData, "Customer123#");
                 await userManager.AddToRoleAsync(customerData, "Customer");
                 await userManager.AddClaimAsync(customerData, new Claim("UserType", "Customer"));
@@ -158,7 +157,7 @@ namespace Sarvicny.Infrastructure.Data
                     }
                 }
             };
-            
+
             if (!context.ProviderAvailabilities.Any())
             {
                 var providerAvailability = await serviceProviderRepository.AddAvailability(avail, new BaseSpecifications<Provider>());
@@ -209,16 +208,21 @@ namespace Sarvicny.Infrastructure.Data
                     new OrderStatus
                     {
                         OrderStatusID = "3",
-                        StatusName = "Rejected"
+                        StatusName = "Paid"
                     },
                     new OrderStatus
                     {
                         OrderStatusID = "4",
-                        StatusName = "Canceled"
+                        StatusName = "Rejected"
                     },
                     new OrderStatus
                     {
                         OrderStatusID = "5",
+                        StatusName = "Canceled"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "6",
                         StatusName = "Completed"
                     }
                 };

@@ -86,7 +86,8 @@ namespace Sarvicny.Infrastructure.Data
             builder.Entity<Order>()
                 .HasOne(o => o.Customer)
                 .WithMany(c => c.Orders)
-                .HasForeignKey(o => o.CustomerID);
+                .HasForeignKey(o => o.CustomerID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Order>()
                 .HasOne(o => o.OrderStatus)

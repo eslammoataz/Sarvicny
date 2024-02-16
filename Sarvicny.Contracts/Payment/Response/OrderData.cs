@@ -1,4 +1,6 @@
-﻿namespace Sarvicny.Contracts.Payment.Response
+﻿using Newtonsoft.Json;
+
+namespace Sarvicny.Contracts.Payment.Response
 {
     public class OrderData
     {
@@ -16,6 +18,9 @@
         public bool IsCancel { get; set; }
         public bool IsReturned { get; set; }
         public bool IsCanceled { get; set; }
+
+        [JsonProperty("merchant_order_id")]
+        public string merchant_order_id { get; set; }
         public object MerchantOrderId { get; set; }
         public object WalletNotification { get; set; }
         public int PaidAmountCents { get; set; }

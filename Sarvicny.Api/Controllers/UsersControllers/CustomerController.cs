@@ -39,7 +39,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 FirstName = registrationDto.FirstName,
             };
 
-            var Response = await _authenticationService.Register(user, role,registrationDto.UserType, registrationDto.Password);
+            var Response = await _authenticationService.Register(user, role, registrationDto.UserType, registrationDto.Password);
 
             if (Response.isError)
                 return BadRequest(Response);

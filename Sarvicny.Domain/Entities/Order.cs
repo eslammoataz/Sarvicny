@@ -1,11 +1,6 @@
-﻿using Sarvicny.Domain.Entities.Users;
-using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Sarvicny.Domain.Entities.Users;
 
 namespace Sarvicny.Domain.Entities
 {
@@ -16,11 +11,9 @@ namespace Sarvicny.Domain.Entities
         public string OrderID { get; set; }
         public string CustomerID { get; set; }
         public string OrderStatusID { get; set; }
-        
+
         public List<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
         public decimal? TotalPrice { get; set; }
-
-        //public DateTime? OrderDate { get; set; }
 
         [ForeignKey("CustomerID")]
         public Customer Customer { get; set; }
@@ -29,6 +22,8 @@ namespace Sarvicny.Domain.Entities
         public OrderStatus OrderStatus { get; set; }
 
         public DateTime OrderDate { get; set; }
+
+        public bool IsPaid { get; set; }
 
     }
 }
