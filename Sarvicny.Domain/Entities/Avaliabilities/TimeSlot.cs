@@ -16,6 +16,7 @@ namespace Sarvicny.Domain.Entities.Avaliabilities
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
 
+       
         public TimeSpan? Duration => EndTime - StartTime;
 
         public bool? enable { get; set; }

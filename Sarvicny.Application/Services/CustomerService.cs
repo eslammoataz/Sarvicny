@@ -24,11 +24,12 @@ namespace Sarvicny.Application.Services
         private readonly IPaymentService _paymentService;
         private readonly IOrderService _orderService;
         private readonly IServiceProviderService _serviceProvider;
+        private readonly IDistrictRepository _districtRepository;
 
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService)
+            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService,IDistrictRepository districtRepository)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -39,13 +40,14 @@ namespace Sarvicny.Application.Services
             _cartRepository = cartRepository;
             _orderService = orderService;
             _serviceProvider = serviceProvider;
+            _districtRepository = districtRepository;
             _paymentService = paymentService;
         }
         public async Task<Response<object>> RequestService(RequestServiceDto requestServiceDto, string customerId)
         {
             requestServiceDto.RequestDay = requestServiceDto.RequestDay.Date;
 
-            var spec = new ProviderWithServicesAndAvailabilitiesSpecification(requestServiceDto.ProviderId);
+            var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(requestServiceDto.ProviderId);
             var provider = await _providerRepository.FindByIdAsync(spec);
 
             if (provider == null)
@@ -77,6 +79,25 @@ namespace Sarvicny.Application.Services
                 {
                     isError = true,
                     Errors = new List<string> { "This Worker is not Registered for the Service" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+
+            var district = await _districtRepository.GetDistrictById(requestServiceDto.DistrictID);
+            if (district == null)
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "district not found" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            var providerDistrict = provider.ProviderDistricts.SingleOrDefault(d => d.DistrictID == requestServiceDto.DistrictID);
+            if (providerDistrict == null)
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "This Worker is not Registered for the district" },
                     Status = "Error",
                     Message = "Failed",
                 };
@@ -149,6 +170,7 @@ namespace Sarvicny.Application.Services
             {
                 AddedTime = DateTime.UtcNow,
                 providerService = providerService,
+                providerDistrict = providerDistrict,
                 Slot = slotExist,
                 SlotID = slotExist.TimeSlotID,
                 CartID = customer.Cart.CartID,
@@ -167,6 +189,7 @@ namespace Sarvicny.Application.Services
                 RequestId = newRequest.ServiceRequestID,
                 RequestDay = requestServiceDto.RequestDay,
                 RequestTime = slotExist.StartTime,
+                District=providerDistrict.District.DistrictName,
                 ServiceName = service.ServiceName,
                 ProviderName = provider.FirstName + " " + provider.LastName,
                 Price = providerService.Price,
@@ -228,6 +251,7 @@ namespace Sarvicny.Application.Services
                     ServiceRequestID = requestId,
                     serviceRequest.SlotID,
                     serviceRequest.AddedTime
+                    
 
 
                 };
@@ -320,6 +344,8 @@ namespace Sarvicny.Application.Services
                 s.providerService.Service.Criteria?.CriteriaName,
                 s.SlotID,
                 s.Slot.StartTime,
+                s.providerDistrict.DistrictID,
+                s.providerDistrict.District.DistrictName,
                 s.Price,
                 s.ProblemDescription,
 

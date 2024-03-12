@@ -95,7 +95,7 @@ namespace Sarvicny.Infrastructure.Data
                 await userManager.AddClaimAsync(customerData, new Claim("UserType", "Customer"));
 
             }
-
+          
             // Seed Criteria data
             var criteriaData = new Criteria
             {

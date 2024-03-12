@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Sarvicny.Contracts.Dtos
 {
     public class RegisterWorkerDto : RegisterDto
@@ -15,6 +16,8 @@ namespace Sarvicny.Contracts.Dtos
 
         [Required(ErrorMessage = "Criminal Record is Required")]
         public string CriminalRecord { get; set; }
+
+
         //image (fesh we tashbeh)
         //service 
     }

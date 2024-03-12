@@ -20,6 +20,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<ICollection<Provider>> GetAllServiceProviders(ISpecifications<Provider> spec);
         Task<ICollection<Provider>> GetProvidersRegistrationRequest(ISpecifications<Provider> spec);
+
+        
        
     }
 }

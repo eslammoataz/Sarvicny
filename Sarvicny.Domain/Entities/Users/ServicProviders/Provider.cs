@@ -14,7 +14,8 @@ public abstract class Provider : User
 
     public List<ProviderService> ProviderServices { get; set; }
     public List<ProviderAvailability> Availabilities { get; set; } // Make sure this property is present
-    //list<Service>
+    public List<ProviderDistrict> ProviderDistricts { get; set; }
+    
     //image (profile)
     //image (license)
 }

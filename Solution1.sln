@@ -1,14 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarvicny.Api", "Sarvicny.Api\Sarvicny.Api.csproj", "{0D98FD3C-106F-4285-91F7-34A2409A3B2F}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarvicny.Api", "Sarvicny.Api\Sarvicny.Api.csproj", "{0D98FD3C-106F-4285-91F7-34A2409A3B2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarvicny.Application", "Sarvicny.Application\Sarvicny.Application.csproj", "{DB84666A-A581-44AA-942C-39142A633BD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarvicny.Application", "Sarvicny.Application\Sarvicny.Application.csproj", "{DB84666A-A581-44AA-942C-39142A633BD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarvicny.Contracts", "Sarvicny.Contracts\Sarvicny.Contracts.csproj", "{2F9078C3-1357-4FB0-B9F2-68D5E8B0576E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarvicny.Contracts", "Sarvicny.Contracts\Sarvicny.Contracts.csproj", "{2F9078C3-1357-4FB0-B9F2-68D5E8B0576E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarvicny.Domain", "Sarvicny.Domain\Sarvicny.Domain.csproj", "{4A678814-616B-44FC-B0CD-30D2EBFA0C6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarvicny.Domain", "Sarvicny.Domain\Sarvicny.Domain.csproj", "{4A678814-616B-44FC-B0CD-30D2EBFA0C6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarvicny.Infrastructure", "Sarvicny.Infrastructure\Sarvicny.Infrastructure.csproj", "{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarvicny.Infrastructure", "Sarvicny.Infrastructure\Sarvicny.Infrastructure.csproj", "{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +39,11 @@ Global
 		{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {75057344-EC1C-4B22-ADB2-79D50F29CEE5}
 	EndGlobalSection
 EndGlobal

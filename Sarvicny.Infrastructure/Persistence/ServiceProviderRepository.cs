@@ -93,11 +93,14 @@ namespace Sarvicny.Infrastructure.Persistence
                 ServiceProviderID = provider.Id,
                 DayOfWeek = availabilityDto.DayOfWeek,
                 AvailabilityDate = availabilityDto.AvailabilityDate,
-                ServiceProvider = provider
+                ServiceProvider = provider,
+                
+                
             };
 
             List<TimeSlot> timeSlots = await ConvertToTimeSlot(availabilityDto.Slots, providerAvailability);
             providerAvailability.Slots = timeSlots;
+            
             _context.ProviderAvailabilities.Add(providerAvailability);
 
             provider.Availabilities.Add(providerAvailability);
@@ -166,7 +169,10 @@ namespace Sarvicny.Infrastructure.Persistence
             return await ApplySpecification(spec).ToListAsync();
         }
 
-       
+
+
+
+
     }
 
 }

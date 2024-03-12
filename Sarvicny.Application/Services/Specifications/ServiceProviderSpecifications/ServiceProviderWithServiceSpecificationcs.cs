@@ -11,12 +11,13 @@ namespace Sarvicny.Application.Services.Specifications.ServiceProviderSpecificat
         {
             AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
-
+           // AddInclude($"{nameof(Provider.ProviderDistricts)}.{nameof(ProviderDistrict.District)}");
         }
         public ServiceProviderWithServiceSpecificationcs(string providerId):base(p=>p.Id==providerId)
         {
             AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
+            //AddInclude($"{nameof(Provider.ProviderDistricts)}.{nameof(ProviderDistrict.District)}");
         }
     }
 }

@@ -10,5 +10,7 @@ namespace Sarvicny.Domain.Entities.Avaliabilities
     {
         public string startTime { get; set; }
         public string endTime { get; set; }
+
+        
     }
 }

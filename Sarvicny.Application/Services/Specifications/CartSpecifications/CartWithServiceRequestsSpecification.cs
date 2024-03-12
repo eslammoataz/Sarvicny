@@ -12,6 +12,7 @@ public class CartWithServiceRequestsSpecification : BaseSpecifications<Cart>
         AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
         AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
         AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
+        AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
     }
 
     public CartWithServiceRequestsSpecification(string cartId) : base(c => c.CartID == cartId)
@@ -22,6 +23,7 @@ public class CartWithServiceRequestsSpecification : BaseSpecifications<Cart>
         AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
         AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
         AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
+        AddInclude($"{nameof(Cart.ServiceRequests)}.{nameof(ServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
 
     }
 

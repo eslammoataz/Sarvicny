@@ -21,12 +21,15 @@ namespace Sarvicny.Application.Services
         private readonly IServiceProviderRepository _serviceProviderRepository;
         private readonly ICustomerRepository _customerRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IDistrictRepository _districtRepository;
         private readonly IEmailService _emailService;
 
         private IOrderService _orderService;
 
+        
 
-        public ServiceProviderService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IOrderRepository orderRepository, ICustomerRepository customerRepository, IOrderService orderService, IEmailService emailService)
+
+        public ServiceProviderService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IOrderRepository orderRepository, ICustomerRepository customerRepository, IOrderService orderService, IEmailService emailService,IDistrictRepository districtRepository)
         {
             _serviceRepository = serviceRepository;
             _userRepository = userRepository;
@@ -36,10 +39,11 @@ namespace Sarvicny.Application.Services
             _customerRepository = customerRepository;
             _orderService = orderService;
             _emailService = emailService;
+            _districtRepository = districtRepository;
         }
         public async Task<Response<object>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
         {
-            var spec1 = new ProviderWithServicesAndAvailabilitiesSpecification(workerId);
+            var spec1 = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(workerId);
 
             var worker = await _serviceProviderRepository.FindByIdAsync(spec1);
             var spec = new ServiceWithProvidersSpecification(serviceId);
@@ -596,7 +600,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> ShowProviderProfile(string providerId)
         {
-            var spec = new ProviderWithServicesAndAvailabilitiesSpecification(providerId);
+            var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(providerId);
             var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
             if (serviceProvider == null)
             {
@@ -608,8 +612,6 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-
-
 
             var services = serviceProvider.ProviderServices.Select(p => p.Service);
             var servicesAsObject = services.Select(s => new
@@ -683,6 +685,143 @@ namespace Sarvicny.Application.Services
             };
         }
 
+        public async Task<Response<object>> AddDistrictToProvider(string providerId, string districtName)
+        {
+            var spec = new ProviderWithDistrictsSpecification(providerId);
+            var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
+            if (serviceProvider == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Provider Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            var district = await _districtRepository.GetDistrictByName(districtName);
+            if(district == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "District Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            if(district.Availability==false)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "District is Not Available",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            if(serviceProvider.ProviderDistricts.Any(d=>d.District==district))
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "District is already Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            var districts = new ProviderDistrict()
+            {
+                Provider=serviceProvider,
+                ProviderID=providerId,
+                District=district,
+                DistrictID=district.DistrictID,
+                enable=true
 
+            };
+            var providerDistrict= await _districtRepository.AddDistrictToProvider(districts);
+            serviceProvider.ProviderDistricts.Add(districts);
+            _unitOfWork.Commit();
+            return new Response<object>()
+            {
+                Status = "success",
+                Message = "District added succesfully to provider",
+                Payload = serviceProvider,
+                isError = false
+            };
+
+        }
+
+        public async Task<Response<object>> GetProviderDistricts(string providerId)
+        {
+            var spec = new ProviderWithDistrictsSpecification(providerId);
+            var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
+            if (serviceProvider == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Provider Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            var districts = serviceProvider.ProviderDistricts.Select(d => new
+            {
+                d.DistrictID,
+                d.District.DistrictName,
+                d.enable
+
+
+            }).ToList<object>();
+
+            if (districts.Any())
+            {
+                return new Response<object>()
+                {
+                    Status = "success",
+                    Payload = districts,
+                    isError = false
+                };
+            }
+            return new Response<object>()
+            {
+                Status = "failed",
+                Message = "No districts found to this provider",
+                Payload = null,
+                isError = true
+            };
+        }
+
+        //public async Task<Response<object>> RequestNewDistrictToBeAdded(string districtName)
+        //{
+        //    var districtExist = await _districtRepository.GetDistrictByName(districtName);
+        //    if (districtExist != null)
+        //    {
+        //        return new Response<object>()
+        //        {
+        //            Status = "failed",
+        //            Message = " District is already Found",
+        //            Payload = null,
+        //            isError = true
+        //        };
+        //    }
+        //    var district = new District()
+        //    {
+        //        DistrictName = districtName,
+        //        Availability = false,
+
+        //    };
+        //    var added= await _districtRepository.AddDistrict(district);
+
+        //    return new Response<object>()
+        //    {
+        //        Status = "success",
+                
+        //        Payload = added,
+        //        isError = false
+        //    };
+
+        //}
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 
 
@@ -17,4 +18,9 @@ public interface IAdminService
     Task<Response<List<object>>> getAllApprovededOrders();
     Task<Response<bool>> BlockServiceProvider(string workerId);
     Task<Response<bool>> UnBlockServiceProvider(string workerId);
+    Task<Response<List<object>>>GetAllAvailableDistricts();
+    Task<Response<List<object>>> GetAllRequestedDistricts();
+
+    Task<Response<District>> AddDistrict(District district);
+    
 }

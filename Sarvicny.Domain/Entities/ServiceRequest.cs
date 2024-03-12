@@ -25,6 +25,15 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("SlotID")]
         public TimeSlot Slot { get; set; }
 
+
+
+        public string ProviderDistrictID { get; set; } = default!;
+
+        [ForeignKey("ProviderDistrictID")]
+        public ProviderDistrict providerDistrict { get; set; }
+
+
+
         [ForeignKey("OrderId")]
         public string? OrderId { get; set; }
 

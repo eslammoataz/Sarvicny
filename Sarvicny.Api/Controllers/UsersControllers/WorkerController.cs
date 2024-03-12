@@ -28,6 +28,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("register")]
         public async Task<IActionResult> Register(RegisterWorkerDto registrationDto, string role)
         {
+
             var user = new Worker()
             {
                 Email = registrationDto.Email,
@@ -37,6 +38,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 FirstName = registrationDto.FirstName,
                 CriminalRecord = registrationDto.CriminalRecord,
                 NationalID = registrationDto.NationalID,
+                
                 IsVerified = false,
                 //photos
             };

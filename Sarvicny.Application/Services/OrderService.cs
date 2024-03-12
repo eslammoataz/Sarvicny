@@ -58,6 +58,9 @@ namespace Sarvicny.Application.Services
                     s.providerService.Service.Criteria?.CriteriaName,
                     s.SlotID,
                     s.Slot.StartTime,
+                    s.providerDistrict.DistrictID,
+                    s.providerDistrict.District.DistrictName,
+
                     s.Price,
                     s.ProblemDescription
                 }).ToList<object>(),
@@ -106,6 +109,8 @@ namespace Sarvicny.Application.Services
                     s.providerService.Service.Criteria?.CriteriaName,
                     s.SlotID,
                     s.Slot.StartTime,
+                    s.providerDistrict.DistrictID,
+                    s.providerDistrict.District.DistrictName,
                     s.Price,
                     s.ProblemDescription
                 }).ToList<object>(),
@@ -160,6 +165,8 @@ namespace Sarvicny.Application.Services
                     s.providerService.Service.Criteria?.CriteriaName,
                     s.SlotID,
                     s.Slot.StartTime,
+                    s.providerDistrict.DistrictID,
+                    s.providerDistrict.District.DistrictName,
                     s.Price,
                      s.ProblemDescription
                 }).ToList<object>(),

@@ -14,6 +14,7 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
             AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
             AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
+            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
 
         }
         public OrderWithRequestsSpecification(string orderId) : base(o => o.OrderID == orderId)
@@ -24,6 +25,7 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
             AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
             AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
+            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
         }
     }
 

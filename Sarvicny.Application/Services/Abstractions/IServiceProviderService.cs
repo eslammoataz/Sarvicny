@@ -29,6 +29,11 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<List<object>>> getAllRequestedOrders(string workerId);
         Task<Response<object>> getRegisteredServices(string providerId);
         Task<Response<object>> ShowProviderProfile(string workerId);
+
+        Task<Response<object>> AddDistrictToProvider(string providerId,string District);
+
+        Task<Response<object>> GetProviderDistricts(string providerId);
+       // Task<Response<object>> RequestNewDistrictToBeAdded(string districtName);
        
 
 

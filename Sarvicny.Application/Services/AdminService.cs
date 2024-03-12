@@ -6,6 +6,7 @@ using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
@@ -22,12 +23,13 @@ public class AdminService : IAdminService
     private readonly UserManager<User> _userManager;
     private readonly IEmailService _emailService;
     private readonly IOrderRepository _orderRepository;
+    private readonly IDistrictRepository _districtRepository;
 
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly IOrderService _orderService;
 
-    public AdminService(UserManager<User>userManager ,IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService,IOrderService orderService)
+    public AdminService(UserManager<User>userManager ,IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService,IOrderService orderService, IDistrictRepository districtRepository)
     {
         _userManager = userManager;
         _serviceRepository = serviceRepository;
@@ -38,6 +40,7 @@ public class AdminService : IAdminService
         _orderRepository = orderRepository;
         _emailService = emailService;
         _orderService = orderService;
+        _districtRepository = districtRepository;
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -82,6 +85,14 @@ public class AdminService : IAdminService
                 p.Service.ServiceName
 
             }).ToList<object>(),
+            districts = c.ProviderDistricts.Select(d => new
+            {
+                d.DistrictID,
+               d.District.DistrictName,
+               d.enable
+
+
+            }).ToList(),
 
         }).ToList<object>();
 
@@ -208,13 +219,16 @@ public class AdminService : IAdminService
                 s.Service.ServiceName,
 
                 s.Service.ParentServiceID,
-                parentServiceName=s.Service.ParentService?.ServiceName,
+                parentServiceName = s.Service.ParentService?.ServiceName,
                 s.Service.CriteriaID,
                 s.Service.Criteria?.CriteriaName
-            }).ToList()
+            }).ToList(),
 
-
-
+            //districts=p.ProviderDistricts.Select(d => new
+            //{
+            //    d.DistrictID, d.District.DistrictName,
+                
+            //}).ToList(),
         }).ToList<object>();
 
 
@@ -415,5 +429,58 @@ public class AdminService : IAdminService
             isError = false
 
         };
+
     }
+
+    public async Task<Response<District>> AddDistrict(District district)
+    {
+        var added= await _districtRepository.AddDistrict(district);
+        _unitOfWork.Commit();
+        
+        return new Response<District>()
+        {
+            Status = "Success",
+            Message = "District added succesfully",
+            Payload = added,
+            isError = false
+
+        };
+
+    }
+    public async Task<Response<List<object>>> GetAllAvailableDistricts()
+    {
+        var districts = await _districtRepository.GetAllDistricts();
+        var available = districts.Where(d => d.Availability == true).ToList<object>();
+        if (available.Count == 0) {
+            return new Response<List<object>>()
+            {
+                Status = "failed",
+                Message = "no Available Districts",
+                Payload = null,
+                isError = true
+
+            };
+        }
+        return new Response<List<object>>()
+        {
+            Status = "Success",
+           
+            Payload = available,
+            isError = false
+
+        };
+
+
+    }
+
+    public Task<Response<List<object>>> GetAllRequestedDistricts()
+    {
+        throw new NotImplementedException();
+    }
+
+    //public Task<Response<List<object>>> GetAllRequestedDistricts()
+    //{
+    //}
+
+
 }

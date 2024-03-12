@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 
 
@@ -130,6 +131,48 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
+        [HttpPost]
+        [Route("AddDistrict")]
+        public async Task<IActionResult> AddDistrict(string providerId, string districtName)
+        {
+            var response = await _serviceProviderService.AddDistrictToProvider(providerId, districtName);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        //[HttpPost]
+        //[Route("RequestDistrict")]
+        //public async Task<IActionResult> RequestNewDistrictToBeAdded(string districtName)
+        //{
+        //    var response = await _serviceProviderService.RequestNewDistrictToBeAdded(districtName);
+
+        //    if (response.isError)
+        //    {
+        //        return BadRequest(response);
+        //    }
+
+        //    return Ok(response);
+        //}
+
+        //[HttpGet("getProviderDistricts/{providerid}")]
+        //public async Task<IActionResult> GetProviderDistricts(string providerID)
+        //{
+        //    var response = await _serviceProviderService.GetProviderDistricts(providerID);
+
+        //    if (response.isError)
+        //    {
+        //        return NotFound(response);
+        //    }
+
+
+        //    return Ok(response);
+        //}
+
         [HttpGet("getAllOrders")]
         public async Task<IActionResult> getAllOrders(string providerID)
         {
@@ -198,6 +241,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
 
         }
+
+
     }
 
 }

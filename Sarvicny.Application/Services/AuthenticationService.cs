@@ -8,10 +8,13 @@ using Sarvicny.Application.Common.Interfaces.Authentication;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
+using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Authentication;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
+using Sarvicny.Domain.Specification;
 
 
 namespace Sarvicny.Application.Services
@@ -27,13 +30,14 @@ namespace Sarvicny.Application.Services
         private readonly IRoleRepository _roleRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IServiceProviderRepository _serviceProviderRepository;
 
 
 
         public AuthenticationService(IConfiguration config, IEmailService emailService,
                 IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator,
                 IJwtTokenGenerator jwtTokenGenerator, IRoleRepository roleRepository, IUserRepository userRepository
-                , IUnitOfWork unitOfWork, ILogger<AuthenticationService> logger, ICustomerRepository customerRepository)
+                , IUnitOfWork unitOfWork, ILogger<AuthenticationService> logger, ICustomerRepository customerRepository, IServiceProviderRepository serviceProviderRepository)
         {
             JwtTokenGenerator = jwtTokenGenerator;
             _config = config;
@@ -44,6 +48,7 @@ namespace Sarvicny.Application.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _customerRepository = customerRepository;
+            _serviceProviderRepository = serviceProviderRepository;
         }
 
 
@@ -97,15 +102,11 @@ namespace Sarvicny.Application.Services
                 }
                 _unitOfWork.Commit();
             }
-            else
-            {
-                await _userRepository.AddUserClaims(user, new()
+
+            await _userRepository.AddUserClaims(user, new()
                 {
                     new Claim("UserType", userType)
                 });
-
-
-            }
 
 
             List<Claim> claims = new()
@@ -154,6 +155,22 @@ namespace Sarvicny.Application.Services
 
 
             var roles = await _userRepository.GetRolesAsync(user);
+
+            if (roles.FirstOrDefault() == "ServiceProvider")
+            {
+                var spec = new ProviderWithAvailabilitesSpecification(user.Id);
+                var provider = await _serviceProviderRepository.FindByIdAsync(spec);
+                if (provider.IsVerified == false || provider.IsBlocked == true)
+                {
+                    response.Status = "Failed";
+                    response.isError = true;
+                    response.Errors.Add("not verified or blocked");
+                    response.Message = "User is not verified ";
+                    response.Payload = null;
+                    return response;
+                }
+
+            }
 
             List<Claim> claims = new()
             {

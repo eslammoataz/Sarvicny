@@ -43,6 +43,8 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IDistrictRepository, DistrictRepository>();
+
         services.AddScoped<IOrderService, OrderService>();
 
 

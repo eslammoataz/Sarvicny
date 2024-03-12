@@ -17,6 +17,9 @@ namespace Sarvicny.Contracts.Dtos
         
         [Required(ErrorMessage = "Slot ID is Required ")] 
         public string SlotID { get; set; }
+
+        [Required(ErrorMessage = "District ID is Required ")]
+        public string DistrictID { get; set; }
         
         [Required(ErrorMessage = "Day of Request is Required")] 
         public DateTime RequestDay { get; set; } 
