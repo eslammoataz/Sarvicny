@@ -2,6 +2,7 @@
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,82 @@ namespace Sarvicny.Application.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository)
+        private IUnitOfWork _unitOfWork;
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IUnitOfWork unitOfWork)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
+
+      
+
+        public async Task<Response<object>> AddRatingCustomer(OrderRating rating)
+        {
+            var orderRting = new OrderRating
+            {
+                OrderId = rating.OrderId,
+                CustomerId = rating.CustomerId,
+                CustomerRating = rating.CustomerRating,
+                Comment = rating.Comment,
+
+            };
+
+
+            var Rating = await _orderRepository.AddCustomerRating(orderRting);
+            _unitOfWork.Commit();
+            if(Rating == null) 
+            {
+                return new Response<object>()
+                {
+                    Status = "Failed",
+                    Message = "Action Failed ",
+                    Payload = rating
+                };
+
+
+            }
+            return new Response<object>()
+            {
+                Status = "Success",
+                Message = "Action Done Successfully",
+                Payload = rating
+            };
+        }
+
+        public async Task<Response<object>> AddRatingServiceProvider(OrderRating rating)
+        {
+            var orderRting = new OrderRating
+            {
+                OrderId = rating.OrderId,
+                CustomerId = rating.ProviderId,
+                ServiceProviderRating = rating.ServiceProviderRating,
+                Comment = rating.Comment,
+
+            };
+
+
+            var Rating = await _orderRepository.AddServiceProviderRating(orderRting);
+            _unitOfWork.Commit();
+            if (Rating == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "Failed",
+                    Message = "Action Failed ",
+                    Payload = rating
+                };
+
+
+            }
+            return new Response<object>()
+            {
+                Status = "Success",
+                Message = "Action Done Successfully",
+                Payload = rating
+            };
+        }
+
         public async Task<Response<object>> ShowAllOrderDetails(string orderId)
         {
             var spec = new OrderWithRequestsSpecification(orderId);

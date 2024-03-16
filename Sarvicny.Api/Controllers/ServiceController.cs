@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Contracts.Dtos;
 using Sarvicny.Contracts.Service;
 using Sarvicny.Domain.Entities;
 
@@ -11,11 +13,13 @@ public class ServiceController : ControllerBase
 {
     private readonly IServicesService _servicesService;
     private readonly ICriteriaService _criteriaService;
+    private readonly IOrderService _orderService;
 
-    public ServiceController(IServicesService servicesService, ICriteriaService criteriaService)
+    public ServiceController(IServicesService servicesService, ICriteriaService criteriaService, IOrderService orderService)
     {
         _servicesService = servicesService;
         _criteriaService = criteriaService;
+        _orderService = orderService;
     }
 
     [HttpGet]
@@ -83,4 +87,6 @@ public class ServiceController : ControllerBase
 
         return Ok(response);
     }
+   
+    
 }

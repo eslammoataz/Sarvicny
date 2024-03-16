@@ -1,4 +1,5 @@
 ﻿using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,8 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> ShowAllOrderDetails(string orderId);
         Task<Response<object>> ShowAllOrderDetailsForCustomer(string orderId);
         Task<Response<object>> ShowOrderStatus(string orderId);
+
+        Task<Response<object>> AddRatingCustomer(OrderRating rating);
+        Task<Response<object>> AddRatingServiceProvider(OrderRating rating);
     }
 }

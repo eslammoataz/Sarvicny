@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {}
+    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {}
   },
   "projects": {
-    "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
+    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
+        "projectUniqueName": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
         "projectName": "Sarvicny.Domain",
-        "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
-        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
-        "outputPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\obj\\",
+        "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
+        "packagesPath": "C:\\Users\\Menna\\.nuget\\packages\\",
+        "outputPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Menna\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -56,12 +60,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.17, 7.0.17]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.17, 7.0.17]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.17, 7.0.17]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.103\\RuntimeIdentifierGraph.json"
         }
       }
     }

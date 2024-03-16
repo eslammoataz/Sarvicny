@@ -2,6 +2,7 @@
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Authentication.Registers;
 using Sarvicny.Contracts.Dtos;
+using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
 
 namespace Sarvicny.Api.Controllers.UsersControllers
@@ -141,6 +142,27 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             }
             return Ok(response);
 
+        }
+
+
+        [HttpPost]
+        [Route("CustomerRating")]
+        public async Task<IActionResult> setRating(RatingDto rating)
+        {
+            var newRating = new OrderRating
+            {
+                OrderId = rating.OrderId,
+                CustomerId = rating.CustomerId,
+                ProviderId = rating.ServiceProviderId,
+                CustomerRating = rating.customerRating,
+                Comment = rating.Comment
+            };
+            var response = await _orderService.AddRatingCustomer(newRating);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
         }
 
 

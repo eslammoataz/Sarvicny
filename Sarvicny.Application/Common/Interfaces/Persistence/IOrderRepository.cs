@@ -17,6 +17,9 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task ChangeToPaid(Order order);
         Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest> serviceRequests, Order order);
+
+        Task<OrderRating> AddCustomerRating(OrderRating rating);
+        Task<OrderRating> AddServiceProviderRating(OrderRating rating);
     }
 
 }

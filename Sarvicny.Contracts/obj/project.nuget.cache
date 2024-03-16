@@ -1,12 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "59d6Zk/1bFknnOVbNxz1FlAIN9LkJfbEy+/f7gXWLj84k8cZt/Di2BVTXuVQeYCGFF4RuL2du0fFRqgkkIUUUA==",
+  "dgSpecHash": "17NDw68/6HYIqtrFG1gTvSEm8icg1q4aETBYhoCWEhguxPKeBQxrSWrwDddjp6TxJ6NszxOzLwvBdr4F0vEqpQ==",
   "success": true,
-  "projectFilePath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
+  "projectFilePath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Nemox\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\7.0.0\\microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
-    "C:\\Users\\Nemox\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
-    "C:\\Users\\Nemox\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+    "C:\\Users\\Menna\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\7.0.0\\microsoft.extensions.dependencyinjection.7.0.0.nupkg.sha512",
+    "C:\\Users\\Menna\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\7.0.0\\microsoft.extensions.dependencyinjection.abstractions.7.0.0.nupkg.sha512",
+    "C:\\Users\\Menna\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\Menna\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.17\\microsoft.windowsdesktop.app.ref.7.0.17.nupkg.sha512",
+    "C:\\Users\\Menna\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.17\\microsoft.netcore.app.ref.7.0.17.nupkg.sha512",
+    "C:\\Users\\Menna\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.17\\microsoft.aspnetcore.app.ref.7.0.17.nupkg.sha512"
   ],
   "logs": []
 }

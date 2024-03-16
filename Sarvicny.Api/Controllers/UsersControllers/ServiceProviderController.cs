@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts;
+using Sarvicny.Contracts.Dtos;
+using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 
 
@@ -242,7 +244,27 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
+        [HttpPost]
+        [Route("ServiceProivderRating")]
+        public async Task<IActionResult> setRating(RatingDto rating)
+        {
+            var newRating = new OrderRating
+            {
+                OrderId = rating.OrderId,
+                CustomerId = rating.CustomerId,
+                ProviderId = rating.ServiceProviderId,
+                ServiceProviderRating = rating.providerRating,
+                Comment = rating.Comment
+            };
+            var response = await _orderService.AddRatingServiceProvider(newRating);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
+
+        }
 
     }
-
 }

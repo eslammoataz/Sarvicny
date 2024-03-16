@@ -41,6 +41,7 @@ namespace Sarvicny.Infrastructure.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Admin> Admins { get; set; }
+        public DbSet<OrderRating> OrderRatings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -65,8 +66,25 @@ namespace Sarvicny.Infrastructure.Data
 
 
             builder.Entity<Criteria>().ToTable("Criterias");
+            
+
+            //orderratingsdatabase
+         /*   builder.Entity<OrderRating>().ToTable("OrderRatings");
+
+            builder.Entity<OrderRating>().HasKey(R => R.RatingId);
+
+            builder.Entity<OrderRating>().HasOne(c =>c.customer).
+              WithMany().HasForeignKey(c => c.CustomerId);
 
 
+            builder.Entity<OrderRating>().HasOne(p => p.provider).
+             WithMany().HasForeignKey(p => p.serviceProviderId);
+
+
+            builder.Entity<OrderRating>().HasOne(o => o.order).
+            WithMany().HasForeignKey( o=> o.OrderId);
+         */
+            /////////////////////////
 
             builder.Entity<Service>()
                 .HasKey(s => s.ServiceID);

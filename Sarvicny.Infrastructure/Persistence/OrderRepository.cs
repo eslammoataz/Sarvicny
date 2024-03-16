@@ -126,5 +126,28 @@ namespace Sarvicny.Infrastructure.Persistence
             order.IsPaid = true;
             return;
         }
+
+       
+        
+
+        
+       
+
+        public async Task<OrderRating> AddServiceProviderRating(OrderRating rating)
+        {
+         
+          _context.OrderRatings.Add(rating);
+            return rating;
+            
+            
+
+        }
+
+        public async Task<OrderRating> AddCustomerRating(OrderRating rating)
+        {
+            _context.OrderRatings.Add(rating);
+            return rating;
+
+        }
     }
 }
