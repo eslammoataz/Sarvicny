@@ -1,0 +1,17 @@
+title Worker Register Service 
+
+actor Worker
+
+Worker->Service Provider Controller:Register Service(ServiceId , ServiceProviderId)
+Service Provider Controller ->Service Provider Service:RegisterServiceForProvider(ServiceId,ServiceProviderId)
+Service Provider Service->Service Provider Repository:GetProvider(ProviderId)
+Service Provider Repository-->Service Provider Service: ServiceProvider
+
+Service Provider Service->Service Repository:GetService(ServiceId)
+
+Service Repository-->Service Provider Service:Service
+
+Service Provider Service ->Service Provider Repository:AddServiceToProvider(ServiceProvider,Service)
+
+Service Provider Service -->Service Provider Controller:message(Service Registered to Provider)
+Service Provider Controller -->Worker: message(Servicee Registered Successfully)

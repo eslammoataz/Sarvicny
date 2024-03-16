@@ -1,0 +1,6 @@
+D:\ASP publish 3\Sarvicny.Contracts.dll
+D:\ASP publish 3\Sarvicny.Contracts.deps.json
+D:\ASP publish 3\Sarvicny.Contracts.pdb
+D:\ASP publish 3\Microsoft.Extensions.DependencyInjection.dll
+D:\ASP publish 3\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\ASP publish 3\Newtonsoft.Json.dll

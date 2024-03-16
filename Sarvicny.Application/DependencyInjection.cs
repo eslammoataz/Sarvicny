@@ -2,6 +2,7 @@
 using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
+using Sarvicny.Application.Services.Paypal;
 
 namespace Sarvicny.Application;
 
@@ -19,6 +20,7 @@ public static class DependencyInjection
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IHandlePayment, HandlePayment>();
+        services.AddScoped<IPaypalPaymentService, PaypalPaymentService>();
 
         return services;
     }

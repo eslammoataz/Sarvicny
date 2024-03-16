@@ -29,7 +29,7 @@ namespace Sarvicny.Application.Services
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService,IDistrictRepository districtRepository)
+            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService, IDistrictRepository districtRepository)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -189,7 +189,7 @@ namespace Sarvicny.Application.Services
                 RequestId = newRequest.ServiceRequestID,
                 RequestDay = requestServiceDto.RequestDay,
                 RequestTime = slotExist.StartTime,
-                District=providerDistrict.District.DistrictName,
+                District = providerDistrict.District.DistrictName,
                 ServiceName = service.ServiceName,
                 ProviderName = provider.FirstName + " " + provider.LastName,
                 Price = providerService.Price,
@@ -251,7 +251,7 @@ namespace Sarvicny.Application.Services
                     ServiceRequestID = requestId,
                     serviceRequest.SlotID,
                     serviceRequest.AddedTime
-                    
+
 
 
                 };

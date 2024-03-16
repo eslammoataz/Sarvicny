@@ -1,0 +1,15 @@
+title Order Cart
+
+actor Customer
+
+Customer->Customer Controller :Checkout
+Customer Controller->Customer Service:AddOrder(CustomerId)
+Customer Service -> Customer Repository:GetCustomerById(CustomerId)
+Customer Repository --> Customer Service: Customer
+Customer Service->Order Repository: AddOrder(Order)
+Order Repository -->Customer Service:Order
+Customer Service-> PaymentService:Pay(Order)
+PaymentService -->Customer Service:PaymentUrl
+Customer Service -->Customer Controller:PaymentUrl
+Customer Controller -->Customer :PaymentUrl
+

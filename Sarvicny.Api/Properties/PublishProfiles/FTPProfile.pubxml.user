@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAd/FgyAJcrUyG2HmRUOX1bwAAAAACAAAAAAAQZgAAAAEAACAAAAAiAqX+BqdpVr6U6aIj6AR554rHyxIvB/wy9vp/kkrNKwAAAAAOgAAAAAIAACAAAAC3SoX8XADUpny5jhUMi6qrEfguNuRhExfVzzaJNvnYPTAAAACbvMcYkAlSWJ6IRMpDdG1VM0cg5bv8w2bdIYFiA954HGCPS8QHCxy+1xoOBkOnKLZAAAAAYjySyMg4Foc4G1Hy1tG22pDMT0iZ5pS6lg8S/ojA6mfz712xFwaSwA1r6ActCkODLyN4V5PBTKeUARj2Emcbtg==</EncryptedPassword>
+    <_PublishTargetUrl>ftp://155.254.244.37/www.sarvicny.somee.com</_PublishTargetUrl>
+    <History>False|2024-03-02T03:38:09.1507620Z;True|2024-02-23T01:55:24.8802507+02:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="appsettings.Development.json">
+      <publishTime>02/16/2024 21:45:31</publishTime>
+    </File>
+    <File Include="appsettings.json">
+      <publishTime>02/23/2024 01:07:23</publishTime>
+    </File>
+    <File Include="BouncyCastle.Cryptography.dll">
+      <publishTime>04/21/2023 14:06:40</publishTime>
+    </File>
+    <File Include="MailKit.dll">
+      <publishTime>11/11/2023 21:25:24</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Authentication.JwtBearer.dll">
+      <publishTime>10/24/2023 00:35:00</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Cryptography.Internal.dll">
+      <publishTime>10/24/2023 00:33:38</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Cryptography.KeyDerivation.dll">
+      <publishTime>10/24/2023 00:34:10</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll">
+      <publishTime>10/24/2023 00:34:34</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.OpenApi.dll">
+      <publishTime>10/20/2023 20:31:08</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Abstractions.dll">
+      <publishTime>10/23/2023 21:27:42</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.dll">
+      <publishTime>10/23/2023 21:27:58</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Relational.dll">
+      <publishTime>10/23/2023 21:28:08</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Identity.Core.dll">
+      <publishTime>10/24/2023 00:34:12</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Identity.Stores.dll">
+      <publishTime>10/24/2023 00:34:14</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Options.dll">
+      <publishTime>01/20/2023 01:54:36</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.JsonWebTokens.dll">
+      <publishTime>01/20/2022 00:27:34</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Logging.dll">
+      <publishTime>01/20/2022 00:29:28</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Protocols.dll">
+      <publishTime>01/20/2022 00:30:48</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Protocols.OpenIdConnect.dll">
+      <publishTime>01/20/2022 00:38:34</publishTime>
+    </File>
+    <File Include="Microsoft.IdentityModel.Tokens.dll">
+      <publishTime>01/20/2022 00:34:00</publishTime>
+    </File>
+    <File Include="Microsoft.OpenApi.dll">
+      <publishTime>09/26/2022 14:32:38</publishTime>
+    </File>
+    <File Include="MimeKit.dll">
+      <publishTime>11/11/2023 21:07:00</publishTime>
+    </File>
+    <File Include="MySqlConnector.dll">
+      <publishTime>01/01/2023 23:32:22</publishTime>
+    </File>
+    <File Include="Newtonsoft.Json.dll">
+      <publishTime>03/08/2023 09:09:54</publishTime>
+    </File>
+    <File Include="Pomelo.EntityFrameworkCore.MySql.dll">
+      <publishTime>01/17/2023 00:50:04</publishTime>
+    </File>
+    <File Include="RestSharp.dll">
+      <publishTime>04/09/2023 19:40:54</publishTime>
+    </File>
+    <File Include="Sarvicny.Api.deps.json">
+      <publishTime>02/23/2024 01:52:38</publishTime>
+    </File>
+    <File Include="Sarvicny.Api.dll">
+      <publishTime>02/23/2024 01:52:37</publishTime>
+    </File>
+    <File Include="Sarvicny.Api.exe">
+      <publishTime>02/23/2024 01:52:37</publishTime>
+    </File>
+    <File Include="Sarvicny.Api.pdb">
+      <publishTime>02/23/2024 01:52:37</publishTime>
+    </File>
+    <File Include="Sarvicny.Api.runtimeconfig.json">
+      <publishTime>02/23/2024 01:52:38</publishTime>
+    </File>
+    <File Include="Sarvicny.Application.dll">
+      <publishTime>02/23/2024 00:55:17</publishTime>
+    </File>
+    <File Include="Sarvicny.Application.pdb">
+      <publishTime>02/23/2024 00:55:17</publishTime>
+    </File>
+    <File Include="Sarvicny.Contracts.dll">
+      <publishTime>02/23/2024 00:56:07</publishTime>
+    </File>
+    <File Include="Sarvicny.Contracts.pdb">
+      <publishTime>02/23/2024 00:56:07</publishTime>
+    </File>
+    <File Include="Sarvicny.Domain.dll">
+      <publishTime>02/23/2024 00:56:29</publishTime>
+    </File>
+    <File Include="Sarvicny.Domain.pdb">
+      <publishTime>02/23/2024 00:56:29</publishTime>
+    </File>
+    <File Include="Sarvicny.Infrastructure.dll">
+      <publishTime>02/23/2024 00:57:21</publishTime>
+    </File>
+    <File Include="Sarvicny.Infrastructure.pdb">
+      <publishTime>02/23/2024 00:57:21</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.Swagger.dll">
+      <publishTime>01/11/2023 08:48:22</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerGen.dll">
+      <publishTime>01/11/2023 08:48:26</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerUI.dll">
+      <publishTime>01/11/2023 08:49:02</publishTime>
+    </File>
+    <File Include="System.IdentityModel.Tokens.Jwt.dll">
+      <publishTime>01/20/2022 00:26:14</publishTime>
+    </File>
+    <File Include="System.Security.Cryptography.Pkcs.dll">
+      <publishTime>06/19/2023 02:39:10</publishTime>
+    </File>
+    <File Include="web.config">
+      <publishTime>02/23/2024 01:52:38</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

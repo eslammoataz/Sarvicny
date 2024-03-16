@@ -20,7 +20,7 @@ namespace Sarvicny.Domain.Entities
         public ProviderService providerService { get; set; }
         public DateTime? AddedTime { get; set; }
 
-        public string SlotID  { get; set; } = default!;
+        public string SlotID { get; set; } = default!;
 
         [ForeignKey("SlotID")]
         public TimeSlot Slot { get; set; }
@@ -38,7 +38,7 @@ namespace Sarvicny.Domain.Entities
         public string? OrderId { get; set; }
 
         public decimal Price { get; set; }
-        
+
         [MaxLength(255)]
         public string? ProblemDescription { get; set; }
 

@@ -1,0 +1,10 @@
+title Show Customer Profile
+
+actor Customer
+
+Customer->Customer Controller :Show Profile
+Customer Controller -> Customer Service:ShowProfile(CustomerId)
+Customer Service->Customer Repository:GetCustomerById(CustomerId)
+Customer Repository -->Customer Service :Customer
+Customer Service -->Customer Controller :Customer Data
+Customer Controller --> Customer : Customer Data

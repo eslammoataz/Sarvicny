@@ -1,0 +1,12 @@
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\bin\Release\net7.0\Sarvicny.Contracts.deps.json
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\bin\Release\net7.0\Sarvicny.Contracts.dll
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\bin\Release\net7.0\Sarvicny.Contracts.pdb
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\Sarvicny.Contracts.csproj.AssemblyReference.cache
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\Sarvicny.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\Sarvicny.Contracts.AssemblyInfoInputs.cache
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\Sarvicny.Contracts.AssemblyInfo.cs
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\Sarvicny.Contracts.csproj.CoreCompileInputs.cache
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\Sarvicny.Contracts.dll
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\refint\Sarvicny.Contracts.dll
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\Sarvicny.Contracts.pdb
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Release\net7.0\ref\Sarvicny.Contracts.dll

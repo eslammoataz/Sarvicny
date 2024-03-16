@@ -1,0 +1,22 @@
+title Block Service Provider
+
+actor Admin
+
+Admin->Admin Controller:Block Service Provider (ServiceProviderId)
+
+Admin Controller ->Admin Service:BlockServiceProvider(ServiceProviderId)
+
+Admin Service->Service Provider Repository:GetServiceProviderById(ServiceProviderId)
+
+Service Provider Repository -->Admin Service:Provide
+
+
+Admin Service-> Service Provider Repository :BlockServiceProvider(Provider)
+
+
+
+Service Provider Repository -->Admin Service:message(Provider Blocked Successfully)
+
+Admin Service -->Admin Controller : message(Provider Data)
+
+Admin Controller --> Admin : message(Provider Data) 

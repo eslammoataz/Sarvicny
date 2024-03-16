@@ -1,0 +1,10 @@
+title Show Service Providers Registration Requests
+
+actor Admin
+
+Admin -> Admin Controller: Show Service Providers Registration Requests
+Admin Controller->Admin Service: GetServiceProvidersRegistrationRequests
+Admin Service -> Provider Repository:GetProviderRegistrations
+Provider Repository-->Admin Service: List Providers
+Admin Service-->Admin Controller: List Providers Data
+Admin Controller -->Admin: List Providers Data

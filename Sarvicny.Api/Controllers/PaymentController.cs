@@ -10,11 +10,13 @@ public class PaymentController : ControllerBase
 {
     private readonly IPaymentService _paymentService;
     private readonly ILogger<PaymentController> _logger;
+    private readonly IPaypalPaymentService _paypalPaymentService;
 
-    public PaymentController(IPaymentService paymentService, ILogger<PaymentController> logger)
+    public PaymentController(IPaymentService paymentService, ILogger<PaymentController> logger, IPaypalPaymentService paypalPaymentService)
     {
         _paymentService = paymentService;
         _logger = logger;
+        _paypalPaymentService = paypalPaymentService;
     }
 
     //[HttpPost]
@@ -328,5 +330,56 @@ public class PaymentController : ControllerBase
             return StatusCode(500, "An error occurred while processing payment");
         }
     }
+
+
+
+    [HttpGet]
+    [Route("GetPayPalAuthToken")]
+    public async Task<IActionResult> GetPayPalAuthToken()
+    {
+        try
+        {
+            var token = await _paypalPaymentService.GetAuthToken();
+            return Ok(token);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return StatusCode(500, "An error occurred while processing payment");
+        }
+    }
+
+    [HttpPost]
+    [Route("CreateOrder")]
+    public async Task<IActionResult> CreateOrder()
+    {
+        try
+        {
+            var response = await _paypalPaymentService.CreateOrder(null);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return StatusCode(500, "An error occurred while processing payment");
+        }
+    }
+
+    [HttpPost]
+    [Route("CaptureOrder")]
+    public async Task<IActionResult> CaptureOrder(string orderId)
+    {
+        try
+        {
+            var response = await _paypalPaymentService.CaptureOrder(orderId);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return StatusCode(500, "An error occurred while processing payment");
+        }
+    }
+
 
 }
