@@ -32,7 +32,7 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<object>> AddDistrictToProvider(string providerId,string District);
 
-        Task<Response<object>> GetProviderDistricts(string providerId);
+        Task<Response<List<object>>> GetProviderDistricts(string providerId);
        // Task<Response<object>> RequestNewDistrictToBeAdded(string districtName);
        
 

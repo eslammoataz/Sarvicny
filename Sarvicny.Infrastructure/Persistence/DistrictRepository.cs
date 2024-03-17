@@ -2,6 +2,7 @@
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 using System;
@@ -31,10 +32,15 @@ namespace Sarvicny.Infrastructure.Persistence
             return providerDistrict;
         }
 
-        public async Task<List<District>> GetAllDistricts()
-        {
-            return await _context.Districts.ToListAsync();
+        //public async Task<List<District>> GetAllDistricts()
+        //{
+        //    return await _context.Districts.ToListAsync();
             
+        //}
+
+        public async Task<List<District>> GetAllDistricts(ISpecifications<District> specifications)
+        {
+            return await ApplySpecification(specifications).ToListAsync();
         }
 
         public async Task<District> GetDistrictById(string districtId)
@@ -46,9 +52,13 @@ namespace Sarvicny.Infrastructure.Persistence
             return await _context.Districts.FirstOrDefaultAsync(d => d.DistrictName == districtName);
         }
 
-        public Task<Response<object>> RequestNewDistrictToBeAdded(string districtName)
+        //public Task<Response<object>> RequestNewDistrictToBeAdded(string districtName)
+        //{
+        //    throw new NotImplementedException();
+        //}
+        private IQueryable<District> ApplySpecification(ISpecifications<District> spec)
         {
-            throw new NotImplementedException();
+            return SpecificationBuilder<District>.Build(_context.Districts, spec);
         }
     }
 }

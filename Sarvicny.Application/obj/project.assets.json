@@ -1970,23 +1970,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Menna\\.nuget\\packages\\": {},
+    "C:\\Users\\Karen\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
+      "projectUniqueName": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
       "projectName": "Sarvicny.Application",
-      "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
-      "packagesPath": "C:\\Users\\Menna\\.nuget\\packages\\",
-      "outputPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\obj\\",
+      "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
+      "packagesPath": "C:\\Users\\Karen\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Application\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Menna\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Karen\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2001,11 +2001,11 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
-              "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
+            "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
+              "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
             },
-            "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
-              "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
+            "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
+              "projectPath": "C:\\Users\\Karen\\Source\\Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
             }
           }
         }
@@ -2056,26 +2056,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[7.0.17, 7.0.17]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[7.0.17, 7.0.17]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
-            "version": "[7.0.17, 7.0.17]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.103\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }

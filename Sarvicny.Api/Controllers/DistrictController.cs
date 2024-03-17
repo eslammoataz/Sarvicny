@@ -13,7 +13,7 @@ namespace Sarvicny.Api.Controllers
         private readonly IAdminService _adminService;
         private readonly IServiceProviderService _serviceProviderService;
 
-        DistrictController(IAdminService adminService, IServiceProviderService serviceProviderService)
+       public DistrictController(IAdminService adminService, IServiceProviderService serviceProviderService)
         {
             _adminService = adminService;
             _serviceProviderService = serviceProviderService;
@@ -94,9 +94,9 @@ namespace Sarvicny.Api.Controllers
         }
         [HttpPost]
         [Route("AddDistrict/{providerId}")]
-        public async Task<IActionResult> AddDistrictToProvider(string providerId, string districtName)
+        public async Task<IActionResult> AddDistrictToProvider(string providerId, string districtID)
         {
-            var response = await _serviceProviderService.AddDistrictToProvider(providerId, districtName);
+            var response = await _serviceProviderService.AddDistrictToProvider(providerId, districtID);
 
             if (response.isError)
             {

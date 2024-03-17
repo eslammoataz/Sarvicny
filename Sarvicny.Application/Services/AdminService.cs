@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
+using Sarvicny.Application.Services.Specifications.DistrictSpecification;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
@@ -434,6 +435,19 @@ public class AdminService : IAdminService
 
     public async Task<Response<District>> AddDistrict(District district)
     {
+        var spec=new BaseSpecifications<District>();
+        var districts = await _districtRepository.GetAllDistricts(spec);
+        if (districts.Any(d => d.DistrictName == district.DistrictName)){
+
+            return new Response<District>()
+            {
+                Status = "fail",
+                Message = "District already found",
+                Payload = null,
+                isError = true
+
+            };
+        }
         var added= await _districtRepository.AddDistrict(district);
         _unitOfWork.Commit();
         
@@ -449,9 +463,20 @@ public class AdminService : IAdminService
     }
     public async Task<Response<List<object>>> GetAllAvailableDistricts()
     {
-        var districts = await _districtRepository.GetAllDistricts();
-        var available = districts.Where(d => d.Availability == true).ToList<object>();
-        if (available.Count == 0) {
+        var spec = new DistrictWithProvidersSpecification();
+        var districts = await _districtRepository.GetAllDistricts(spec);
+        var available = districts.Where(d => d.Availability == true).Select(d => new
+        {
+            d.DistrictID,
+            d.DistrictName,
+            providers = d.ProviderDistricts.Select(p => new
+            {
+                p.ProviderID,
+                p.enable
+            }).ToList<object>()
+
+        }).ToList<object>();
+        if (available== null) {
             return new Response<List<object>>()
             {
                 Status = "failed",
