@@ -147,14 +147,12 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         [HttpPost]
         [Route("CustomerRating")]
-        public async Task<IActionResult> setRating(RatingDto rating)
+        public async Task<IActionResult> setRating(CustomerRatingDto rating)
         {
             var newRating = new OrderRating
             {
-                OrderId = rating.OrderId,
-                CustomerId = rating.CustomerId,
-                ProviderId = rating.ServiceProviderId,
-                CustomerRating = rating.customerRating,
+                serviceRequestID = rating.serviceRequestID,
+                customerRating = rating.customerRating,
                 Comment = rating.Comment
             };
             var response = await _orderService.AddRatingCustomer(newRating);

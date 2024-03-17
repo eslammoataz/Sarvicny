@@ -71,7 +71,10 @@ namespace Sarvicny.Infrastructure.Persistence
             return SpecificationBuilder<Order>.Build(_context.Orders, spec);
         }
 
-
+        private IQueryable<ServiceRequest> ApplySpecificationSR(ISpecifications<ServiceRequest> spec)
+        {
+            return SpecificationBuilder<ServiceRequest>.Build(_context.ServiceRequests, spec);
+        }
         public async Task<Order?> GetOrder(ISpecifications<Order> specifications)
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync();
@@ -136,7 +139,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<OrderRating> AddServiceProviderRating(OrderRating rating)
         {
          
-          _context.OrderRatings.Add(rating);
+         await _context.OrderRatings.AddAsync(rating);
             return rating;
             
             
@@ -145,9 +148,27 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<OrderRating> AddCustomerRating(OrderRating rating)
         {
-            _context.OrderRatings.Add(rating);
+           await _context.OrderRatings.AddAsync(rating);
             return rating;
 
+        }
+
+        public async Task<ServiceRequest> GetServiceRequestByID(ISpecifications<ServiceRequest> spec)
+        {
+            return await ApplySpecificationSR(spec).FirstOrDefaultAsync();
+        }
+
+       
+
+       public async Task<List<OrderRating>> GetAllOrderRating()
+        {
+             return await _context.OrderRatings.ToListAsync();
+
+        }
+
+        public async Task RemoveRating(OrderRating rating)
+        {
+             _context.OrderRatings.Remove(rating);   
         }
     }
 }

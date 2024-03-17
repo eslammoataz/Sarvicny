@@ -1,6 +1,7 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
+using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using System;
@@ -27,68 +28,164 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> AddRatingCustomer(OrderRating rating)
         {
-            var orderRting = new OrderRating
-            {
-                OrderId = rating.OrderId,
-                CustomerId = rating.CustomerId,
-                CustomerRating = rating.CustomerRating,
-                Comment = rating.Comment,
-
-            };
+            var spec = new ServiceRequest_RatingSpecification(rating.serviceRequestID);
+            var Request  = await _orderRepository.GetServiceRequestByID(spec);
+            if(Request == null) {
 
 
-            var Rating = await _orderRepository.AddCustomerRating(orderRting);
-            _unitOfWork.Commit();
-            if(Rating == null) 
-            {
                 return new Response<object>()
                 {
                     Status = "Failed",
-                    Message = "Action Failed ",
-                    Payload = rating
+                    Message = " Request Not Found ",
+                    Payload = null
                 };
 
-
             }
-            return new Response<object>()
+            var rates = await _orderRepository.GetAllOrderRating();
+
+           
+
+
+
+            if (rating.CustomerId == null )
             {
-                Status = "Success",
-                Message = "Action Done Successfully",
-                Payload = rating
-            };
+                rating.CustomerId = Request.order.CustomerID;
+                
+
+                if (rates.Any(s => s.serviceRequestID == rating.serviceRequestID))
+                {
+                    _unitOfWork.Commit();
+
+                }
+
+                rating.OrderId = Request.order.OrderID;
+
+                var Rating = await _orderRepository.AddCustomerRating(rating);
+                _unitOfWork.Commit();
+                if (Rating == null)
+                {
+
+                    return new Response<object>()
+                    {
+                        Status = "Failed",
+                        isError = true,
+                        Message = "Action Failed ",
+                        Payload = null
+                    };
+
+
+                }
+
+                var ratingAsobject = new
+                {
+                    ServiceRequest = rating.serviceRequestID,
+                    CustomerRate = rating.customerRating,
+                    FeedBack = rating.Comment
+                };
+                return new Response<object>()
+                {
+                    Status = "Success",
+                    isError = false,
+                    Message = "Action Done Successfully",
+                    Payload = ratingAsobject
+                };
+            }
+             return new Response<object>()
+                {
+                    Status = "failed",
+                    isError = true,
+                    Message = "Dublicate Record",
+                    Payload = null
+                };
         }
 
         public async Task<Response<object>> AddRatingServiceProvider(OrderRating rating)
         {
-            var orderRting = new OrderRating
+            var spec = new ServiceRequest_RatingSpecification(rating.serviceRequestID);
+            var Request = await _orderRepository.GetServiceRequestByID(spec);
+            if (Request == null)
             {
-                OrderId = rating.OrderId,
-                CustomerId = rating.ProviderId,
-                ServiceProviderRating = rating.ServiceProviderRating,
-                Comment = rating.Comment,
 
-            };
-
-
-            var Rating = await _orderRepository.AddServiceProviderRating(orderRting);
-            _unitOfWork.Commit();
-            if (Rating == null)
-            {
                 return new Response<object>()
                 {
                     Status = "Failed",
-                    Message = "Action Failed ",
-                    Payload = rating
+                    Message = " Request Not Found ",
+                    isError = true,
+                    Payload = null
                 };
 
 
+
             }
+
+            var rates = await _orderRepository.GetAllOrderRating();
+
+
+
+            if (rating.ProviderId == null)
+            {
+                rating.ProviderId = Request.providerService.ProviderID;
+
+
+                if (rates.Any(s => s.serviceRequestID == rating.serviceRequestID))
+                {
+                    var ProviderRate = new OrderRating
+                    {
+                        ProviderId = rating.ProviderId,    
+                        CustomerId = Request.order.CustomerID,
+                        customerRating = rating.customerRating,
+                        ServiceProviderRating = rating.ServiceProviderRating,
+                        Comment = rating.Comment
+
+                    };
+                     await _orderRepository.AddServiceProviderRating(ProviderRate);
+                    await _orderRepository.RemoveRating(rating);
+
+                    _unitOfWork.Commit();
+
+                }
+
+
+                
+                rating.OrderId = Request.order.OrderID;
+
+                var Rating = await _orderRepository.AddServiceProviderRating(rating);
+                _unitOfWork.Commit();
+                if (Rating == null)
+                {
+                    return new Response<object>()
+                    {
+                        Status = "Failed",
+                        isError = true,
+                        Message = "Action Failed ",
+                        Payload = null
+                    };
+
+
+                }
+
+                var ratingAsobject = new
+                {
+                    ServiceRequest = rating.serviceRequestID,
+                    ProviderRate = rating.ServiceProviderRating,
+                    FeedBack = rating.Comment
+                };
+                return new Response<object>()
+                {
+                    Status = "Success",
+                    isError = false,
+                    Message = "Action Done Successfully",
+                    Payload = ratingAsobject
+                }; }
+
             return new Response<object>()
             {
-                Status = "Success",
-                Message = "Action Done Successfully",
-                Payload = rating
+                Status = "failed",
+                isError = true,
+                Message = "Dublicate Record",
+                Payload = null
             };
+
         }
 
         public async Task<Response<object>> ShowAllOrderDetails(string orderId)

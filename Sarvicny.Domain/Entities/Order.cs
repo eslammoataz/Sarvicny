@@ -25,7 +25,7 @@ namespace Sarvicny.Domain.Entities
 
         public bool IsPaid { get; set; }
         
-        public OrderRating? Rate { get; set; }
+        
 
     }
 }

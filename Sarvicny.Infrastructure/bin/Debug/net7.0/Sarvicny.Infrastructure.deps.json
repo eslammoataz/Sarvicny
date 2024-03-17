@@ -442,7 +442,8 @@
       "Sarvicny.Contracts/1.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "7.0.0",
-          "Newtonsoft.Json": "13.0.3"
+          "Newtonsoft.Json": "13.0.3",
+          "Sarvicny.Domain": "1.0.0"
         },
         "runtime": {
           "Sarvicny.Contracts.dll": {}

@@ -33,7 +33,7 @@ namespace Sarvicny.Domain.Entities
         public ProviderDistrict providerDistrict { get; set; }
 
 
-
+        public Order? order { get; set; }
         [ForeignKey("OrderId")]
         public string? OrderId { get; set; }
 
@@ -41,6 +41,8 @@ namespace Sarvicny.Domain.Entities
 
         [MaxLength(255)]
         public string? ProblemDescription { get; set; }
+
+        public OrderRating? Rate { get; set; }
 
 
     }

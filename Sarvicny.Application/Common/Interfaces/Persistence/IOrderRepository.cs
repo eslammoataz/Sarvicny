@@ -20,6 +20,14 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<OrderRating> AddCustomerRating(OrderRating rating);
         Task<OrderRating> AddServiceProviderRating(OrderRating rating);
+        Task<ServiceRequest> GetServiceRequestByID(ISpecifications<ServiceRequest> spec);
+
+        Task<List<OrderRating>> GetAllOrderRating();
+
+        Task RemoveRating(OrderRating rating);
+
+
+
     }
 
 }
