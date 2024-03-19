@@ -38,7 +38,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 FirstName = registrationDto.FirstName,
                 CriminalRecord = registrationDto.CriminalRecord,
                 NationalID = registrationDto.NationalID,
-                
+
                 IsVerified = false,
                 //photos
             };

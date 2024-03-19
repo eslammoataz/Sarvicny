@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Paymob;
+using Sarvicny.Application.Services.Paypal;
 
 namespace Sarvicny.Api.Controllers;
 
@@ -8,32 +9,16 @@ namespace Sarvicny.Api.Controllers;
 [Route("api/[controller]")]
 public class PaymentController : ControllerBase
 {
-    private readonly IPaymentService _paymentService;
+    private readonly IPaymobPaymentService _paymentService;
     private readonly ILogger<PaymentController> _logger;
     private readonly IPaypalPaymentService _paypalPaymentService;
 
-    public PaymentController(IPaymentService paymentService, ILogger<PaymentController> logger, IPaypalPaymentService paypalPaymentService)
+    public PaymentController(IPaymobPaymentService paymentService, ILogger<PaymentController> logger, IPaypalPaymentService paypalPaymentService)
     {
         _paymentService = paymentService;
         _logger = logger;
         _paypalPaymentService = paypalPaymentService;
     }
-
-    //[HttpPost]
-    //[Route("Pay")]
-    //public async Task<IActionResult> Pay()
-    //{
-    //    try
-    //    {
-    //        var payment = await _paymentService.Pay();
-    //        return Ok(payment);
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        _logger.LogError(e.Message);
-    //        return StatusCode(500, "An error occurred while processing payment");
-    //    }
-    //}
 
 
     [HttpPost]
@@ -372,6 +357,56 @@ public class PaymentController : ControllerBase
         try
         {
             var response = await _paypalPaymentService.CaptureOrder(orderId);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return StatusCode(500, "An error occurred while processing payment");
+        }
+    }
+
+    [HttpPost]
+    [Route("CreatePayment")]
+    public async Task<IActionResult> CreatePayment()
+    {
+        try
+        {
+
+            var response = await _paypalPaymentService.Pay(null);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return StatusCode(500, "An error occurred while processing payment");
+        }
+    }
+
+
+    [HttpGet]
+    [Route("ExecutePayment")]
+    public async Task<IActionResult> ExecutePayment(string paymentId, string payerId, string token)
+    {
+        try
+        {
+            var response = await _paypalPaymentService.ExecutePayment(paymentId, payerId, token);
+            return Ok(response);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            return StatusCode(500, "An error occurred while processing payment");
+        }
+    }
+
+    [HttpGet]
+    [Route("GetPayment")]
+    public async Task<IActionResult> GetPayment(string paymentId)
+    {
+        try
+        {
+            var response = await _paypalPaymentService.GetPayment(paymentId);
             return Ok(response);
         }
         catch (Exception e)

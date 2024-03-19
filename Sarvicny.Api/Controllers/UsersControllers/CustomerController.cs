@@ -77,11 +77,18 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
+        /// <summary>
+        /// Order items in the customer's cart.
+        /// </summary>
+        /// <param name="customerId">The ID of the customer.</param>
+        /// <param name="paymentMethod">The payment method. Valid values: Paypal, Paymob.</param>
+        /// <returns>The response containing the result of the operation.</returns>
+
         [HttpPost]
         [Route("orderCart")]
-        public async Task<IActionResult> OrderCart(string customerId)
+        public async Task<IActionResult> OrderCart(string customerId, PaymentMethod paymentMethod)
         {
-            var Response = await _customerService.OrderCart(customerId);
+            var Response = await _customerService.OrderCart(customerId, paymentMethod);
 
             if (Response.isError)
             {

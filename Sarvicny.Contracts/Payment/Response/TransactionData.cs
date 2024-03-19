@@ -5,7 +5,7 @@ namespace Sarvicny.Contracts.Payment.Response
     public class TransactionData
     {
         [JsonProperty("id")]
-        public int TransactionId { get; set; }
+        public string TransactionId { get; set; }
         public bool pending { get; set; }
         public bool success { get; set; }
         public bool is_auth { get; set; }

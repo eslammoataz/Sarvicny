@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -30,7 +29,7 @@ public class AdminService : IAdminService
 
     private readonly IOrderService _orderService;
 
-    public AdminService(UserManager<User>userManager ,IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService,IOrderService orderService, IDistrictRepository districtRepository)
+    public AdminService(UserManager<User> userManager, IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService, IOrderService orderService, IDistrictRepository districtRepository)
     {
         _userManager = userManager;
         _serviceRepository = serviceRepository;
@@ -89,8 +88,8 @@ public class AdminService : IAdminService
             districts = c.ProviderDistricts.Select(d => new
             {
                 d.DistrictID,
-               d.District.DistrictName,
-               d.enable
+                d.District.DistrictName,
+                d.enable
 
 
             }).ToList(),
@@ -144,13 +143,13 @@ public class AdminService : IAdminService
             };
 
         }
-        
+
 
         //Add Token to Verify the email....
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
         var output = await _adminRepository.ApproveServiceProviderRegister(workerId);
         _unitOfWork.Commit();
-        
+
         var message = new EmailDto(provider.Email!, "Sarvicny: Worker Approved Successfully", "Congratulations you are accepted");
 
         _emailService.SendEmail(message);
@@ -158,7 +157,7 @@ public class AdminService : IAdminService
         {
             Status = "Success",
             Message = "Worker Approved Successfully , Verification Email sent to provider's email ",
-            Payload =output ,
+            Payload = output,
 
         };
 
@@ -228,7 +227,7 @@ public class AdminService : IAdminService
             //districts=p.ProviderDistricts.Select(d => new
             //{
             //    d.DistrictID, d.District.DistrictName,
-                
+
             //}).ToList(),
         }).ToList<object>();
 
@@ -287,13 +286,13 @@ public class AdminService : IAdminService
     {
         var spec = new OrderWithRequestsSpecification();
         var orders = await _orderRepository.GetAllOrders(spec);
-       
-       
+
+
 
         List<object> result = new List<object>();
         foreach (var order in orders)
         {
-            if (order.OrderStatusID == "1") // 1 means set
+            if (order.OrderStatus == OrderStatusEnum.Pending) // 1 means set
             {
 
 
@@ -327,19 +326,19 @@ public class AdminService : IAdminService
 
         };
 
-    
-}
 
-    public  async Task<Response<List<object>>> getAllApprovededOrders()
+    }
+
+    public async Task<Response<List<object>>> getAllApprovededOrders()
     {
         var spec = new OrderWithRequestsSpecification();
         var orders = await _orderRepository.GetAllOrders(spec);
-        
+
 
         List<object> result = new List<object>();
         foreach (var order in orders)
         {
-            if (order.OrderStatusID == "2") // 2 means approved
+            if (order.OrderStatus == OrderStatusEnum.Approved) // 2 means approved
             {
 
                 var orderDetails = await _orderService.ShowAllOrderDetails(order.OrderID);
@@ -376,8 +375,8 @@ public class AdminService : IAdminService
 
     public async Task<Response<bool>> BlockServiceProvider(string workerId)
     {
-        var provider = await _providerRepository.FindByIdAsync(new BaseSpecifications<Provider>(p=>p.Id == workerId));
-        
+        var provider = await _providerRepository.FindByIdAsync(new BaseSpecifications<Provider>(p => p.Id == workerId));
+
         if (provider == null)
         {
             return new Response<bool>()
@@ -390,7 +389,7 @@ public class AdminService : IAdminService
 
             };
         }
-        
+
         provider.IsBlocked = true;
         _unitOfWork.Commit();
         return new Response<bool>()
@@ -435,9 +434,10 @@ public class AdminService : IAdminService
 
     public async Task<Response<District>> AddDistrict(District district)
     {
-        var spec=new BaseSpecifications<District>();
+        var spec = new BaseSpecifications<District>();
         var districts = await _districtRepository.GetAllDistricts(spec);
-        if (districts.Any(d => d.DistrictName == district.DistrictName)){
+        if (districts.Any(d => d.DistrictName == district.DistrictName))
+        {
 
             return new Response<District>()
             {
@@ -448,9 +448,9 @@ public class AdminService : IAdminService
 
             };
         }
-        var added= await _districtRepository.AddDistrict(district);
+        var added = await _districtRepository.AddDistrict(district);
         _unitOfWork.Commit();
-        
+
         return new Response<District>()
         {
             Status = "Success",
@@ -476,7 +476,8 @@ public class AdminService : IAdminService
             }).ToList<object>()
 
         }).ToList<object>();
-        if (available== null) {
+        if (available == null)
+        {
             return new Response<List<object>>()
             {
                 Status = "failed",
@@ -489,7 +490,7 @@ public class AdminService : IAdminService
         return new Response<List<object>>()
         {
             Status = "Success",
-           
+
             Payload = available,
             isError = false
 
