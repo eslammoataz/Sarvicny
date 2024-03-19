@@ -1,0 +1,9 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=530f9e8c_002Db3e6_002D4752_002D9bb6_002D71f0bb8ad6dc/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetCustomerCart_CustomerExists_ReturnsCart" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::E2894A8A-9A11-4EE6-80EA-15FC94136A57::net7.0::Sarvicny.Application.Tests.CustomerServiceTests.GetCustomerCart_CustomerExists_ReturnsCart&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::E2894A8A-9A11-4EE6-80EA-15FC94136A57::net7.0::Sarvicny.Application.Tests.CustomerServiceTests.GetCustomerCart_CustomerDoesNotExist_ReturnsError&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::E2894A8A-9A11-4EE6-80EA-15FC94136A57::net7.0::Sarvicny.Application.Tests.CustomerServiceTests.GetCustomerCart_CustomerExists_ReturnsCartWithDetails&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::E2894A8A-9A11-4EE6-80EA-15FC94136A57::net7.0::Sarvicny.Application.Tests.CustomerServiceTests.GetCustomerCart_CustomerExists_ReturnsCartDetails&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
