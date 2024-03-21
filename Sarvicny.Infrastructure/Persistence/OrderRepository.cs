@@ -136,39 +136,35 @@ namespace Sarvicny.Infrastructure.Persistence
         
        
 
-        public async Task<OrderRating> AddServiceProviderRating(OrderRating rating)
-        {
-         
-         await _context.OrderRatings.AddAsync(rating);
-            return rating;
-            
-            
+       
 
-        }
-
-        public async Task<OrderRating> AddCustomerRating(OrderRating rating)
-        {
-           await _context.OrderRatings.AddAsync(rating);
-            return rating;
-
-        }
-
+       
         public async Task<ServiceRequest> GetServiceRequestByID(ISpecifications<ServiceRequest> spec)
         {
             return await ApplySpecificationSR(spec).FirstOrDefaultAsync();
         }
 
-       
-
-       public async Task<List<OrderRating>> GetAllOrderRating()
+        public async Task<CustomerRating> AddCustomerRating(CustomerRating rate)
         {
-             return await _context.OrderRatings.ToListAsync();
+           _context.customerRatings.AddAsync(rate);
+            return rate;
+        }
+         
 
+        public async Task<ProviderRating> AddProviderRating(ProviderRating rate)
+        {
+          _context.ProviderRatings.AddAsync(rate);
+            return rate;
         }
 
-        public async Task RemoveRating(OrderRating rating)
+        public async Task<List<ProviderRating>> GetAllProviderRating()
         {
-             _context.OrderRatings.Remove(rating);   
+          return await _context.ProviderRatings.ToListAsync();
+        }
+
+        public async Task<List<CustomerRating>> GetAllCustomerRating()
+        {
+            return await _context.customerRatings.ToListAsync();
         }
     }
 }

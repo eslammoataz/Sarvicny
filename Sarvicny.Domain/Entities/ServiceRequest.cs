@@ -42,7 +42,16 @@ namespace Sarvicny.Domain.Entities
         [MaxLength(255)]
         public string? ProblemDescription { get; set; }
 
-        public OrderRating? Rate { get; set; }
+        public string? customerRatingId { get; set; }
+
+        [ForeignKey("customerRatingId")]
+        public CustomerRating? CRate { get; set; }
+
+        public string? providerRatingId { get; set; }
+
+        [ForeignKey("providerRatingId")]
+        public ProviderRating? PRate { get; set; }
+
 
 
     }

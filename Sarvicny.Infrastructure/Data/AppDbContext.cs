@@ -41,7 +41,8 @@ namespace Sarvicny.Infrastructure.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Admin> Admins { get; set; }
-        public DbSet<OrderRating> OrderRatings { get; set; }
+        public DbSet<CustomerRating> customerRatings { get; set; }
+        public DbSet<ProviderRating> ProviderRatings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

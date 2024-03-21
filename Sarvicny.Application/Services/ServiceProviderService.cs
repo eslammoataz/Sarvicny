@@ -765,6 +765,7 @@ namespace Sarvicny.Application.Services
         {
             var spec = new ProviderWithDistrictsSpecification(providerId);
             var provider = await _serviceProviderRepository.FindByIdAsync(spec);
+
             if (provider == null)
             {
                 return new Response<List<object>>()

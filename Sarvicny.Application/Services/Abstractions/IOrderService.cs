@@ -14,8 +14,8 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> ShowAllOrderDetails(string orderId);
         Task<Response<object>> ShowAllOrderDetailsForCustomer(string orderId);
         Task<Response<object>> ShowOrderStatus(string orderId);
-
-        Task<Response<object>> AddRatingCustomer(OrderRating rating);
-        Task<Response<object>> AddRatingServiceProvider(OrderRating rating);
+        Task<Response<object>> AddCustomerRating(CustomerRating customerRating);
+        Task<Response<object>> AddProviderRating(ProviderRating providerRating);
+     
     }
 }

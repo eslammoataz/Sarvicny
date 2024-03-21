@@ -144,24 +144,24 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
-
         [HttpPost]
-        [Route("CustomerRating")]
-        public async Task<IActionResult> setRating(CustomerRatingDto rating)
+        [Route("AddCustomerRating")]
+        public async Task<IActionResult> AddCustomerRating(CustomerRatingDto customerRatingDto)
         {
-            var newRating = new OrderRating
-            {
-                serviceRequestID = rating.serviceRequestID,
-                customerRating = rating.customerRating,
-                Comment = rating.Comment
+            var newRate = new CustomerRating
+            { 
+               ServiceRequestID = customerRatingDto.serviceRequestID,
+               Rating= customerRatingDto.customerRating,
+               Comment = customerRatingDto.Comment
             };
-            var response = await _orderService.AddRatingCustomer(newRating);
+            var response = await _orderService.AddCustomerRating(newRate);
             if (response.isError)
             {
                 return BadRequest(response);
             }
             return Ok(response);
         }
+
 
 
     }
