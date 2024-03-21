@@ -9,8 +9,8 @@ namespace Sarvicny.Domain.Entities.Users
 
         [ForeignKey("CartID")]
         public Cart? Cart { get; set; }
-        
-         public List<Order> Orders { get; set; } = new List<Order>();
+
+        public List<Order> Orders { get; set; } = new List<Order>();
 
         //list<worker> favourite
 

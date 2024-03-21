@@ -15,7 +15,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<Order> AddOrder(Order order);
         Task<List<Order>> GetAllOrders(ISpecifications<Order> spec);
 
-        Task ChangeToPaid(Order order);
+        Task ChangeOrderStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
         Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest> serviceRequests, Order order);
 
         Task<CustomerRating> AddCustomerRating(CustomerRating rate);

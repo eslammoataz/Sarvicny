@@ -4,11 +4,6 @@ using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sarvicny.Application.Services
 {
@@ -27,7 +22,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> AddCustomerRating(CustomerRating customerRating)
         {
             var spec = new ServiceRequest_RatingSpecification(customerRating.ServiceRequestID);
-            var request =await _orderRepository.GetServiceRequestByID(spec);
+            var request = await _orderRepository.GetServiceRequestByID(spec);
 
             if (request == null)
             {
@@ -56,14 +51,15 @@ namespace Sarvicny.Application.Services
 
             customerRating.customerID = request.order.CustomerID;
             customerRating.OrderID = request.OrderId;
-            
+
             var rating = await _orderRepository.AddCustomerRating(customerRating);
 
             request.customerRatingId = rating.RatingId;
             request.CRate = rating;
 
             _unitOfWork.Commit();
-            var ratingAsObj = new {
+            var ratingAsObj = new
+            {
                 rating.RatingId,
                 rating.ServiceRequestID,
                 rating.OrderID,
@@ -71,9 +67,8 @@ namespace Sarvicny.Application.Services
                 rating.Rating,
                 rating.Comment
 
-            
+
             };
-            
 
             return new Response<object>()
             {
@@ -83,8 +78,6 @@ namespace Sarvicny.Application.Services
                 isError = false
 
             };
-
-
         }
 
         public async Task<Response<object>> AddProviderRating(ProviderRating providerRating)
@@ -170,9 +163,9 @@ namespace Sarvicny.Application.Services
                 orderId = order.OrderID,
                 customerId = order.CustomerID,
                 customerFN = customer.FirstName,
-                orderStatus = order.OrderStatus.StatusName,
-                orderDate= order.OrderDate,
-                
+                orderStatus = order.OrderStatus,
+                orderDate = order.OrderDate,
+
                 orderPrice = order.TotalPrice,
                 orderService = order.ServiceRequests.Select(s => new
                 {
@@ -222,7 +215,7 @@ namespace Sarvicny.Application.Services
             var orderAsObject = new
             {
                 orderId = order.OrderID,
-                orderStatus = order.OrderStatus.StatusName,
+                orderStatus = order.OrderStatus,
                 orderPrice = order.TotalPrice,
                 orderDate = order.OrderDate,
                 orderService = order.ServiceRequests.Select(s => new
@@ -252,7 +245,7 @@ namespace Sarvicny.Application.Services
                 Payload = orderAsObject
             };
         } //mfhash customer
-    
+
 
 
         public async Task<Response<object>> ShowOrderDetailsForProvider(string orderId) //feha tfasel customer
@@ -266,7 +259,7 @@ namespace Sarvicny.Application.Services
                     Status = "failed",
                     Message = "Order Not Found",
                     Payload = null,
-                    isError=true,
+                    isError = true,
                 };
             }
 
@@ -277,15 +270,15 @@ namespace Sarvicny.Application.Services
                 customerId = order.CustomerID,
                 customerFN = customer.FirstName,
                 customerLN = customer.LastName,
-                Address=customer.Address,
+                Address = customer.Address,
 
 
-                orderStatus = order.OrderStatus.StatusName,
+                orderStatus = order.OrderStatus,
                 orderPrice = order.TotalPrice,
                 orderDate = order.OrderDate,
                 orderService = order.ServiceRequests.Select(s => new
                 {
-                   
+
                     s.providerService.Service.ServiceID,
                     s.providerService.Service.ServiceName,
                     s.providerService.Service.ParentServiceID,
@@ -297,7 +290,7 @@ namespace Sarvicny.Application.Services
                     s.providerDistrict.DistrictID,
                     s.providerDistrict.District.DistrictName,
                     s.Price,
-                     s.ProblemDescription
+                    s.ProblemDescription
                 }).ToList<object>(),
             };
 
@@ -322,9 +315,9 @@ namespace Sarvicny.Application.Services
                     Message = "Order Not Found",
                     Payload = null
                 };
-            
+
             }
-            var status = order.OrderStatus.StatusName;
+            var status = order.OrderStatus;
 
             return new Response<object>()
             {

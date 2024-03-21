@@ -26,10 +26,10 @@ namespace Sarvicny.Application.Services
 
         private IOrderService _orderService;
 
-        
 
 
-        public ServiceProviderService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IOrderRepository orderRepository, ICustomerRepository customerRepository, IOrderService orderService, IEmailService emailService,IDistrictRepository districtRepository)
+
+        public ServiceProviderService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IOrderRepository orderRepository, ICustomerRepository customerRepository, IOrderService orderService, IEmailService emailService, IDistrictRepository districtRepository)
         {
             _serviceRepository = serviceRepository;
             _userRepository = userRepository;
@@ -234,7 +234,7 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            if (order.OrderStatusID == "2")
+            if (order.OrderStatus == OrderStatusEnum.Approved)
             {
                 return new Response<object>()
 
@@ -286,10 +286,10 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            if (order.OrderStatusID != "2") // if not approved
+            if (order.OrderStatus != OrderStatusEnum.Approved) // if not approved
             {
 
-                if (order.OrderStatusID == "4") // if canceled
+                if (order.OrderStatus == OrderStatusEnum.Canceled) // if canceled
                 {
 
                     return new Response<object>()
@@ -348,9 +348,9 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            if (order.OrderStatusID != "1") //if not pending
+            if (order.OrderStatus != OrderStatusEnum.Pending) //if not pending
             {
-                if (order.OrderStatusID == "2")
+                if (order.OrderStatus == OrderStatusEnum.Approved)
                 {
                     return new Response<object>()
                     {
@@ -361,7 +361,7 @@ namespace Sarvicny.Application.Services
 
                     };
                 }
-                if (order.OrderStatusID == "3")
+                if (order.OrderStatus == OrderStatusEnum.Rejected)
                 {
                     return new Response<object>()
                     {
@@ -468,7 +468,7 @@ namespace Sarvicny.Application.Services
             List<object> result = new List<object>();
             foreach (var order in orders)
             {
-                if (order.OrderStatusID == "2") //2 means approved 
+                if (order.OrderStatus == OrderStatusEnum.Approved) //2 means approved 
                 {
                     if (order.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
                     {
@@ -526,7 +526,7 @@ namespace Sarvicny.Application.Services
             List<object> result = new List<object>();
             foreach (var order in orders)
             {
-                if (order.OrderStatusID == "1") // 1 means request
+                if (order.OrderStatus == OrderStatusEnum.Pending) // 1 means request
                 {
                     if (order.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
                     {
@@ -700,7 +700,7 @@ namespace Sarvicny.Application.Services
                 };
             }
             var district = await _districtRepository.GetDistrictById(districtID);
-            if(district == null)
+            if (district == null)
             {
                 return new Response<object>()
                 {
@@ -710,7 +710,7 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            if(district.Availability==false)
+            if (district.Availability == false)
             {
                 return new Response<object>()
                 {
@@ -720,7 +720,7 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            if(serviceProvider.ProviderDistricts.Any(d=>d.District==district))
+            if (serviceProvider.ProviderDistricts.Any(d => d.District == district))
             {
                 return new Response<object>()
                 {
@@ -732,14 +732,14 @@ namespace Sarvicny.Application.Services
             }
             var districts = new ProviderDistrict()
             {
-                Provider=serviceProvider,
-                ProviderID=providerId,
-                District=district,
-                DistrictID=district.DistrictID,
-                enable=true
+                Provider = serviceProvider,
+                ProviderID = providerId,
+                District = district,
+                DistrictID = district.DistrictID,
+                enable = true
 
             };
-            var providerDistrict= await _districtRepository.AddDistrictToProvider(districts);
+            var providerDistrict = await _districtRepository.AddDistrictToProvider(districts);
             serviceProvider.ProviderDistricts.Add(providerDistrict);
             _unitOfWork.Commit();
             var DistrictAsObject = serviceProvider.ProviderDistricts.Select(d => new
@@ -827,7 +827,7 @@ namespace Sarvicny.Application.Services
         //    return new Response<object>()
         //    {
         //        Status = "success",
-                
+
         //        Payload = added,
         //        isError = false
         //    };

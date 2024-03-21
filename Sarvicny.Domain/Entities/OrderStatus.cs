@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sarvicny.Domain.Entities
@@ -13,23 +12,26 @@ namespace Sarvicny.Domain.Entities
         public string StatusName { get; set; }
     }
 
-    public enum OrderStatusEnum
-    {
-        [Description("Pending")]
-        Pending = 1,
+    //public enum OrderStatusEnum
+    //{
+    //    [Description("Pending")]
+    //    Pending = 1,
 
-        [Description("Approved")]
-        Approved = 2,
+    //    [Description("Approved")]
+    //    Approved = 2,
 
-        [Description("Rejected")]
-        Rejected = 3,
+    //    [Description("Paid")]
+    //    Paid = 3,
 
-        [Description("Canceled")]
-        Canceled = 4,
+    //    [Description("Rejected")]
+    //    Rejected = 4,
 
-        [Description("Completed")]
-        Completed = 5,
+    //    [Description("Canceled")]
+    //    Canceled = 5,
 
-    }
+    //    [Description("Completed")]
+    //    Completed = 6
+
+    //}
 
 }

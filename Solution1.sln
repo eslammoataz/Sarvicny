@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarvicny.Domain", "Sarvicny
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarvicny.Infrastructure", "Sarvicny.Infrastructure\Sarvicny.Infrastructure.csproj", "{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarvicny.Application.Tests", "Sarvicny.Application.Tests\Sarvicny.Application.Tests.csproj", "{E2894A8A-9A11-4EE6-80EA-15FC94136A57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2894A8A-9A11-4EE6-80EA-15FC94136A57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2894A8A-9A11-4EE6-80EA-15FC94136A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2894A8A-9A11-4EE6-80EA-15FC94136A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2894A8A-9A11-4EE6-80EA-15FC94136A57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

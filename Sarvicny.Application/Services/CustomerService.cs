@@ -29,7 +29,9 @@ namespace Sarvicny.Application.Services
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
-            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository, IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService, IDistrictRepository districtRepository)
+            IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository,
+            IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService,
+            IDistrictRepository districtRepository)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -371,7 +373,7 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        public async Task<Response<object>> OrderCart(string customerId)
+        public async Task<Response<object>> OrderCart(string customerId, PaymentMethod PayemntMethod)
         {
             #region validation_for_Data
             var spec = new CustomerWithCartSpecification(customerId);
@@ -418,7 +420,7 @@ namespace Sarvicny.Application.Services
             {
                 Customer = customer,
                 CustomerID = customerId,
-                OrderStatusID = "1", //value (status name)=set
+                OrderStatus = OrderStatusEnum.Pending,
                 TotalPrice = totalPrice,
                 OrderDate = DateTime.UtcNow
             };
@@ -434,7 +436,8 @@ namespace Sarvicny.Application.Services
             order.ServiceRequests = orderRequests;
 
             _unitOfWork.Commit();
-            var response = await _paymentService.Pay(order);
+
+            var response = await _paymentService.PayOrder(order, PayemntMethod);
 
             return response;
 

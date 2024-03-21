@@ -12,9 +12,9 @@
 //    {
 //        public OrderWithCustomerSpecification() { 
 //            Includes.Add(o=>o.Customer);
-            
+
 //        }
-        
+
 //        public OrderWithCustomerSpecification(string orderId) : base(o => o.OrderID == orderId)
 //        {
 //            Includes.Add(o => o.Customer);

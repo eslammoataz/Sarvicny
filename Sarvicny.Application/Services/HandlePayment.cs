@@ -20,8 +20,10 @@ namespace Sarvicny.Application.Services
             _customerRepository = customerRepository;
         }
 
-        public async Task<Response<object>> validateOrder(string orderId, bool transactionStatus)
+        public async Task<Response<object>> validateOrder(string orderId, bool transactionStatus,
+            string transactionID, PaymentMethod paymentMethod)
         {
+
             #region Validation_Data
             var spec = new OrderWithRequestsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
@@ -54,12 +56,32 @@ namespace Sarvicny.Application.Services
             }
             #endregion
 
-            if (!transactionStatus)
+            if (transactionStatus)
             {
                 order.ServiceRequests.ForEach(sr => sr.Slot.enable = false);
-                await _orderRepository.ChangeToPaid(order); // change order paid status
+                order.OrderStatus = OrderStatusEnum.Paid; //value (status name)=cancelled
+
+                // change order paid status
+                await _orderRepository.ChangeOrderStatus(order, transactionID, paymentMethod, transactionStatus);
+
                 customer.Cart.ServiceRequests = null; // empty cart of the customer
-                _unitOfWork.Commit();
+                try
+                {
+                    _unitOfWork.Commit();
+                }
+                catch (Exception ex)
+                {
+                    return new Response<object>()
+                    {
+                        Status = "failed",
+                        Message = "Error while saving data",
+                        Payload = null,
+                        isError = true,
+                        Errors = new List<string> { ex.Message }
+
+                    };
+                }
+
                 return new Response<object>()
                 {
                     Status = "success",
@@ -71,7 +93,11 @@ namespace Sarvicny.Application.Services
             }
             else
             {
-                order.OrderStatusID = OrderStatusEnum.Canceled.ToString(); //value (status name)=cancelled
+                order.OrderStatus = OrderStatusEnum.Canceled;
+
+                // change order Cancelled and saving transaction id and payment method
+                await _orderRepository.ChangeOrderStatus(order, transactionID, paymentMethod, transactionStatus);
+
                 _unitOfWork.Commit();
                 return new Response<object>()
                 {

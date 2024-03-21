@@ -45,25 +45,21 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task ApproveOrder(Order order)
         {
 
-            order.OrderStatusID = "2";
-            order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Approved");
+            order.OrderStatus = OrderStatusEnum.Approved;
 
         }
 
         public async Task RejectOrder(Order order)
         {
 
-            order.OrderStatusID = "3";
-            order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Rejected");
+            order.OrderStatus = OrderStatusEnum.Rejected;
 
         }
 
         public async Task CancelOrder(Order order)
         {
 
-            order.OrderStatusID = "4";
-            order.OrderStatus = _context.OrderStatuses.FirstOrDefault(o => o.StatusName == "Canceled");
-
+            order.OrderStatus = OrderStatusEnum.Canceled;
         }
 
         private IQueryable<Order> ApplySpecification(ISpecifications<Order> spec)
@@ -100,7 +96,7 @@ namespace Sarvicny.Infrastructure.Persistence
         {
 
             var orderStatus = _context.OrderStatuses;
-            order.OrderStatus = orderStatus.FirstOrDefault(o => o.OrderStatusID == "1");
+            order.OrderStatus = OrderStatusEnum.Pending;
 
 
             _context.Orders.Add(order);
@@ -124,19 +120,17 @@ namespace Sarvicny.Infrastructure.Persistence
             return serviceRequests;
         }
 
-        public async Task ChangeToPaid(Order order)
+        public async Task ChangeOrderStatus(Order order, string transactionId, PaymentMethod PaymentMethod, bool TransactionStatus)
         {
-            order.IsPaid = true;
+            order.IsPaid = TransactionStatus;
+            order.TransactionID = transactionId;
+            order.PaymentMethod = PaymentMethod;
             return;
         }
 
-       
-        
 
-        
-       
 
-       
+
 
        
         public async Task<ServiceRequest> GetServiceRequestByID(ISpecifications<ServiceRequest> spec)

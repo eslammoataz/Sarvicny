@@ -67,24 +67,24 @@ namespace Sarvicny.Infrastructure.Data
 
 
             builder.Entity<Criteria>().ToTable("Criterias");
-            
+
 
             //orderratingsdatabase
-         /*   builder.Entity<OrderRating>().ToTable("OrderRatings");
+            /*   builder.Entity<OrderRating>().ToTable("OrderRatings");
 
-            builder.Entity<OrderRating>().HasKey(R => R.RatingId);
+               builder.Entity<OrderRating>().HasKey(R => R.RatingId);
 
-            builder.Entity<OrderRating>().HasOne(c =>c.customer).
-              WithMany().HasForeignKey(c => c.CustomerId);
-
-
-            builder.Entity<OrderRating>().HasOne(p => p.provider).
-             WithMany().HasForeignKey(p => p.serviceProviderId);
+               builder.Entity<OrderRating>().HasOne(c =>c.customer).
+                 WithMany().HasForeignKey(c => c.CustomerId);
 
 
-            builder.Entity<OrderRating>().HasOne(o => o.order).
-            WithMany().HasForeignKey( o=> o.OrderId);
-         */
+               builder.Entity<OrderRating>().HasOne(p => p.provider).
+                WithMany().HasForeignKey(p => p.serviceProviderId);
+
+
+               builder.Entity<OrderRating>().HasOne(o => o.order).
+               WithMany().HasForeignKey( o=> o.OrderId);
+            */
             /////////////////////////
 
             builder.Entity<Service>()
@@ -111,10 +111,10 @@ namespace Sarvicny.Infrastructure.Data
                 .HasForeignKey(o => o.CustomerID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<Order>()
-                .HasOne(o => o.OrderStatus)
-                .WithMany()
-                .HasForeignKey(o => o.OrderStatusID);
+            //builder.Entity<Order>()
+            //    .HasOne(o => o.OrderStatus)
+            //    .WithMany()
+            //    .HasForeignKey(o => o.OrderStatusID);
 
             builder.Entity<ProviderAvailability>()
                 .HasOne(wa => wa.ServiceProvider)
