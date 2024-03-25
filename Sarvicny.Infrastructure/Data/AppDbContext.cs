@@ -111,10 +111,6 @@ namespace Sarvicny.Infrastructure.Data
                 .HasForeignKey(o => o.CustomerID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            //builder.Entity<Order>()
-            //    .HasOne(o => o.OrderStatus)
-            //    .WithMany()
-            //    .HasForeignKey(o => o.OrderStatusID);
 
             builder.Entity<ProviderAvailability>()
                 .HasOne(wa => wa.ServiceProvider)
@@ -151,17 +147,17 @@ namespace Sarvicny.Infrastructure.Data
                 .WithMany(pa => pa.Slots)
                 .HasForeignKey(ts => ts.ProviderAvailabilityID);
 
-            //builder.Entity<Cart>()
-            //    .HasMany(sr => sr.ServiceRequests)
-            //    .WithOne(c => c.Cart)
-            //    .HasForeignKey(c => c.CartID)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
             builder.Entity<Customer>()
                    .HasOne(c => c.Cart)
                    .WithOne(c => c.Customer)
                    .HasForeignKey<Customer>(c => c.CartID);
 
+
+            builder.Entity<ServiceRequest>()
+                   .HasOne(sr => sr.Slot)
+                   .WithMany()
+                   .HasForeignKey(sr => sr.SlotID)
+                   .OnDelete(DeleteBehavior.NoAction);
 
         }
 

@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj": {}
+    "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj": {}
   },
   "projects": {
-    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj",
         "projectName": "Sarvicny.Api",
-        "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj",
-        "packagesPath": "C:\\Users\\Menna\\.nuget\\packages\\",
-        "outputPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Api\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Sarvicny.Api.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Menna\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -32,14 +28,14 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
-                "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj"
+              "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj"
               },
-              "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
-                "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
+              "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
               },
-              "D:\\Graduation Project\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
-                "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj"
+              "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj"
               }
             }
           }
@@ -80,24 +76,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -106,25 +84,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.103\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
         "projectName": "Sarvicny.Application",
-        "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
-        "packagesPath": "C:\\Users\\Menna\\.nuget\\packages\\",
-        "outputPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Menna\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -138,11 +112,11 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
-                "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
+              "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj"
               },
-              "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
-                "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
+              "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
               }
             }
           }
@@ -180,6 +154,10 @@
             "RestSharp": {
               "target": "Package",
               "version": "[110.2.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[7.0.0, )"
             }
           },
           "imports": [
@@ -193,44 +171,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.103\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
         "projectName": "Sarvicny.Contracts",
-        "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
-        "packagesPath": "C:\\Users\\Menna\\.nuget\\packages\\",
-        "outputPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Contracts\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\Sarvicny.Contracts.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Contracts\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Menna\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -244,8 +204,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
-                "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
+              "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj"
               }
             }
           }
@@ -280,44 +240,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.103\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
         "projectName": "Sarvicny.Domain",
-        "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
-        "packagesPath": "C:\\Users\\Menna\\.nuget\\packages\\",
-        "outputPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Domain\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Sarvicny.Domain.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Menna\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -359,44 +301,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.103\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\Graduation Project\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
+    "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
+        "projectUniqueName": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
         "projectName": "Sarvicny.Infrastructure",
-        "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\Menna\\.nuget\\packages\\",
-        "outputPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Infrastructure\\obj\\",
+        "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Nemox\\.nuget\\packages\\",
+        "outputPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Menna\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Nemox\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -410,8 +334,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
-                "projectPath": "D:\\Graduation Project\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj"
+              "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj": {
+                "projectPath": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Sarvicny.Application.csproj"
               }
             }
           }
@@ -426,6 +350,10 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.17, )"
+            },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -448,26 +376,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.17, 7.0.17]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.103\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -18,11 +18,25 @@ public static class DependencyInjection
 {
     public static object AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetSection("constr").Value;
 
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
-        );
+        var dbType = configuration.GetSection("DatabaseConfig:DbType").Value;
+
+        if (dbType == "MSSQL")
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString("MSSQLConnection")));
+        }
+        else if (dbType == "MySQL")
+        {
+            var MySqlConnectionString = configuration.GetConnectionString("MySQLConnection");
+
+            services.AddDbContext<AppDbContext>(options =>
+               options.UseMySql(MySqlConnectionString, ServerVersion.AutoDetect(MySqlConnectionString))
+           );
+        }
+
+
 
         // Configure the Interfaces for the Identity
         services.AddIdentity<User, IdentityRole>()
@@ -54,4 +68,5 @@ public static class DependencyInjection
 
         return services;
     }
+
 }

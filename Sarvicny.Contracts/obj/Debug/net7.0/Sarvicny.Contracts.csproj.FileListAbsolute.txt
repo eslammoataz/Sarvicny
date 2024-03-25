@@ -62,3 +62,6 @@ E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\ref\Sarvicny.Contra
 D:\Graduation Project\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.dll
 D:\Graduation Project\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.pdb
 D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.CopyComplete
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.dll
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.pdb
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.CopyComplete
