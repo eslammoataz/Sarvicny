@@ -21,6 +21,7 @@ namespace Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations
         [Required(ErrorMessage = "Time slots is Required ")]
         public List<TimeRange> Slots { get; set; } = new List<TimeRange>();
     }
+
     public class DayOfWeekValidationAttribute : ValidationAttribute
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)

@@ -132,19 +132,19 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-        [HttpPost]
-        [Route("AddDistrict")]
-        public async Task<IActionResult> AddDistrict(string providerId, string districtName)
-        {
-            var response = await _serviceProviderService.AddDistrictToProvider(providerId, districtName);
+        //[HttpPost]
+        //[Route("AddDistrict")]
+        //public async Task<IActionResult> AddDistrict(string providerId, string districtName)
+        //{
+        //    var response = await _serviceProviderService.AddDistrictToProvider(providerId, districtName);
 
-            if (response.isError)
-            {
-                return BadRequest(response);
-            }
+        //    if (response.isError)
+        //    {
+        //        return BadRequest(response);
+        //    }
 
-            return Ok(response);
-        }
+        //    return Ok(response);
+        //}
 
         //[HttpPost]
         //[Route("RequestDistrict")]

@@ -94,7 +94,7 @@ namespace Sarvicny.Application.Services
                     Status = "Error",
                     Message = "Failed",
                 };
-            var providerDistrict = provider.ProviderDistricts.SingleOrDefault(d => d.DistrictID == requestServiceDto.DistrictID);
+            var providerDistrict = provider.ProviderDistricts.SingleOrDefault(d => d.DistrictID == requestServiceDto.DistrictID && d.enable==true);
             if (providerDistrict == null)
                 return new Response<object>
                 {
@@ -546,6 +546,7 @@ namespace Sarvicny.Application.Services
         {
             var spec = new CustomerWithOrdersSpecification(customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
+
             if (customer == null)
             {
                 return new Response<object>()

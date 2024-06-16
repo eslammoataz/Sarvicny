@@ -32,10 +32,16 @@ namespace Sarvicny.Infrastructure.Persistence
             return providerDistrict;
         }
 
+        public async Task RemoveDistrictfromProvider(ProviderDistrict providerDistrict)
+        {
+             _context.ProviderDistricts.Remove(providerDistrict);
+           
+        }
+
         //public async Task<List<District>> GetAllDistricts()
         //{
         //    return await _context.Districts.ToListAsync();
-            
+
         //}
 
         public async Task<List<District>> GetAllDistricts(ISpecifications<District> specifications)
@@ -51,6 +57,7 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return await _context.Districts.FirstOrDefaultAsync(d => d.DistrictName == districtName);
         }
+
 
         //public Task<Response<object>> RequestNewDistrictToBeAdded(string districtName)
         //{

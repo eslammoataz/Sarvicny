@@ -14,7 +14,9 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         public Task<District> GetDistrictById(string districtId);
        public Task<District> GetDistrictByName(string districtName);
        public Task<District> AddDistrict(District district);
+       
         public Task<ProviderDistrict> AddDistrictToProvider(ProviderDistrict providerDistrict);
+        public Task RemoveDistrictfromProvider(ProviderDistrict providerDistrict);
         public Task<List<District>> GetAllDistricts(ISpecifications<District> specifications);
 
        // public Task<Response<object>> RequestNewDistrictToBeAdded(string districtName);

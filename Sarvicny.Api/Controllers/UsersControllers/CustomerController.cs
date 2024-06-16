@@ -138,7 +138,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
         [HttpGet]
-        [Route("getCustomerOrdersLog")]
+        [Route("getCustomerOrdersLog/{customerId}")]
         public async Task<IActionResult> getCustomerOrdersLog(string customerId)
         {
             var response = await _customerService.ViewLogRequest(customerId);

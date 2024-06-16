@@ -12,6 +12,8 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string providerId); //done
 
+       
+
         Task<Response<List<object>>> getAvailability(string workerId); //done
 
         //Task<Response<Object>> ShowOrderDetails(string orderId); //done  //b2t fe orderService
@@ -28,9 +30,15 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<List<object>>> getAllApprovedOrders(string workerId);
         Task<Response<List<object>>> getAllRequestedOrders(string workerId);
         Task<Response<object>> getRegisteredServices(string providerId);
+
         Task<Response<object>> ShowProviderProfile(string workerId);
 
         Task<Response<object>> AddDistrictToProvider(string providerId,string District);
+        Task<Response<object>> DisableDistrictFromProvider(string providerId, string District);
+        Task<Response<object>> EnableDistrictToProvider(string providerId, string District);
+
+        Task<Response<object>> RemoveDistrictFromProvider(string providerId, string District);
+
 
         Task<Response<List<object>>> GetProviderDistricts(string providerId);
        // Task<Response<object>> RequestNewDistrictToBeAdded(string districtName);

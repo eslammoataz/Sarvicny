@@ -79,16 +79,15 @@ namespace Sarvicny.Api.Controllers
 
         }
 
-        [HttpGet("getProviderDistricts/{providerid}")]
-        public async Task<IActionResult> GetProviderDistricts(string providerID)
+        [HttpGet("getProviderDistricts/{providerId}")]
+        public async Task<IActionResult> GetProviderDistricts(string providerId)
         {
-            var response = await _serviceProviderService.GetProviderDistricts(providerID);
+            var response = await _serviceProviderService.GetProviderDistricts(providerId);
 
             if (response.isError)
             {
                 return NotFound(response);
             }
-
 
             return Ok(response);
         }
@@ -97,6 +96,48 @@ namespace Sarvicny.Api.Controllers
         public async Task<IActionResult> AddDistrictToProvider(string providerId, string districtID)
         {
             var response = await _serviceProviderService.AddDistrictToProvider(providerId, districtID);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("RemoveDistrict/{providerId}")]
+        public async Task<IActionResult> RemoveDistrictFromProvider(string providerId, string districtID)
+        {
+            var response = await _serviceProviderService.RemoveDistrictFromProvider(providerId, districtID);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("DisableDistrict/{providerId}")]
+        public async Task<IActionResult> DisableDistrictFromProvider(string providerId, string districtID)
+        {
+            var response = await _serviceProviderService.DisableDistrictFromProvider(providerId, districtID);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost]
+        [Route("EnableDistrict/{providerId}")]
+        public async Task<IActionResult> EnableDistrictToProvider(string providerId, string districtID)
+        {
+            var response = await _serviceProviderService.EnableDistrictToProvider(providerId, districtID);
 
             if (response.isError)
             {
