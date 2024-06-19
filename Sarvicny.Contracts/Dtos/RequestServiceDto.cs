@@ -20,10 +20,13 @@ namespace Sarvicny.Contracts.Dtos
 
         [Required(ErrorMessage = "District ID is Required ")]
         public string DistrictID { get; set; }
-        
+
+        public string? Address { get; set; }
+
         [Required(ErrorMessage = "Day of Request is Required")] 
         public DateTime RequestDay { get; set; } 
         
+       
         public string? ProblemDescription { get; set; }
     }
 }

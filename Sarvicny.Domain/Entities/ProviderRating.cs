@@ -15,7 +15,7 @@ namespace Sarvicny.Domain.Entities
         public string RatingId { get; set; }
 
         [ForeignKey("ServiceRequestID")]
-        public ServiceRequest serviceRequest { get; set; }
+        public OrderServiceRequest serviceRequest { get; set; }
 
         public string ServiceRequestID { get; set; }
         public string providerId { get; set; }

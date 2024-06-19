@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Authentication.Registers;
 using Sarvicny.Contracts.Dtos;
@@ -125,10 +126,23 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
         [HttpGet]
-        [Route("getCustomerProfile")]
+        [Route("getCustomerProfile/{customerId}")]
         public async Task<IActionResult> ShowCustomerProfile(string customerId)
         {
             var response = await _customerService.ShowCustomerProfile(customerId);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
+        }
+        [HttpPost]
+        [Route("updateCustomerProfile/{customerId}")]
+        public async Task<IActionResult> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto ,string customerId)
+        {
+            var response = await _customerService.UpdateCustomerProfile(updateCustomerDto,customerId);
 
             if (response.isError)
             {

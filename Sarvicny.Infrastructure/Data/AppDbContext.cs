@@ -4,6 +4,7 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
+using System.Reflection.Emit;
 
 
 namespace Sarvicny.Infrastructure.Data
@@ -34,10 +35,14 @@ namespace Sarvicny.Infrastructure.Data
 
         public DbSet<ProviderService> ProviderServices { get; set; }
         public DbSet<ProviderAvailability> ProviderAvailabilities { get; set; }
-        public DbSet<TimeSlot> Slots { get; set; }
+        public DbSet<AvailabilityTimeSlot> Slots { get; set; }
+
+        public DbSet<RequestedSlot> RequestedSlots { get; set; }
 
         public DbSet<Cart> Carts { get; set; }
-        public DbSet<ServiceRequest> ServiceRequests { get; set; }
+        public DbSet<CartServiceRequest> CartServiceRequests { get; set; }
+        public DbSet<OrderServiceRequest> OrderServiceRequests { get; set; }
+
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Admin> Admins { get; set; }
@@ -117,7 +122,7 @@ namespace Sarvicny.Infrastructure.Data
                 .WithMany(w => w.Availabilities)
                 .HasForeignKey(wa => wa.ServiceProviderID);
 
-            builder.Entity<TimeSlot>()
+            builder.Entity<AvailabilityTimeSlot>()
                 .HasOne(ts => ts.ProviderAvailability)
                 .WithMany(pa => pa.Slots)
                 .HasForeignKey(ts => ts.ProviderAvailabilityID);
@@ -142,10 +147,13 @@ namespace Sarvicny.Infrastructure.Data
                .WithMany(w => w.Availabilities)
                .HasForeignKey(wa => wa.ServiceProviderID);
 
-            builder.Entity<TimeSlot>()
+            builder.Entity<AvailabilityTimeSlot>()
                 .HasOne(ts => ts.ProviderAvailability)
                 .WithMany(pa => pa.Slots)
-                .HasForeignKey(ts => ts.ProviderAvailabilityID);
+                .HasForeignKey(ts => ts.ProviderAvailabilityID)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
 
             builder.Entity<Customer>()
                    .HasOne(c => c.Cart)
@@ -153,11 +161,23 @@ namespace Sarvicny.Infrastructure.Data
                    .HasForeignKey<Customer>(c => c.CartID);
 
 
-            builder.Entity<ServiceRequest>()
-                   .HasOne(sr => sr.Slot)
-                   .WithMany()
-                   .HasForeignKey(sr => sr.SlotID)
-                   .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<OrderServiceRequest>()
+               .HasOne(osr => osr.CRate)
+               .WithOne(cr => cr.serviceRequest)
+               .HasForeignKey<CustomerRating>(cr => cr.ServiceRequestID)
+               .OnDelete(DeleteBehavior.Cascade); // Configure cascading delete
+
+            builder.Entity<OrderServiceRequest>()
+               .HasOne(osr => osr.PRate)
+               .WithOne(cr => cr.serviceRequest)
+               .HasForeignKey<ProviderRating>(cr => cr.ServiceRequestID)
+               .OnDelete(DeleteBehavior.Cascade); // Configure cascading delete
+
+             builder.Entity<CartServiceRequest>()
+                .HasOne(c => c.Slot)
+                .WithMany()
+                .HasForeignKey(c => c.SlotID)
+                .OnDelete(DeleteBehavior.SetNull);
 
         }
 

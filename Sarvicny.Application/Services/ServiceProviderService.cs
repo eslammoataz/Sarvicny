@@ -1,12 +1,16 @@
 ﻿using System.Dynamic;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
+using Sarvicny.Application.Services.Specifications.NewFolder;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
+using Sarvicny.Contracts.Payment;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
@@ -124,8 +128,6 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string workerId)
         {
 
-            availabilityDto.AvailabilityDate = availabilityDto.AvailabilityDate.Value.Date;
-
             var spec = new ProviderWithAvailabilitesSpecification(workerId);
             var provider = await _serviceProviderRepository.FindByIdAsync(spec);
             if (provider == null)
@@ -149,18 +151,19 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-
             var availiabilities = await _serviceProviderRepository.AddAvailability(availabilityDto, spec);
             provider.Availabilities.Add(availiabilities);
             _unitOfWork.Commit();
+
+
             var slots = availiabilities.Slots.Select(s => new
             {
                 s.StartTime,
                 s.EndTime
             }).ToList();
+
             object result = new
             {
-                availiabilities.AvailabilityDate,
                 availiabilities.DayOfWeek,
                 slots,
                 availiabilities.ServiceProviderID
@@ -174,7 +177,60 @@ namespace Sarvicny.Application.Services
             };
         }
 
+        public async Task<Response<object>> RemoveAvailability(string availabilityId, string providerId)
+        {
+            var spec = new ProviderWithAvailabilitesSpecification(providerId);
+            var provider = await _serviceProviderRepository.FindByIdAsync(spec);
+            if (provider == null)
+            {
+                return new Response<object>()
 
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider Not Found"
+                };
+            }
+            var availabilities= provider.Availabilities;
+            var availabilty= availabilities.FirstOrDefault(a=>a.ProviderAvailabilityID == availabilityId);
+            if (availabilty ==null) 
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Availabilty Not Found"
+                };
+
+            }
+
+            await _serviceProviderRepository.RemoveAvailability(availabilty);
+            provider.Availabilities.Remove(availabilty);
+            _unitOfWork.Commit();
+            return new Response<object>()
+
+            {
+                isError = false,
+                Payload = availabilty,
+                Message = "provider availability is removed successfully"
+            };
+            //var slots= availabilty.Slots;
+
+            //if (slots.Any(s=>s.enable==false))
+            //{
+            //    foreach (var slot in slots.Where(s => s.enable == false))
+            //    {
+
+
+            //    }
+
+            //}
+
+
+
+
+        }
 
         public async Task<Response<List<object>>> getAvailability(string workerId)
         {
@@ -202,7 +258,7 @@ namespace Sarvicny.Application.Services
             var avail = availability.Select(a => new
             {
                 a.ProviderAvailabilityID,
-                a.AvailabilityDate,
+                //a.AvailabilityDate,
                 a.DayOfWeek,
                 slots = a.Slots.Select(s => new { s.StartTime, s.EndTime }).ToList<object>(),
 
@@ -217,7 +273,24 @@ namespace Sarvicny.Application.Services
             };
         }
 
+        public async Task<AvailabilityTimeSlot> getOriginalSlot(RequestedSlot RequestedSlot, string providerId)
+        {
+            var spec = new ProviderWithAvailabilitesSpecification(providerId);
 
+            var provider = await _serviceProviderRepository.FindByIdAsync(spec);
+
+            var availability = provider.Availabilities.FirstOrDefault(a => a.DayOfWeek == RequestedSlot.DayOfWeek);
+            if (availability == null)
+                return null;
+
+            var slot = availability.Slots.FirstOrDefault(s => s.StartTime == RequestedSlot.StartTime);
+            if (slot == null)
+                return null;
+
+            return slot;
+
+
+        }
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
 
@@ -252,7 +325,23 @@ namespace Sarvicny.Application.Services
 
 
             await _orderRepository.ApproveOrder(order);
+
+            var orderRequests = order.OrderRequests;
+
+            foreach (var request in orderRequests)
+            {
+                var originalSlot = await getOriginalSlot(request.RequestedSlot, request.providerService.ProviderID);
+                if (originalSlot == null)
+                {
+                    continue;
+                }
+                originalSlot.isActive = false;
+
+
+            }
             _unitOfWork.Commit();
+
+            
             var details = await _orderService.ShowOrderDetailsForProvider(orderId);
 
 
@@ -315,6 +404,19 @@ namespace Sarvicny.Application.Services
 
             }
             await _orderRepository.CancelOrder(order);
+
+            var orderRequests = order.OrderRequests;
+            foreach (var request in orderRequests)
+            {
+                var originalSlot = await getOriginalSlot(request.RequestedSlot, request.providerService.ProviderID);
+                if (originalSlot == null)
+                {
+                    continue;
+                }
+                originalSlot.isActive = true;
+            }
+
+
             _unitOfWork.Commit();
 
             var customer = order.Customer;
@@ -422,7 +524,7 @@ namespace Sarvicny.Application.Services
             List<object> result = new List<object>();
             foreach (var order in orders)
             {
-                if (order.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
+                if (order.OrderRequests.Any(s => s.providerService.ProviderID == workerId))
                 {
                     var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
 
@@ -473,7 +575,7 @@ namespace Sarvicny.Application.Services
             {
                 if (order.OrderStatus == OrderStatusEnum.Approved) //2 means approved 
                 {
-                    if (order.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
+                    if (order.OrderRequests.Any(s => s.providerService.ProviderID == workerId))
                     {
                         var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
 
@@ -531,7 +633,7 @@ namespace Sarvicny.Application.Services
             {
                 if (order.OrderStatus == OrderStatusEnum.Pending) // 1 means request
                 {
-                    if (order.ServiceRequests.Any(s => s.providerService.ProviderID == workerId))
+                    if (order.OrderRequests.Any(s => s.providerService.ProviderID == workerId))
                     {
                         var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
 
@@ -1011,6 +1113,8 @@ namespace Sarvicny.Application.Services
                 isError = true
             };
         }
+
+
 
 
 

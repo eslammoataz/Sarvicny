@@ -12,11 +12,13 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string providerId); //done
 
-       
+        Task<Response<object>> RemoveAvailability(string availabilityId, string providerId); 
+
+
 
         Task<Response<List<object>>> getAvailability(string workerId); //done
 
-        //Task<Response<Object>> ShowOrderDetails(string orderId); //done  //b2t fe orderService
+       
 
         Task<Response<object>> ApproveOrder(string orderId); //done
         Task<Response<object>> RejectOrder(string orderId); //done

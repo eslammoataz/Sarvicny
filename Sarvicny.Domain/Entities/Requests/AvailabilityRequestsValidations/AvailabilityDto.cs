@@ -15,9 +15,6 @@ namespace Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations
         public string DayOfWeek { get; set; }
 
 
-        public DateTime? AvailabilityDate { get; set; }
-
-
         [Required(ErrorMessage = "Time slots is Required ")]
         public List<TimeRange> Slots { get; set; } = new List<TimeRange>();
     }

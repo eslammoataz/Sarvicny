@@ -9,21 +9,21 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
         {
             Includes.Add(o => o.Customer);
 
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.RequestedSlot)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
 
         }
         public OrderWithRequestsSpecification(string orderId) : base(o => o.OrderID == orderId)
         {
             Includes.Add(o => o.Customer);
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.Slot)}");
-            AddInclude($"{nameof(Order.ServiceRequests)}.{nameof(ServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.RequestedSlot)}");
+            AddInclude($"{nameof(Order.OrderRequests)}.{nameof(OrderServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
         }
     }
 

@@ -58,13 +58,13 @@ namespace Sarvicny.Application.Services
 
             if (transactionStatus)
             {
-                order.ServiceRequests.ForEach(sr => sr.Slot.enable = false);
+                //order.OrderRequests.ForEach(sr => sr.Slot.isActive = false);
                 order.OrderStatus = OrderStatusEnum.Paid; //value (status name)=cancelled
 
                 // change order paid status
                 await _orderRepository.ChangeOrderStatus(order, transactionID, paymentMethod, transactionStatus);
 
-                customer.Cart.ServiceRequests = null; // empty cart of the customer
+                //customer.Cart.ServiceRequests = null; // empty cart of the customer
                 try
                 {
                     _unitOfWork.Commit();

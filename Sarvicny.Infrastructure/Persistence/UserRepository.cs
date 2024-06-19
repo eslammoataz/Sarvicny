@@ -93,6 +93,11 @@ public class UserRepository : IUserRepository
         return await _userManager.GetClaimsAsync(user);
     }
 
+    public async Task<IdentityResult> UpdateUserAsync(User user)
+    {
+       return await _userManager.UpdateAsync(user);
+    }
+
     //public async Task<ICollection<Provider>> GetAllServiceProviders()
     //{
     //    var providers = await _context.Provider.ToListAsync();

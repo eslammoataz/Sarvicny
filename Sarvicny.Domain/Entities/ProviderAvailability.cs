@@ -15,7 +15,7 @@ namespace Sarvicny.Domain.Entities
     {
         public ProviderAvailability()
         {
-            Slots = new List<TimeSlot>();
+            Slots = new List<AvailabilityTimeSlot>();
         }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,14 +23,9 @@ namespace Sarvicny.Domain.Entities
 
         public string ServiceProviderID { get; set; }
 
-        // Date or week associated with the availability data
-        //to be able to reserve and retrieve previous data
-        public DateTime? AvailabilityDate { get; set; }
-
         public string DayOfWeek { get; set; }
 
-
-        public List<TimeSlot> Slots { get; set; }
+        public List<AvailabilityTimeSlot> Slots { get; set; }
 
         [ForeignKey("ServiceProviderID")]
         [JsonIgnore]

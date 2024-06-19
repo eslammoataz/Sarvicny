@@ -91,27 +91,25 @@ namespace Sarvicny.Infrastructure.Persistence
             var providerAvailability = new ProviderAvailability
             {
                 ServiceProviderID = provider.Id,
-                DayOfWeek = availabilityDto.DayOfWeek,
-                AvailabilityDate = availabilityDto.AvailabilityDate,
                 ServiceProvider = provider,
+                DayOfWeek = availabilityDto.DayOfWeek,
                 
+ 
                 
             };
 
-            List<TimeSlot> timeSlots = await ConvertToTimeSlot(availabilityDto.Slots, providerAvailability);
+            List<AvailabilityTimeSlot> timeSlots = await ConvertToTimeSlot(availabilityDto.Slots, providerAvailability);
             providerAvailability.Slots = timeSlots;
             
             _context.ProviderAvailabilities.Add(providerAvailability);
-
-            provider.Availabilities.Add(providerAvailability);
 
             return providerAvailability;
 
         }
 
-        private async Task<List<TimeSlot>> ConvertToTimeSlot(List<TimeRange> timeRanges, ProviderAvailability providerAvailability)
+        private async Task<List<AvailabilityTimeSlot>> ConvertToTimeSlot(List<TimeRange> timeRanges, ProviderAvailability providerAvailability)
         {
-            List<TimeSlot> timeSlots = new List<TimeSlot>();
+            List<AvailabilityTimeSlot> timeSlots = new List<AvailabilityTimeSlot>();
 
             foreach (var timeRange in timeRanges)
             {
@@ -121,13 +119,14 @@ namespace Sarvicny.Infrastructure.Persistence
                 // Iterate over 1-hour intervals within the time range
                 for (TimeSpan currentHour = startTime; currentHour < endTime; currentHour = currentHour.Add(TimeSpan.FromHours(1)))
                 {
-                    var timeSlot = new TimeSlot
+                    var timeSlot = new AvailabilityTimeSlot
                     {
                         StartTime = currentHour,
                         EndTime = currentHour.Add(TimeSpan.FromHours(1)),
-                        enable = true,
+                        isActive=true,
                         ProviderAvailabilityID = providerAvailability.ProviderAvailabilityID,
                         ProviderAvailability = providerAvailability
+
                     };
                     timeSlots.Add(timeSlot);
                 }
@@ -136,12 +135,17 @@ namespace Sarvicny.Infrastructure.Persistence
             return timeSlots;
         }
 
+        public async Task RemoveAvailability(ProviderAvailability providerAvailability)
+        {
+             _context.ProviderAvailabilities.Remove(providerAvailability);
+        }
+
         public async Task<List<ProviderAvailability>> getAvailability(ISpecifications<Provider> spec)
         {
             var provider = await ApplySpecification(spec).FirstOrDefaultAsync();
             return provider.Availabilities;
         }
-        public async Task<List<TimeSlot>> getAvailabilitySlots(ISpecifications<ProviderAvailability> spec)
+        public async Task<List<AvailabilityTimeSlot>> getAvailabilitySlots(ISpecifications<ProviderAvailability> spec)
         {
             var avail = await ApplySpecificationA(spec).FirstOrDefaultAsync();
             return avail.Slots;
@@ -168,9 +172,6 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return await ApplySpecification(spec).ToListAsync();
         }
-
-
-
 
 
     }

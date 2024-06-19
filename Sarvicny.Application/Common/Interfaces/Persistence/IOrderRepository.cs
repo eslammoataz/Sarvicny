@@ -16,13 +16,13 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<List<Order>> GetAllOrders(ISpecifications<Order> spec);
 
         Task ChangeOrderStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
-        Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest> serviceRequests, Order order);
+        Task<List<OrderServiceRequest>> SetOrderToServiceRequest(List<OrderServiceRequest> serviceRequests, Order order);
 
         Task<CustomerRating> AddCustomerRating(CustomerRating rate);
         Task<ProviderRating> AddProviderRating(ProviderRating rating);
 
      
-         Task<ServiceRequest> GetServiceRequestByID(ISpecifications<ServiceRequest> spec);
+         Task<OrderServiceRequest> GetOrderServiceRequestByID(ISpecifications<OrderServiceRequest> spec);
         Task<List<ProviderRating>> GetAllProviderRating();
         Task<List<CustomerRating>> GetAllCustomerRating();
 

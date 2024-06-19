@@ -14,7 +14,7 @@ namespace Sarvicny.Domain.Entities
 
         public string CustomerID { get; set; }
 
-        public List<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
+        public List<CartServiceRequest>? ServiceRequests { get; set; } = new List<CartServiceRequest>();
 
         //public DateTime? AddedTime { get; set; }
 

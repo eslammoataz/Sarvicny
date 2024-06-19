@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Sarvicny.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class intial_migration : Migration
+    public partial class test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -94,6 +95,23 @@ namespace Sarvicny.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OrderStatuses", x => x.OrderStatusID);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "RequestedSlots",
+                columns: table => new
+                {
+                    SlotId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RequestedDay = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DayOfWeek = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    StartTime = table.Column<TimeSpan>(type: "time(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestedSlots", x => x.SlotId);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -424,7 +442,6 @@ namespace Sarvicny.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ServiceProviderID = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    AvailabilityDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     DayOfWeek = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
@@ -524,45 +541,6 @@ namespace Sarvicny.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "OrderRating",
-                columns: table => new
-                {
-                    RatingId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    OrderId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CustomerId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CustomerRating = table.Column<int>(type: "int", nullable: true),
-                    ServiceProviderRating = table.Column<int>(type: "int", nullable: true),
-                    Comment = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderRating", x => x.RatingId);
-                    table.ForeignKey(
-                        name: "FK_OrderRating_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_OrderRating_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "OrderID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderRating_ServiceProviders_ProviderId",
-                        column: x => x.ProviderId,
-                        principalTable: "ServiceProviders",
-                        principalColumn: "Id");
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Slots",
                 columns: table => new
                 {
@@ -570,7 +548,7 @@ namespace Sarvicny.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     StartTime = table.Column<TimeSpan>(type: "time(6)", nullable: false),
                     EndTime = table.Column<TimeSpan>(type: "time(6)", nullable: false),
-                    enable = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    isActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     ProviderAvailabilityID = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
@@ -582,6 +560,59 @@ namespace Sarvicny.Infrastructure.Migrations
                         column: x => x.ProviderAvailabilityID,
                         principalTable: "ProviderAvailabilities",
                         principalColumn: "ProviderAvailabilityID",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "OrderServiceRequests",
+                columns: table => new
+                {
+                    OrderServiceRequestID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    OrderId = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderServiceID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RequestedSlotID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderDistrictID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Address = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    ProblemDescription = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    customerRatingId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    providerRatingId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderServiceRequests", x => x.OrderServiceRequestID);
+                    table.ForeignKey(
+                        name: "FK_OrderServiceRequests_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderID");
+                    table.ForeignKey(
+                        name: "FK_OrderServiceRequests_ProviderDistricts_ProviderDistrictID",
+                        column: x => x.ProviderDistrictID,
+                        principalTable: "ProviderDistricts",
+                        principalColumn: "ProviderDistrictID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderServiceRequests_ProviderServices_ProviderServiceID",
+                        column: x => x.ProviderServiceID,
+                        principalTable: "ProviderServices",
+                        principalColumn: "ProviderServiceID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderServiceRequests_RequestedSlots_RequestedSlotID",
+                        column: x => x.RequestedSlotID,
+                        principalTable: "RequestedSlots",
+                        principalColumn: "SlotId",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -607,6 +638,55 @@ namespace Sarvicny.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "CartServiceRequests",
+                columns: table => new
+                {
+                    CartServiceRequestID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CartID = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderServiceID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RequestedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    SlotID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderDistrictID = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Address = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    ProblemDescription = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CartServiceRequests", x => x.CartServiceRequestID);
+                    table.ForeignKey(
+                        name: "FK_CartServiceRequests_Carts_CartID",
+                        column: x => x.CartID,
+                        principalTable: "Carts",
+                        principalColumn: "CartID");
+                    table.ForeignKey(
+                        name: "FK_CartServiceRequests_ProviderDistricts_ProviderDistrictID",
+                        column: x => x.ProviderDistrictID,
+                        principalTable: "ProviderDistricts",
+                        principalColumn: "ProviderDistrictID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartServiceRequests_ProviderServices_ProviderServiceID",
+                        column: x => x.ProviderServiceID,
+                        principalTable: "ProviderServices",
+                        principalColumn: "ProviderServiceID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CartServiceRequests_Slots_SlotID",
+                        column: x => x.SlotID,
+                        principalTable: "Slots",
+                        principalColumn: "TimeSlotID");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "customerRatings",
                 columns: table => new
                 {
@@ -625,6 +705,12 @@ namespace Sarvicny.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_customerRatings", x => x.RatingId);
+                    table.ForeignKey(
+                        name: "FK_customerRatings_OrderServiceRequests_ServiceRequestID",
+                        column: x => x.ServiceRequestID,
+                        principalTable: "OrderServiceRequests",
+                        principalColumn: "OrderServiceRequestID",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -647,74 +733,12 @@ namespace Sarvicny.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProviderRatings", x => x.RatingId);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "ServiceRequests",
-                columns: table => new
-                {
-                    ServiceRequestID = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CartID = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderServiceID = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    AddedTime = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    SlotID = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderDistrictID = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    OrderId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Price = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    ProblemDescription = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    customerRatingId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    providerRatingId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ServiceRequests", x => x.ServiceRequestID);
                     table.ForeignKey(
-                        name: "FK_ServiceRequests_Carts_CartID",
-                        column: x => x.CartID,
-                        principalTable: "Carts",
-                        principalColumn: "CartID");
-                    table.ForeignKey(
-                        name: "FK_ServiceRequests_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "OrderID");
-                    table.ForeignKey(
-                        name: "FK_ServiceRequests_ProviderDistricts_ProviderDistrictID",
-                        column: x => x.ProviderDistrictID,
-                        principalTable: "ProviderDistricts",
-                        principalColumn: "ProviderDistrictID",
+                        name: "FK_ProviderRatings_OrderServiceRequests_ServiceRequestID",
+                        column: x => x.ServiceRequestID,
+                        principalTable: "OrderServiceRequests",
+                        principalColumn: "OrderServiceRequestID",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ServiceRequests_ProviderRatings_providerRatingId",
-                        column: x => x.providerRatingId,
-                        principalTable: "ProviderRatings",
-                        principalColumn: "RatingId");
-                    table.ForeignKey(
-                        name: "FK_ServiceRequests_ProviderServices_ProviderServiceID",
-                        column: x => x.ProviderServiceID,
-                        principalTable: "ProviderServices",
-                        principalColumn: "ProviderServiceID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ServiceRequests_Slots_SlotID",
-                        column: x => x.SlotID,
-                        principalTable: "Slots",
-                        principalColumn: "TimeSlotID");
-                    table.ForeignKey(
-                        name: "FK_ServiceRequests_customerRatings_customerRatingId",
-                        column: x => x.customerRatingId,
-                        principalTable: "customerRatings",
-                        principalColumn: "RatingId");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -745,9 +769,30 @@ namespace Sarvicny.Infrastructure.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CartServiceRequests_CartID",
+                table: "CartServiceRequests",
+                column: "CartID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartServiceRequests_ProviderDistrictID",
+                table: "CartServiceRequests",
+                column: "ProviderDistrictID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartServiceRequests_ProviderServiceID",
+                table: "CartServiceRequests",
+                column: "ProviderServiceID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CartServiceRequests_SlotID",
+                table: "CartServiceRequests",
+                column: "SlotID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_customerRatings_ServiceRequestID",
                 table: "customerRatings",
-                column: "ServiceRequestID");
+                column: "ServiceRequestID",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_CartID",
@@ -756,25 +801,29 @@ namespace Sarvicny.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderRating_CustomerId",
-                table: "OrderRating",
-                column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderRating_OrderId",
-                table: "OrderRating",
-                column: "OrderId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderRating_ProviderId",
-                table: "OrderRating",
-                column: "ProviderId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerID",
                 table: "Orders",
                 column: "CustomerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderServiceRequests_OrderId",
+                table: "OrderServiceRequests",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderServiceRequests_ProviderDistrictID",
+                table: "OrderServiceRequests",
+                column: "ProviderDistrictID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderServiceRequests_ProviderServiceID",
+                table: "OrderServiceRequests",
+                column: "ProviderServiceID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderServiceRequests_RequestedSlotID",
+                table: "OrderServiceRequests",
+                column: "RequestedSlotID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProviderAvailabilities_ServiceProviderID",
@@ -794,7 +843,8 @@ namespace Sarvicny.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProviderRatings_ServiceRequestID",
                 table: "ProviderRatings",
-                column: "ServiceRequestID");
+                column: "ServiceRequestID",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProviderServices_ProviderID",
@@ -805,41 +855,6 @@ namespace Sarvicny.Infrastructure.Migrations
                 name: "IX_ProviderServices_ServiceID",
                 table: "ProviderServices",
                 column: "ServiceID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceRequests_CartID",
-                table: "ServiceRequests",
-                column: "CartID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceRequests_customerRatingId",
-                table: "ServiceRequests",
-                column: "customerRatingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceRequests_OrderId",
-                table: "ServiceRequests",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceRequests_ProviderDistrictID",
-                table: "ServiceRequests",
-                column: "ProviderDistrictID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceRequests_providerRatingId",
-                table: "ServiceRequests",
-                column: "providerRatingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceRequests_ProviderServiceID",
-                table: "ServiceRequests",
-                column: "ProviderServiceID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ServiceRequests_SlotID",
-                table: "ServiceRequests",
-                column: "SlotID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Services_CriteriaID",
@@ -866,55 +881,11 @@ namespace Sarvicny.Infrastructure.Migrations
                 table: "Users",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_customerRatings_ServiceRequests_ServiceRequestID",
-                table: "customerRatings",
-                column: "ServiceRequestID",
-                principalTable: "ServiceRequests",
-                principalColumn: "ServiceRequestID",
-                onDelete: ReferentialAction.Cascade);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ProviderRatings_ServiceRequests_ServiceRequestID",
-                table: "ProviderRatings",
-                column: "ServiceRequestID",
-                principalTable: "ServiceRequests",
-                principalColumn: "ServiceRequestID",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Customers_Users_Id",
-                table: "Customers");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ServiceProviders_Users_Id",
-                table: "ServiceProviders");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProviderAvailabilities_ServiceProviders_ServiceProviderID",
-                table: "ProviderAvailabilities");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProviderDistricts_ServiceProviders_ProviderID",
-                table: "ProviderDistricts");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProviderServices_ServiceProviders_ProviderID",
-                table: "ProviderServices");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_customerRatings_ServiceRequests_ServiceRequestID",
-                table: "customerRatings");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ProviderRatings_ServiceRequests_ServiceRequestID",
-                table: "ProviderRatings");
-
             migrationBuilder.DropTable(
                 name: "Admins");
 
@@ -934,31 +905,37 @@ namespace Sarvicny.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CartServiceRequests");
+
+            migrationBuilder.DropTable(
                 name: "Companies");
 
             migrationBuilder.DropTable(
                 name: "Consultants");
 
             migrationBuilder.DropTable(
-                name: "OrderRating");
+                name: "customerRatings");
 
             migrationBuilder.DropTable(
                 name: "OrderStatuses");
 
             migrationBuilder.DropTable(
+                name: "ProviderRatings");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Slots");
 
             migrationBuilder.DropTable(
                 name: "Workers");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "OrderServiceRequests");
 
             migrationBuilder.DropTable(
-                name: "ServiceProviders");
-
-            migrationBuilder.DropTable(
-                name: "ServiceRequests");
+                name: "ProviderAvailabilities");
 
             migrationBuilder.DropTable(
                 name: "Orders");
@@ -967,16 +944,10 @@ namespace Sarvicny.Infrastructure.Migrations
                 name: "ProviderDistricts");
 
             migrationBuilder.DropTable(
-                name: "ProviderRatings");
-
-            migrationBuilder.DropTable(
                 name: "ProviderServices");
 
             migrationBuilder.DropTable(
-                name: "Slots");
-
-            migrationBuilder.DropTable(
-                name: "customerRatings");
+                name: "RequestedSlots");
 
             migrationBuilder.DropTable(
                 name: "Customers");
@@ -985,13 +956,16 @@ namespace Sarvicny.Infrastructure.Migrations
                 name: "Districts");
 
             migrationBuilder.DropTable(
+                name: "ServiceProviders");
+
+            migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
-                name: "ProviderAvailabilities");
+                name: "Carts");
 
             migrationBuilder.DropTable(
-                name: "Carts");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Criterias");

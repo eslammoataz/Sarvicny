@@ -67,9 +67,9 @@ namespace Sarvicny.Infrastructure.Persistence
             return SpecificationBuilder<Order>.Build(_context.Orders, spec);
         }
 
-        private IQueryable<ServiceRequest> ApplySpecificationSR(ISpecifications<ServiceRequest> spec)
+        private IQueryable<OrderServiceRequest> ApplySpecificationSR(ISpecifications<OrderServiceRequest> spec)
         {
-            return SpecificationBuilder<ServiceRequest>.Build(_context.ServiceRequests, spec);
+            return SpecificationBuilder<OrderServiceRequest>.Build(_context.OrderServiceRequests, spec);
         }
         public async Task<Order?> GetOrder(ISpecifications<Order> specifications)
         {
@@ -111,7 +111,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         }
 
-        public async Task<List<ServiceRequest>> SetOrderToServiceRequest(List<ServiceRequest> serviceRequests, Order order)
+        public async Task<List<OrderServiceRequest>> SetOrderToServiceRequest(List<OrderServiceRequest> serviceRequests, Order order)
         {
             foreach (var serviceRequest in serviceRequests)
             {
@@ -130,10 +130,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
 
 
-
-
-       
-        public async Task<ServiceRequest> GetServiceRequestByID(ISpecifications<ServiceRequest> spec)
+        public async Task<OrderServiceRequest> GetOrderServiceRequestByID(ISpecifications<OrderServiceRequest> spec)
         {
             return await ApplySpecificationSR(spec).FirstOrDefaultAsync();
         }

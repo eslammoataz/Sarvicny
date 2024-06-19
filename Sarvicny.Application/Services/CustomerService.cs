@@ -7,6 +7,7 @@ using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 
@@ -45,10 +46,11 @@ namespace Sarvicny.Application.Services
             _districtRepository = districtRepository;
             _paymentService = paymentService;
         }
+
+
         public async Task<Response<object>> RequestService(RequestServiceDto requestServiceDto, string customerId)
         {
-            requestServiceDto.RequestDay = requestServiceDto.RequestDay.Date;
-
+            
             var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(requestServiceDto.ProviderId);
             var provider = await _providerRepository.FindByIdAsync(spec);
 
@@ -94,7 +96,7 @@ namespace Sarvicny.Application.Services
                     Status = "Error",
                     Message = "Failed",
                 };
-            var providerDistrict = provider.ProviderDistricts.SingleOrDefault(d => d.DistrictID == requestServiceDto.DistrictID && d.enable==true);
+            var providerDistrict = provider.ProviderDistricts.SingleOrDefault(d => d.DistrictID == requestServiceDto.DistrictID && d.enable == true);
             if (providerDistrict == null)
                 return new Response<object>
                 {
@@ -116,6 +118,8 @@ namespace Sarvicny.Application.Services
                     Message = "Customer Not Found",
                 };
 
+
+
             var slots = provider.Availabilities.SelectMany(p => p.Slots);
 
             var slotExist = slots.SingleOrDefault(s => s.TimeSlotID == requestServiceDto.SlotID);
@@ -128,16 +132,30 @@ namespace Sarvicny.Application.Services
                     Status = "Error",
                     Message = "An Error Occured",
                 };
-            if (slotExist.enable == false)
+            if (slotExist.isActive == false)
             {
                 return new Response<object>
                 {
                     isError = true,
                     Errors = new List<string> { "Error with Date or Slot" },
                     Status = "Error",
-                    Message = "Slot is not available",
+                    Message = "Slot is not available ,may be reserved",
                 };
             }
+
+            var dayofweek = requestServiceDto.RequestDay.DayOfWeek.ToString();
+
+            if (dayofweek != slotExist.ProviderAvailability.DayOfWeek)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Error with Date" },
+                    Status = "Error",
+                    Message = "This date is inconsistent with the provided slot",
+                };
+            }
+
 
             var cart = customer.Cart;
 
@@ -155,7 +173,7 @@ namespace Sarvicny.Application.Services
             {
 
 
-                if (requestServiceDto.ServiceId == request.providerService.ServiceID && requestServiceDto.ProviderId == request.providerService.ProviderID && slotExist.TimeSlotID == request.SlotID)
+                if (requestServiceDto.ServiceId == request.providerService.ServiceID && requestServiceDto.ProviderId == request.providerService.ProviderID && slotExist.TimeSlotID == request.SlotID && requestServiceDto.RequestDay == request.RequestedDate )
                 {
                     return new Response<object>
                     {
@@ -168,9 +186,19 @@ namespace Sarvicny.Application.Services
 
             }
 
-            var newRequest = new ServiceRequest
+            var Address = requestServiceDto.Address;
+
+            if (Address is null)
             {
-                AddedTime = DateTime.UtcNow,
+                Address = customer.Address;
+            }
+
+
+
+
+            var newRequest = new CartServiceRequest
+            {
+                RequestedDate = requestServiceDto.RequestDay,
                 providerService = providerService,
                 providerDistrict = providerDistrict,
                 Slot = slotExist,
@@ -178,20 +206,24 @@ namespace Sarvicny.Application.Services
                 CartID = customer.Cart.CartID,
                 Cart = customer.Cart,
                 Price = providerService.Price,
-                ProblemDescription = requestServiceDto.ProblemDescription
+                ProblemDescription = requestServiceDto.ProblemDescription,
+                Address = Address,
             };
 
-            //slotExist.enable = false;
+    
 
             await _customerRepository.AddRequest(newRequest);
             _unitOfWork.Commit();
 
             var output = new
             {
-                RequestId = newRequest.ServiceRequestID,
+                RequestId = newRequest.CartServiceRequestID,
                 RequestDay = requestServiceDto.RequestDay,
+                DayOfWeek= slotExist.ProviderAvailability.DayOfWeek,
                 RequestTime = slotExist.StartTime,
+
                 District = providerDistrict.District.DistrictName,
+                Address = Address,
                 ServiceName = service.ServiceName,
                 ProviderName = provider.FirstName + " " + provider.LastName,
                 Price = providerService.Price,
@@ -228,16 +260,15 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            var spec2 = new ServiceRequestWithSlotSpecification(requestId);
-            var serviceRequest = await _customerRepository
-                .GetServiceRequestById(spec2);
+            var spec2 = new CartServiceRequestWithDetailsSpecification(requestId);
+            var serviceRequest = await _customerRepository.GetCartServiceRequestById(spec2);
 
             if (serviceRequest == null)
             {
                 return new Response<object>()
                 {
                     Payload = null,
-                    Message = "Service is not found",
+                    Message = "Request is not found",
                     Errors = new List<string> { "Error with service requested" },
                     isError = true
 
@@ -246,26 +277,33 @@ namespace Sarvicny.Application.Services
 
             var requestInCart = cart.ServiceRequests;
 
-            if (requestInCart.Any(s => s.ServiceRequestID == requestId))
+            if (requestInCart.Any(s => s.CartServiceRequestID == requestId))
             {
+
                 var requestAsObject = new
                 {
                     ServiceRequestID = requestId,
-                    serviceRequest.SlotID,
-                    serviceRequest.AddedTime
+                    
+                    ServiceID = serviceRequest.providerService.Service.ServiceID,
+                    Service = serviceRequest.providerService.Service.ServiceName,
+                    SlotId = serviceRequest.SlotID,
+                    RequestedDate = serviceRequest.RequestedDate,
+                    DayOfWeek = serviceRequest.Slot != null ? serviceRequest.Slot.ProviderAvailability.DayOfWeek : null,
+                    StartTime = serviceRequest.Slot != null ? serviceRequest.Slot.StartTime : (TimeSpan?)null,
+                    EndTime = serviceRequest.Slot != null ? serviceRequest.Slot.EndTime : (TimeSpan?)null,
 
+
+                    DistrictId = serviceRequest.ProviderDistrictID,
+                    District = serviceRequest.providerDistrict.District.DistrictName,
+                    Address = serviceRequest.Address,
+                    Price = serviceRequest.Price,
+                    ProblemDescription = serviceRequest.ProblemDescription
 
 
                 };
                 await _customerRepository.RemoveRequest(serviceRequest);
 
-
-                serviceRequest.Slot.enable = true;
-
-
                 _unitOfWork.Commit();
-
-
 
                 return new Response<object>()
                 {
@@ -334,7 +372,7 @@ namespace Sarvicny.Application.Services
 
             var requestedServices = cart.ServiceRequests.Select(s => new
             {
-                s.ServiceRequestID,
+                s.CartServiceRequestID,
                 providerId = s.providerService.Provider.Id,
                 s.providerService.Provider.FirstName,
                 s.providerService.Provider.LastName,
@@ -345,9 +383,13 @@ namespace Sarvicny.Application.Services
                 s.providerService.Service.CriteriaID,
                 s.providerService.Service.Criteria?.CriteriaName,
                 s.SlotID,
+                s.RequestedDate,
+                s.Slot.ProviderAvailability.DayOfWeek,
                 s.Slot.StartTime,
+
                 s.providerDistrict.DistrictID,
                 s.providerDistrict.District.DistrictName,
+                s.Address,
                 s.Price,
                 s.ProblemDescription,
 
@@ -412,7 +454,32 @@ namespace Sarvicny.Application.Services
 
                 };
             }
+            var deleted = serviceRequests.Any(r => r.Slot == null);
+            if(deleted)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Payload = null,
+                    Status = "Error",
+                    Message = "Request slots seams to be not found anymore ,may be deleted",
+                };
+            }
+            var reserved = serviceRequests.Any(r => r.Slot.isActive == false);
+
+            if (reserved)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Payload = null,
+                    Status = "Error",
+                    Message = "Request seams to be reserved by another user",
+                };
+            }
             #endregion
+
+
 
             var totalPrice = serviceRequests.Sum(s => s.providerService.Price);
 
@@ -426,15 +493,46 @@ namespace Sarvicny.Application.Services
             };
 
             var order = await _orderRepository.AddOrder(newOrder);
-            var orderRequests = serviceRequests;
 
-            foreach (var request in orderRequests)
+            foreach( var request in serviceRequests)
             {
-                request.OrderId = order.OrderID;
+                var newRequestedSlot = new RequestedSlot
+                {
+                    RequestedDay = request.RequestedDate,
+                    DayOfWeek= request.Slot.ProviderAvailability.DayOfWeek,
+                    StartTime=request.Slot.StartTime
+
+                };
+                var neworderRequest = new OrderServiceRequest
+                {
+                    Order = order,
+                    OrderId=order.OrderID,
+                    providerService=request.providerService,
+                    ProviderServiceID=request.ProviderServiceID,
+                    providerDistrict=request.providerDistrict,
+                    ProviderDistrictID=request.ProviderDistrictID,
+
+                    Address = request.Address,
+                    Price = request.Price,
+                    ProblemDescription = request.ProblemDescription,
+                    RequestedSlot=newRequestedSlot,
+                    RequestedSlotID=newRequestedSlot.SlotId
+
+
+                    
+
+
+                };
+                
+                order.OrderRequests.Add(neworderRequest);
+                
+
             }
+            //cart.ServiceRequests = null;
+            await _cartRepository.ClearCart(cart);
+            
 
-            order.ServiceRequests = orderRequests;
-
+         
             _unitOfWork.Commit();
 
             var response = await _paymentService.PayOrder(order, PayemntMethod);
@@ -528,7 +626,8 @@ namespace Sarvicny.Application.Services
                 customer.LastName,
                 customer.UserName,
                 customer.Email,
-                customer.Address
+                customer.Address,
+                customer.PhoneNumber
 
             };
             return new Response<object>()
@@ -595,5 +694,97 @@ namespace Sarvicny.Application.Services
 
 
         }
+
+        public async Task<Response<object>> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto, string customerId)
+        {
+            var spec = new BaseSpecifications<Customer>(c => c.Id == customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Customer is not found",
+                    isError = true,
+                    Errors = new List<string> { "Error with customer" },
+                };
+            }
+            var usrname = updateCustomerDto.UserName;
+            var email = updateCustomerDto.Email;
+            var phone = updateCustomerDto.PhoneNumber;
+            var address = updateCustomerDto.Address;
+
+
+            if (usrname != null)
+            {
+                var user = await _userRepository.GetUserByUserNameAsync(usrname);
+                if (user != null && user != customer) //another user rather than the updated
+                {
+                    return new Response<object>()
+                    {
+                        Status = "failed",
+                        Message = "userName already Found",
+                        Payload = null,
+                        isError = true
+
+                    };
+                }
+                customer.UserName = usrname;
+
+            }
+            if (email != null)
+            {
+                var user = await _userRepository.GetUserByEmailAsync(email); 
+                if (user != null && user != customer) //another user rather than the updated
+                {
+                    return new Response<object>()
+                    {
+                        Status = "failed",
+                        Message = "email already Found",
+                        Payload = null,
+                        isError = true
+
+                    };
+
+                }
+                customer.Email = email;
+            }
+
+            if (phone != null)
+            {
+                customer.PhoneNumber = phone;
+            }
+            if (address != null)
+            {
+                customer.Address = address;
+
+            }
+
+            await _userRepository.UpdateUserAsync(customer);
+            _unitOfWork.Commit();
+
+            var customerAsObject = new
+            {
+                userName = customer.UserName,
+                email = customer.Email,
+  
+                phone = customer.PhoneNumber,
+                address = customer.Address,
+
+
+            };
+
+            return new Response<object>()
+            {
+                Payload = customerAsObject,
+                Message = "customer updated successfuly",
+                isError = false,
+
+            };
+
+
+        }
+
+
     }
 }

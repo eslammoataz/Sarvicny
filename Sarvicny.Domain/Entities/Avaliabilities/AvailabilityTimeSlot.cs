@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Sarvicny.Domain.Entities.Avaliabilities
 {
-    public class TimeSlot
+    public class AvailabilityTimeSlot
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,10 +16,8 @@ namespace Sarvicny.Domain.Entities.Avaliabilities
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
 
-       
-        public TimeSpan? Duration => EndTime - StartTime;
+        public bool isActive { get; set; }
 
-        public bool? enable { get; set; }
 
         // Foreign key to relate TimeSlot to ProviderAvailability
         public string ProviderAvailabilityID { get; set; }

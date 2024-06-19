@@ -28,9 +28,9 @@ namespace Sarvicny.Infrastructure.Persistence
             return customer;
         }
 
-        public async Task AddRequest(ServiceRequest newRequest)
+        public async Task AddRequest(CartServiceRequest newRequest)
         {
-            await _context.ServiceRequests.AddAsync(newRequest);
+            await _context.CartServiceRequests.AddAsync(newRequest);
         }
 
 
@@ -38,14 +38,14 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return SpecificationBuilder<Customer>.Build(_context.Customers, spec);
         }
-        private IQueryable<ServiceRequest> ApplySpecificationS(ISpecifications<ServiceRequest> spec)
+        private IQueryable<CartServiceRequest> ApplySpecificationS(ISpecifications<CartServiceRequest> spec)
         {
-            return SpecificationBuilder<ServiceRequest>.Build(_context.ServiceRequests, spec);
+            return SpecificationBuilder<CartServiceRequest>.Build(_context.CartServiceRequests, spec);
         }
 
-        public async Task RemoveRequest(ServiceRequest specificRequest)
+        public async Task RemoveRequest(CartServiceRequest specificRequest)
         {
-            _context.ServiceRequests.Remove(specificRequest);
+            _context.CartServiceRequests.Remove(specificRequest);
         }
 
         public async Task EmptyCart(Cart cart)
@@ -53,7 +53,7 @@ namespace Sarvicny.Infrastructure.Persistence
             cart.ServiceRequests.Clear();
         }
 
-        public async Task<ServiceRequest> GetServiceRequestById(ISpecifications<ServiceRequest> spec)
+        public async Task<CartServiceRequest> GetCartServiceRequestById(ISpecifications<CartServiceRequest> spec)
         {
             return await ApplySpecificationS(spec).FirstOrDefaultAsync();
 
@@ -81,7 +81,7 @@ namespace Sarvicny.Infrastructure.Persistence
         }
         public List<object> GetServiceRequests()
         {
-            return _context.ServiceRequests.Select(s => new
+            return _context.CartServiceRequests.Select(s => new
             {
                 s.Price,
                 s.SlotID,

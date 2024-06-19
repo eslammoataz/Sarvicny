@@ -24,7 +24,7 @@ namespace Sarvicny.Domain.Entities
         }
 
 
-        public List<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
+        public List<OrderServiceRequest> OrderRequests { get; set; } = new List<OrderServiceRequest>();
         public decimal? TotalPrice { get; set; }
 
         [ForeignKey("CustomerID")]
@@ -37,10 +37,6 @@ namespace Sarvicny.Domain.Entities
 
         public bool IsPaid { get; set; }
 
-        
-
-
-        public OrderRating? Rate { get; set; }
 
 
         public string? TransactionID { get; set; }

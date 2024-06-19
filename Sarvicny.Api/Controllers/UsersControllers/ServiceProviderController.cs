@@ -35,6 +35,20 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
         }
 
+        [HttpPost]
+        [Route("RemoveAvailability")]
+        public async Task<IActionResult> RemoveAvailability(string availabilityId, string providerId)
+        {
+            var Response = await _serviceProviderService.RemoveAvailability(availabilityId, providerId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+
+            return Ok(Response);
+        }
+
 
         [HttpGet("GetServiceProviderAvailability/{providerId}")]
         public async Task<IActionResult> GetServiceProviderAvailabilityAsync(string providerId)

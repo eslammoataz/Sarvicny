@@ -14,6 +14,15 @@ public class CartRepository : ICartRepository
         _context = context;
     }
 
+    public async Task ClearCart(Cart cart)
+    {
+        var requests = cart.ServiceRequests;
+        foreach (var request in requests)
+        {
+            _context.CartServiceRequests.Remove(request);
+        }
+        
+    }
 
     public async Task<Cart> GetCart(ISpecifications<Cart> specifications)
     {

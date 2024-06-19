@@ -14,6 +14,10 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
+        Task<IdentityResult> UpdateUserAsync(User user);
+
+
+
         Task<IdentityResult> AddUserToRoleAsync(User user, string role);
 
         Task<string> GenerateEmailConfirmationTokenAsync(User user);

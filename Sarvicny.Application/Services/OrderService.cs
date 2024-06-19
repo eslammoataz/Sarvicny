@@ -22,7 +22,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> AddCustomerRating(CustomerRating customerRating)
         {
             var spec = new ServiceRequest_RatingSpecification(customerRating.ServiceRequestID);
-            var request = await _orderRepository.GetServiceRequestByID(spec);
+            var request = await _orderRepository.GetOrderServiceRequestByID(spec);
 
             if (request == null)
             {
@@ -49,7 +49,7 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-            customerRating.customerID = request.order.CustomerID;
+            customerRating.customerID = request.Order.CustomerID;
             customerRating.OrderID = request.OrderId;
 
             var rating = await _orderRepository.AddCustomerRating(customerRating);
@@ -83,7 +83,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> AddProviderRating(ProviderRating providerRating)
         {
             var spec = new ServiceRequest_RatingSpecification(providerRating.ServiceRequestID);
-            var request = await _orderRepository.GetServiceRequestByID(spec);
+            var request = await _orderRepository.GetOrderServiceRequestByID(spec);
 
             if (request == null)
             {
@@ -167,7 +167,7 @@ namespace Sarvicny.Application.Services
                 orderDate = order.OrderDate,
 
                 orderPrice = order.TotalPrice,
-                orderService = order.ServiceRequests.Select(s => new
+                orderService = order.OrderRequests.Select(s => new
                 {
                     s.providerService.Provider.Id,
                     s.providerService.Provider.FirstName,
@@ -178,11 +178,14 @@ namespace Sarvicny.Application.Services
                     parentServiceName = s.providerService.Service.ParentService?.ServiceName,
                     s.providerService.Service.CriteriaID,
                     s.providerService.Service.Criteria?.CriteriaName,
-                    s.SlotID,
-                    s.Slot.StartTime,
+                    s.RequestedSlotID,
+                    s.RequestedSlot.RequestedDay,
+                    s.RequestedSlot.DayOfWeek,
+                    s.RequestedSlot.StartTime,
+                    
                     s.providerDistrict.DistrictID,
                     s.providerDistrict.District.DistrictName,
-
+                    s.Address,
                     s.Price,
                     s.ProblemDescription
                 }).ToList<object>(),
@@ -218,7 +221,7 @@ namespace Sarvicny.Application.Services
                 orderStatus = order.OrderStatus,
                 orderPrice = order.TotalPrice,
                 orderDate = order.OrderDate,
-                orderService = order.ServiceRequests.Select(s => new
+                orderService = order.OrderRequests.Select(s => new
                 {
                     s.providerService.Provider.Id,
                     s.providerService.Provider.FirstName,
@@ -229,10 +232,13 @@ namespace Sarvicny.Application.Services
                     parentServiceName = s.providerService.Service.ParentService?.ServiceName,
                     s.providerService.Service.CriteriaID,
                     s.providerService.Service.Criteria?.CriteriaName,
-                    s.SlotID,
-                    s.Slot.StartTime,
+                    s.RequestedSlotID,
+                    s.RequestedSlot.RequestedDay,
+                    s.RequestedSlot.DayOfWeek,
+                    s.RequestedSlot.StartTime,
                     s.providerDistrict.DistrictID,
                     s.providerDistrict.District.DistrictName,
+                    s.Address,
                     s.Price,
                     s.ProblemDescription
                 }).ToList<object>(),
@@ -270,13 +276,13 @@ namespace Sarvicny.Application.Services
                 customerId = order.CustomerID,
                 customerFN = customer.FirstName,
                 customerLN = customer.LastName,
-                Address = customer.Address,
+                
 
 
                 orderStatus = order.OrderStatus,
                 orderPrice = order.TotalPrice,
                 orderDate = order.OrderDate,
-                orderService = order.ServiceRequests.Select(s => new
+                orderService = order.OrderRequests.Select(s => new
                 {
 
                     s.providerService.Service.ServiceID,
@@ -285,10 +291,13 @@ namespace Sarvicny.Application.Services
                     parentServiceName = s.providerService.Service.ParentService?.ServiceName,
                     s.providerService.Service.CriteriaID,
                     s.providerService.Service.Criteria?.CriteriaName,
-                    s.SlotID,
-                    s.Slot.StartTime,
+                    s.RequestedSlotID,
+                    s.RequestedSlot.RequestedDay,
+                    s.RequestedSlot.DayOfWeek,
+                    s.RequestedSlot.StartTime,
                     s.providerDistrict.DistrictID,
                     s.providerDistrict.District.DistrictName,
+                    s.Address,
                     s.Price,
                     s.ProblemDescription
                 }).ToList<object>(),

@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications
 {
-    public class ServiceRequest_RatingSpecification : BaseSpecifications<ServiceRequest>
+    public class ServiceRequest_RatingSpecification : BaseSpecifications<OrderServiceRequest>
     {
         public ServiceRequest_RatingSpecification()
         {
-            AddInclude($"{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-            AddInclude($"{nameof(ServiceRequest.order)}.{nameof(Order.Customer)}");
+            AddInclude($"{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
+            AddInclude($"{nameof(OrderServiceRequest.Order)}.{nameof(Order.Customer)}");
         }
-        public ServiceRequest_RatingSpecification(string serviceRequestId) : base(x => x.ServiceRequestID == serviceRequestId)
+        public ServiceRequest_RatingSpecification(string serviceRequestId) : base(x => x.OrderServiceRequestID == serviceRequestId)
         {
-            AddInclude($"{nameof(ServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-            AddInclude($"{nameof(ServiceRequest.order)}.{nameof(Order.Customer)}");
+            AddInclude($"{nameof(OrderServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
+            AddInclude($"{nameof(OrderServiceRequest.Order)}.{nameof(Order.Customer)}");
         }
     }
 }

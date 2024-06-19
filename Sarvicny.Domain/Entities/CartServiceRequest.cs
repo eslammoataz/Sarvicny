@@ -4,11 +4,11 @@ using Sarvicny.Domain.Entities.Avaliabilities;
 
 namespace Sarvicny.Domain.Entities
 {
-    public class ServiceRequest
+    public class CartServiceRequest
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string ServiceRequestID { get; set; }
+        public string CartServiceRequestID { get; set; }
 
         public string? CartID { get; set; }
 
@@ -18,39 +18,26 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("ProviderServiceID")]
         public string ProviderServiceID { get; set; }
         public ProviderService providerService { get; set; }
-        public DateTime? AddedTime { get; set; }
 
-        public string SlotID { get; set; } = default!;
+        public DateTime RequestedDate { get; set; }
+
+        public string? SlotID { get; set; } = default!;
 
         [ForeignKey("SlotID")]
-        public TimeSlot Slot { get; set; }
-
-
+        public AvailabilityTimeSlot? Slot { get; set; }
 
         public string ProviderDistrictID { get; set; } = default!;
 
         [ForeignKey("ProviderDistrictID")]
         public ProviderDistrict providerDistrict { get; set; }
 
+        public string Address { get; set; }
 
-        public Order? order { get; set; }
-        [ForeignKey("OrderId")]
-        public string? OrderId { get; set; }
 
         public decimal Price { get; set; }
 
         [MaxLength(255)]
         public string? ProblemDescription { get; set; }
-
-        public string? customerRatingId { get; set; }
-
-        [ForeignKey("customerRatingId")]
-        public CustomerRating? CRate { get; set; }
-
-        public string? providerRatingId { get; set; }
-
-        [ForeignKey("providerRatingId")]
-        public ProviderRating? PRate { get; set; }
 
 
 

@@ -10,9 +10,9 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<Customer?> GetCustomerById(ISpecifications<Customer> specifications);
 
-        Task<ServiceRequest> GetServiceRequestById(ISpecifications<ServiceRequest> spec);
-        Task AddRequest(ServiceRequest newRequest);
-        Task RemoveRequest(ServiceRequest specificRequest);
+        Task<CartServiceRequest> GetCartServiceRequestById(ISpecifications<CartServiceRequest> spec);
+        Task AddRequest(CartServiceRequest newRequest);
+        Task RemoveRequest(CartServiceRequest specificRequest);
         Task EmptyCart(Cart cart);
 
         bool CreateCart(string customerID);

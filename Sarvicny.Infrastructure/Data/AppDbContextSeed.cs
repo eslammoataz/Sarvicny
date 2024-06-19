@@ -147,7 +147,7 @@ namespace Sarvicny.Infrastructure.Data
             var avail = new AvailabilityDto
             {
                 DayOfWeek = "Saturday",
-                AvailabilityDate = DateTime.Now,
+                //AvailabilityDate = DateTime.Now,
                 Slots = new List<TimeRange>
                 {
                     new TimeRange

@@ -105,19 +105,19 @@ namespace Sarvicny.Api.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
-        [Route("RemoveDistrict/{providerId}")]
-        public async Task<IActionResult> RemoveDistrictFromProvider(string providerId, string districtID)
-        {
-            var response = await _serviceProviderService.RemoveDistrictFromProvider(providerId, districtID);
+        //[HttpPost]
+        //[Route("RemoveDistrict/{providerId}")]
+        //public async Task<IActionResult> RemoveDistrictFromProvider(string providerId, string districtID)
+        //{
+        //    var response = await _serviceProviderService.RemoveDistrictFromProvider(providerId, districtID);
 
-            if (response.isError)
-            {
-                return BadRequest(response);
-            }
+        //    if (response.isError)
+        //    {
+        //        return BadRequest(response);
+        //    }
 
-            return Ok(response);
-        }
+        //    return Ok(response);
+        //}
 
         [HttpPost]
         [Route("DisableDistrict/{providerId}")]
