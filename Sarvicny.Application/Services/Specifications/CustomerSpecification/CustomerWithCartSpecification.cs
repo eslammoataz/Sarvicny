@@ -15,6 +15,7 @@ public class CustomerWithCartSpecification : BaseSpecifications<Customer>
         AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Provider)}");
         AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}");
         AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.providerDistrict)}");
     }
 
     public CustomerWithCartSpecification(string customerId) : base(c => c.Id == customerId)
@@ -24,6 +25,7 @@ public class CustomerWithCartSpecification : BaseSpecifications<Customer>
         AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Provider)}");
         AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}");
         AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.providerDistrict)}");
     }
 
 }

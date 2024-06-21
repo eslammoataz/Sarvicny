@@ -115,8 +115,8 @@ namespace Sarvicny.Infrastructure.Data
             {
                 ServiceName = "Roof Painting",
                 Description = "This is a test service.",
-                Price = 99.99M,
-                AvailabilityStatus = "Available"
+                
+                
             };
 
             if (!context.Services.Any())

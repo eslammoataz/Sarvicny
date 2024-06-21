@@ -89,7 +89,6 @@ public class ServiceController : ControllerBase
         {
             ServiceName = serviceDto.ServiceName,
             Description = serviceDto.Description,
-            AvailabilityStatus = serviceDto.AvailabilityStatus,
             ParentServiceID=serviceDto.ParentServiceID
         };
 

@@ -182,6 +182,12 @@ namespace Sarvicny.Infrastructure.Data
                 .HasForeignKey<Order>(o => o.providerRatingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+           /* builder.Entity<Order>()
+              .HasOne(o => o.OrderDetails)
+              .WithOne(od => od.Order)
+              .HasForeignKey<Order>(o => o.OrderDetailsId)
+              .OnDelete(DeleteBehavior.Cascade);*/
+
 
         }
 

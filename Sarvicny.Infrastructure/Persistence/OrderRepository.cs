@@ -2,6 +2,7 @@
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 using static Sarvicny.Domain.Entities.OrderDetails;
@@ -56,11 +57,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<Order> AddOrder(Order order)
         {
 
-            var orderStatus = _context.OrderStatuses;
-         
-
-
-            _context.Orders.Add(order);
+           _context.Orders.Add(order);
             return order;
         }
 
@@ -138,10 +135,20 @@ namespace Sarvicny.Infrastructure.Persistence
             await _context.OrderRatings.AddAsync(rate);
             return rate;
         }
-         
 
+        public async Task<OrderDetails> AddOrderDetails(OrderDetails orderDetails)
+        {
+           
+             await _context.OrderDetails.AddAsync(orderDetails);
+            return orderDetails;
+            
+        }
 
+        public async Task<RequestedSlot> AddRequestedSlot(RequestedSlot requestedSlot)
+        {
+           await _context.RequestedSlots.AddAsync(requestedSlot);
+            return requestedSlot;
 
-
+        }
     }
 }

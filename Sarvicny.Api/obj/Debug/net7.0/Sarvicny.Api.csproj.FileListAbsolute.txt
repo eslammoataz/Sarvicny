@@ -394,3 +394,41 @@ C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Azure.Core.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Azure.Identity.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Bcl.AsyncInterfaces.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Data.SqlClient.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.EntityFrameworkCore.SqlServer.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Identity.Client.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Identity.Client.Extensions.Msal.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.IdentityModel.Abstractions.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.SqlServer.Server.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.AspNetCore.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.Extensions.Hosting.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.Extensions.Logging.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.Formatting.Compact.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.Settings.Configuration.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.Sinks.Console.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.Sinks.Debug.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\Serilog.Sinks.File.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.Configuration.ConfigurationManager.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.Drawing.Common.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.Memory.Data.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.Runtime.Caching.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.Security.Cryptography.ProtectedData.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.Security.Permissions.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\System.Windows.Extensions.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\unix\lib\net6.0\Microsoft.Data.SqlClient.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\Microsoft.Data.SqlClient.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win-arm\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
+D:\Graduation Project\Sarvicny\Sarvicny.Api\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll

@@ -114,7 +114,6 @@ public class AdminService : IAdminService
         {
             s.ServiceID,
             s.ServiceName,
-            s.AvailabilityStatus,
             CriteriaName = s.Criteria?.CriteriaName
 
         }).ToList<object>();

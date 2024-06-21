@@ -1,4 +1,6 @@
 ﻿using MailKit.Search;
+using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Asn1.X509;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.CartSpecifications;
@@ -69,11 +71,22 @@ namespace Sarvicny.Application.Services
 
             List<Service> services = new List<Service>();
             decimal price = 0;
+      
+           
             foreach (var Id in requestServiceDto.ServiceIDs)
             {
                 var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == Id);
                 var service = await _serviceRepository.GetServiceById(serviceSpec);
+                 
                 if (service == null)
+                    return new Response<object>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "Service Not Found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+                if(service.ParentServiceID == null)
                     return new Response<object>
                     {
                         isError = true,
@@ -514,91 +527,105 @@ namespace Sarvicny.Application.Services
             var totalPrice = cartServiceRequests.Sum(s => s.Price);
 
             List<object > result= new List<object>();
-
-            foreach (var request in cartServiceRequests)
+            try
             {
-                var newRequestedSlot = new RequestedSlot
+                foreach (var request in cartServiceRequests)
                 {
-                    RequestedDay = request.RequestedDate,
-                    DayOfWeek = request.Slot.ProviderAvailability.DayOfWeek,
-                    StartTime = request.Slot.StartTime
-
-                };
-                var newOrderDetails = new OrderDetails
-                {
-                    ProviderID = request.ProviderID,
-                    Provider = request.Provider,
-                    RequestedServicesID = request.RequestedServicesID,
-                    RequestedServices = request.RequestedServices,
-                    Price = request.Price,
-                    RequestedSlot = newRequestedSlot,
-                    RequestedSlotID = newRequestedSlot.RequestedSlotId,
-                    providerDistrict = request.providerDistrict,
-                    ProviderDistrictID = request.ProviderDistrictID,
-                    Address = request.Address,
-                    ProblemDescription = request.ProblemDescription,
-
-                };
-                var newOrder = new Order
-                {
-                    Customer = customer,
-                    CustomerID = customerId,
-                    OrderDate = DateTime.UtcNow,
-                    OrderDetails = newOrderDetails,
-                    OrderDetailsId = newOrderDetails.OrderDetailsID,
-                };
-
-                newOrderDetails.OrderId = newOrder.OrderID;
-                newOrderDetails.Order= newOrder;
-
-                var order = await _orderRepository.AddOrder(newOrder);
-
-                var orderAsObject = new
-                {
-                    OrderId = order.OrderID,
-                    CustomerId = order.CustomerID,
-                    OrderDate = order.OrderDate,
-                    ProviderID = order.OrderDetails.ProviderID,
-                    ProviderFName= order.OrderDetails.Provider.FirstName,
-                    ProviderLName = order.OrderDetails.Provider.LastName,
-
-                    RequestedServicesID = order.OrderDetails.RequestedServicesID,
-                    RequestedServices = order.OrderDetails.RequestedServices.Services.Select(s=> new
+                    var requestedSlot = new RequestedSlot
                     {
-                        s.ServiceID,
-                        s.ServiceName
-                    }).ToList<object>(),
-                    Price = order.OrderDetails.Price,
-                    RequestedSlotID = newRequestedSlot.RequestedSlotId,
-                    ProviderDistrictID = request.ProviderDistrictID,
-                    Address = request.Address,
-                    ProblemDescription = request.ProblemDescription,
+                        RequestedDay = request.RequestedDate,
+                        DayOfWeek = request.Slot.ProviderAvailability.DayOfWeek,
+                        StartTime = request.Slot.StartTime
+
+                    };
+                    var newRequestedSlot =await _orderRepository.AddRequestedSlot(requestedSlot);
+                    var newOrderDetails = new OrderDetails
+                    {
+                        ProviderID = request.ProviderID,
+                        Provider = request.Provider,
+                        RequestedServicesID = request.RequestedServicesID,
+                        RequestedServices = request.RequestedServices,
+                        Price = request.Price,
+                        RequestedSlot = newRequestedSlot,
+                        RequestedSlotID = newRequestedSlot.RequestedSlotId,
+                        providerDistrict = request.providerDistrict,
+                        ProviderDistrictID = request.ProviderDistrictID,
+                        Address = request.Address,
+                        ProblemDescription = request.ProblemDescription,
+
+                    };
+                    var newOrder = new Order
+                    {
+                        Customer = customer,
+                        CustomerID = customerId,
+                        OrderDate = DateTime.UtcNow,
+                        OrderDetails = newOrderDetails,
+                        OrderDetailsId = newOrderDetails.OrderDetailsID,
+                    };
+
+                    newOrderDetails.OrderId = newOrder.OrderID;
+                    newOrderDetails.Order = newOrder;
+                    await _orderRepository.AddOrderDetails(newOrderDetails);
+                    await _orderRepository.AddOrder(newOrder);
+
+                    var order = await _orderRepository.AddOrder(newOrder);
+
+                    var orderAsObject = new
+                    {
+                        OrderId = order.OrderID,
+                        CustomerId = order.CustomerID,
+                        OrderDate = order.OrderDate,
+                        ProviderID = order.OrderDetails.ProviderID,
+                        ProviderFName = order.OrderDetails.Provider.FirstName,
+                        ProviderLName = order.OrderDetails.Provider.LastName,
+                        RequestedServicesID = order.OrderDetails.RequestedServicesID,
+                        RequestedServices = order.OrderDetails.RequestedServices.Services.Select(s => new
+                        {
+                            s.ServiceID,
+                            s.ServiceName
+                        }).ToList<object>(),
+                        Price = order.OrderDetails.Price,
+                        RequestedSlotID = order.OrderDetails.RequestedSlotID,
+                        ProviderDistrictID = order.OrderDetails.ProviderDistrictID,
+                        Address = order.OrderDetails.Address,
+                        ProblemDescription = order.OrderDetails.ProblemDescription,
+                    };
+                    result.Add(orderAsObject);
 
 
+
+
+
+                }
+
+
+
+                await _cartRepository.ClearCart(cart);
+                _unitOfWork.Commit();
+
+                var output = new
+                {
+                    orders = result,
+                    OrdersTotalPrice = totalPrice
                 };
 
-                result.Add(orderAsObject);
-                
+                return new Response<object>()
+                {
+                    Payload = output,
+                    Message = "Orders are requested successfully",
+                    isError = false
+                };
             }
-
-            await _cartRepository.ClearCart(cart);
-            
-            _unitOfWork.Commit();
-
-            var output = new
+            catch (Exception ex)
             {
-                orders = result,
-
-                OrdersTotalPrice = totalPrice
-
-            };
-            return new Response<object>()
-            {
-                Payload = output,
-                Message = "Orders are requested successfully",
-                isError = false
-
-            };
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = $"An error occurred: {ex.Message}",
+                    isError = true,
+                    Errors = new List<string> { ex.StackTrace }
+                };
+            }
         }
 
         public async Task<Response<object>> PayOrder(string orderId,PaymentMethod PayemntMethod)

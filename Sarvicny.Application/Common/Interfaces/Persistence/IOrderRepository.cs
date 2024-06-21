@@ -1,4 +1,5 @@
 ﻿using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Common.Interfaces.Persistence
@@ -11,8 +12,12 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task ApproveOrder(Order orderId);
         Task RejectOrder(Order orderId);
         Task CancelOrder(Order orderId);
+
         
         Task<Order> AddOrder(Order order);
+        Task<OrderDetails> AddOrderDetails(OrderDetails orderDetails);
+        Task<RequestedSlot> AddRequestedSlot(RequestedSlot requestedSlot);
+
         Task<List<Order>> GetAllOrders(ISpecifications<Order> spec);
 
         Task<List<Order>> GetAllOrdersForProvider(ISpecifications<Order> spec, string providerId);
@@ -27,6 +32,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task ChangeOrderPaidStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
 
         Task<OrderRating> AddRating(OrderRating rate);
+
 
         //Task<List<ProviderRating>> GetAllProviderRating();
         //Task<List<OrderRating>> GetAllCustomerRating();

@@ -69,18 +69,32 @@ public class ServicesServices : IServicesService
 
     public async Task<Response<Service>> AddServiceAsync(Service newService)
     {
-        if(newService.ParentServiceID != null)
+        var response = new Response<Service>();
+        if (newService.ParentServiceID != null)
         {
             var spec = new ServiceWithParentAndChilds_CriteriaSpecification(newService.ParentServiceID);
             var parent = await _serviceRepository.GetServiceById(spec);
+            if(parent == null)
+            {
+                response.Status = "Fail";
+                response.Message = "ParentService Not Found";
+                response.Payload = null;
+                response.isError = false;
+                return response;
+
+            }
+            var criteria = parent.Criteria;
+            newService.Criteria = criteria;
+            newService.CriteriaID= parent.CriteriaID;
+            newService.ParentServiceID= parent.ParentServiceID;
             newService.ParentService = parent;
             parent.ChildServices.Add(newService);
+
             
         }
         await _serviceRepository.AddServiceAsync(newService);
         _unitOfWork.Commit();
-        var response = new Response<Service>();
-
+        
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = newService;

@@ -24,7 +24,7 @@ namespace Sarvicny.Domain.Entities
 
         public string RequestedServicesID { get; set; }
 
-        [ForeignKey("RequestedServicesID")]
+        [ForeignKey("RequestedServiceID")]
         public RequestedService RequestedServices { get; set; }
 
         public DateTime RequestedDate { get; set; }

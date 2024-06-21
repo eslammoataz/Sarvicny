@@ -11,9 +11,7 @@ public class Service
     public string ServiceID { get; set; }
     public string ServiceName { get; set; }
     public string? Description { get; set; }
-    public decimal? Price { get; set; }
-    public string AvailabilityStatus { get; set; }
-
+    
 
     // Explicit foreign key for the Criteria relationship
     public string? CriteriaID { get; set; }

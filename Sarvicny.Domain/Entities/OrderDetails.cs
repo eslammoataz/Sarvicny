@@ -30,7 +30,7 @@ namespace Sarvicny.Domain.Entities
 
         public string RequestedServicesID { get; set; }
 
-        [ForeignKey("RequestedServicesID")]
+        [ForeignKey("RequestedServiceID")]
         public RequestedService RequestedServices { get; set; }
 
         public decimal Price { get; set; }
