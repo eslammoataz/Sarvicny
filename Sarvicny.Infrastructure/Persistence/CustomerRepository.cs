@@ -50,7 +50,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task EmptyCart(Cart cart)
         {
-            cart.ServiceRequests.Clear();
+            cart.CartServiceRequests.Clear();
         }
 
         public async Task<CartServiceRequest> GetCartServiceRequestById(ISpecifications<CartServiceRequest> spec)
@@ -79,14 +79,14 @@ namespace Sarvicny.Infrastructure.Persistence
             customer.CartID = cart.CartID;
             return true;
         }
-        public List<object> GetServiceRequests()
-        {
-            return _context.CartServiceRequests.Select(s => new
-            {
-                s.Price,
-                s.SlotID,
-                s.ProviderServiceID
-            }).ToList<object>();
-        }
+        //public List<object> GetServiceRequests()
+        //{
+        //    return _context.CartServiceRequests.Select(s => new
+        //    {
+        //        s.Price,
+        //        s.SlotID,
+        //        s.ProviderServiceID
+        //    }).ToList<object>();
+        //}
     }
 }

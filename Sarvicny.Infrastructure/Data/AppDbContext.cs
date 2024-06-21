@@ -38,16 +38,17 @@ namespace Sarvicny.Infrastructure.Data
         public DbSet<AvailabilityTimeSlot> Slots { get; set; }
 
         public DbSet<RequestedSlot> RequestedSlots { get; set; }
+        public DbSet<RequestedService> RequestedServices { get; set; }
 
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartServiceRequest> CartServiceRequests { get; set; }
-        public DbSet<OrderServiceRequest> OrderServiceRequests { get; set; }
+        public DbSet<OrderDetails> OrderDetails { get; set; }
 
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Admin> Admins { get; set; }
-        public DbSet<CustomerRating> customerRatings { get; set; }
-        public DbSet<ProviderRating> ProviderRatings { get; set; }
+        public DbSet<OrderRating> OrderRatings { get; set; }
+    
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -161,23 +162,26 @@ namespace Sarvicny.Infrastructure.Data
                    .HasForeignKey<Customer>(c => c.CartID);
 
 
-            builder.Entity<OrderServiceRequest>()
-               .HasOne(osr => osr.CRate)
-               .WithOne(cr => cr.serviceRequest)
-               .HasForeignKey<CustomerRating>(cr => cr.ServiceRequestID)
-               .OnDelete(DeleteBehavior.Cascade); // Configure cascading delete
 
-            builder.Entity<OrderServiceRequest>()
-               .HasOne(osr => osr.PRate)
-               .WithOne(cr => cr.serviceRequest)
-               .HasForeignKey<ProviderRating>(cr => cr.ServiceRequestID)
-               .OnDelete(DeleteBehavior.Cascade); // Configure cascading delete
 
              builder.Entity<CartServiceRequest>()
                 .HasOne(c => c.Slot)
                 .WithMany()
                 .HasForeignKey(c => c.SlotID)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Order>()
+            .HasOne(o => o.CRate)
+            .WithOne()
+            .HasForeignKey<Order>(o => o.customerRatingId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Order>()
+                .HasOne(o => o.PRate)
+                .WithOne()
+                .HasForeignKey<Order>(o => o.providerRatingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
         }
 

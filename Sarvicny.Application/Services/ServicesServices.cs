@@ -1,4 +1,5 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
@@ -133,26 +134,8 @@ public class ServicesServices : IServicesService
             };
         }
 
-        //var providers = new List<object>();
+        
 
-        //foreach (var p in service.ProviderServices)
-        //{
-        //    //var spec3 = new BaseSpecifications<Provider>(pr => pr.Id == p.ProviderID);
-        //    //var provider = await _serviceProviderRepository.FindByIdAsync(spec3);
-
-
-        //    var serviceProvidersAsObjects = new
-        //    {
-        //        provider.Id,
-        //        provider.FirstName,
-        //        provider.LastName,
-        //        provider.Email,
-        //        provider.PhoneNumber,
-        //        provider.isVerified,
-        //    };
-
-        //    providers.Add(serviceProvidersAsObjects);
-        //}
 
 
 
@@ -217,6 +200,48 @@ public class ServicesServices : IServicesService
 
 
         return response;
+
+
+
+
+    }
+    public async Task<Response<List<object>>> GetAllParentServices()
+    {
+       var spec = new ServiceWithParentAndChilds_CriteriaSpecification();
+       var services = await _serviceRepository.GetAllParentServices(spec);
+        if (services.Count()==null)
+        {
+            return new Response<List<object>>()
+            {
+                Message = "No Parent Services Found",
+                Payload = null,
+                isError = true,
+            };
+        }
+        List<object> result = new List<object>();
+        foreach (var service in services)
+        {
+            var servicesAsObjects = new
+            {
+                serviceId = service.ServiceID,
+                serviceName = service.ServiceName,
+                criteriaID = service.CriteriaID,
+                criteriaName = service.Criteria?.CriteriaName,
+            };
+            result.Add(servicesAsObjects);
+
+        }
+
+        return new Response<List<object>>()
+        {
+            Message = "Action Done succesfully",
+            Payload = result,
+            isError = false,
+        };
+
+
+
+
 
 
 

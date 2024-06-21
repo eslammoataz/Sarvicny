@@ -51,6 +51,21 @@ public class ServiceController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpGet]
+    [Route("GetAllParentServices")]
+    public async Task<IActionResult> GetAllParentServices()
+    {
+        var response = await _servicesService.GetAllParentServices();
+
+        if (response.isError)
+        {
+            return BadRequest(response);
+        }
+
+        return Ok(response);
+    }
+
     [HttpGet]
     [Route("GetAllChildForService")]
     public async Task<IActionResult> GetAllChildsForService(string serviceId)

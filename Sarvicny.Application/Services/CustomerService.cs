@@ -1,7 +1,9 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using MailKit.Search;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.CartSpecifications;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
+using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
@@ -9,7 +11,9 @@ using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
+using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Application.Services
 {
@@ -48,9 +52,9 @@ namespace Sarvicny.Application.Services
         }
 
 
-        public async Task<Response<object>> RequestService(RequestServiceDto requestServiceDto, string customerId)
+        public async Task<Response<object>> addToCart(RequestServiceDto requestServiceDto, string customerId)
         {
-            
+
             var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(requestServiceDto.ProviderId);
             var provider = await _providerRepository.FindByIdAsync(spec);
 
@@ -63,30 +67,55 @@ namespace Sarvicny.Application.Services
                     Message = "Failed",
                 };
 
-            var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == requestServiceDto.ServiceId);
-            var service = await _serviceRepository.GetServiceById(serviceSpec);
+            List<Service> services = new List<Service>();
+            decimal price = 0;
+            foreach (var Id in requestServiceDto.ServiceIDs)
+            {
+                var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == Id);
+                var service = await _serviceRepository.GetServiceById(serviceSpec);
+                if (service == null)
+                    return new Response<object>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "Service Not Found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
 
-            if (service == null)
+                var providerService =
+                provider.ProviderServices.SingleOrDefault(ps => ps.ServiceID == service.ServiceID);
+                if (providerService == null)
+                    return new Response<object>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "This Worker is not Registered for the Service" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+
+                services.Add(service);
+                price += providerService.Price;
+
+
+            }
+
+            if ( services.Count()!= requestServiceDto.ServiceIDs.Count())
+            {
                 return new Response<object>
                 {
                     isError = true,
-                    Errors = new List<string> { "Service Not Found" },
+                    Errors = new List<string> { "Error With Service" },
                     Status = "Error",
                     Message = "Failed",
                 };
 
-            var providerService =
-                provider.ProviderServices.SingleOrDefault(ps => ps.ServiceID == requestServiceDto.ServiceId);
+            }
+            var requestedServices = new RequestedService();
+            requestedServices.Services = services;
 
-            if (providerService == null)
-                return new Response<object>
-                {
-                    isError = true,
-                    Errors = new List<string> { "This Worker is not Registered for the Service" },
-                    Status = "Error",
-                    Message = "Failed",
-                };
+            await _serviceRepository.AddRequestedService(requestedServices);
 
+            
             var district = await _districtRepository.GetDistrictById(requestServiceDto.DistrictID);
             if (district == null)
                 return new Response<object>
@@ -168,19 +197,18 @@ namespace Sarvicny.Application.Services
                     Customer = customer
                 };
             }
-            var cartRequest = cart.ServiceRequests.ToList();
+            var cartRequest = cart.CartServiceRequests.ToList();
             foreach (var request in cartRequest)  //check not already in cart
             {
 
-
-                if (requestServiceDto.ServiceId == request.providerService.ServiceID && requestServiceDto.ProviderId == request.providerService.ProviderID && slotExist.TimeSlotID == request.SlotID && requestServiceDto.RequestDay == request.RequestedDate )
+                if ( requestServiceDto.ProviderId == request.ProviderID && slotExist.TimeSlotID == request.SlotID && requestServiceDto.RequestDay == request.RequestedDate )
                 {
                     return new Response<object>
                     {
                         isError = true,
 
                         Status = "Error",
-                        Message = "Request is already Found in the cart",
+                        Message = "Provider is already Found in the cart",
                     };
                 }
 
@@ -193,19 +221,19 @@ namespace Sarvicny.Application.Services
                 Address = customer.Address;
             }
 
-
-
-
             var newRequest = new CartServiceRequest
             {
                 RequestedDate = requestServiceDto.RequestDay,
-                providerService = providerService,
+                Provider = provider,
+                ProviderID= provider.Id,
+                RequestedServices = requestedServices,
                 providerDistrict = providerDistrict,
                 Slot = slotExist,
                 SlotID = slotExist.TimeSlotID,
                 CartID = customer.Cart.CartID,
-                Cart = customer.Cart,
-                Price = providerService.Price,
+                Cart=customer.Cart,
+    
+                Price = price,
                 ProblemDescription = requestServiceDto.ProblemDescription,
                 Address = Address,
             };
@@ -221,12 +249,17 @@ namespace Sarvicny.Application.Services
                 RequestDay = requestServiceDto.RequestDay,
                 DayOfWeek= slotExist.ProviderAvailability.DayOfWeek,
                 RequestTime = slotExist.StartTime,
-
                 District = providerDistrict.District.DistrictName,
                 Address = Address,
-                ServiceName = service.ServiceName,
                 ProviderName = provider.FirstName + " " + provider.LastName,
-                Price = providerService.Price,
+                Services = requestedServices.Services.Select(s=> new
+                {
+                    s.ServiceID,
+                    s.ServiceName
+
+                }).ToList<object>(),
+                               
+                Price = price,
                 ProblemDescription = requestServiceDto.ProblemDescription
             };
 
@@ -234,7 +267,7 @@ namespace Sarvicny.Application.Services
             { isError = false, Message = "Service Request is added successfully to the cart", Payload = output };
         }
 
-        public async Task<Response<object>> CancelRequestService(string customerId, string requestId)
+        public async Task<Response<object>> RemoveFromCart(string customerId, string requestId)
         {
             var spec = new CustomerWithCartSpecification(customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
@@ -275,7 +308,7 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-            var requestInCart = cart.ServiceRequests;
+            var requestInCart = cart.CartServiceRequests;
 
             if (requestInCart.Any(s => s.CartServiceRequestID == requestId))
             {
@@ -283,15 +316,20 @@ namespace Sarvicny.Application.Services
                 var requestAsObject = new
                 {
                     ServiceRequestID = requestId,
-                    
-                    ServiceID = serviceRequest.providerService.Service.ServiceID,
-                    Service = serviceRequest.providerService.Service.ServiceName,
+
+                    ProviderID = serviceRequest.Provider.Id,
+                    ProviderName = serviceRequest.Provider.FirstName + " " + serviceRequest.Provider.LastName,
+                    Services = serviceRequest.RequestedServices.Services.Select(s => new
+                    {
+                        s.ServiceID,
+                        s.ServiceName
+
+                    }).ToList<object>(),
                     SlotId = serviceRequest.SlotID,
                     RequestedDate = serviceRequest.RequestedDate,
                     DayOfWeek = serviceRequest.Slot != null ? serviceRequest.Slot.ProviderAvailability.DayOfWeek : null,
                     StartTime = serviceRequest.Slot != null ? serviceRequest.Slot.StartTime : (TimeSpan?)null,
                     EndTime = serviceRequest.Slot != null ? serviceRequest.Slot.EndTime : (TimeSpan?)null,
-
 
                     DistrictId = serviceRequest.ProviderDistrictID,
                     District = serviceRequest.providerDistrict.District.DistrictName,
@@ -327,10 +365,6 @@ namespace Sarvicny.Application.Services
             }
 
 
-
-
-
-
         }
 
         public async Task<Response<object>> GetCustomerCart(string customerId)
@@ -362,31 +396,28 @@ namespace Sarvicny.Application.Services
                 _unitOfWork.Commit();
             }
 
-            // var requestedServices = cart.ServiceRequests.Select(s => s.providerService)
-            //     .Select(ps => new
-            //     {
-            //         ps.ProviderID,
-            //         ps.ServiceID,
-            //         ps.Price
-            //     });
-
-            var requestedServices = cart.ServiceRequests.Select(s => new
+            var requestedServices = cart.CartServiceRequests.Select(s => new
             {
                 s.CartServiceRequestID,
-                providerId = s.providerService.Provider.Id,
-                s.providerService.Provider.FirstName,
-                s.providerService.Provider.LastName,
-                s.providerService.Service.ServiceID,
-                s.providerService.Service.ServiceName,
-                s.providerService.Service.ParentServiceID,
-                parentServiceName = s.providerService.Service.ParentService?.ServiceName,
-                s.providerService.Service.CriteriaID,
-                s.providerService.Service.Criteria?.CriteriaName,
+                providerId = s.Provider.Id,
+                s.Provider.FirstName,
+                s.Provider.LastName,
+                Services = s.RequestedServices.Services.Select(s => new
+                {
+                    s.ServiceID,
+                    s.ServiceName,
+                    s.ParentServiceID,
+                    parentServiceName = s.ParentService?.ServiceName,
+                    s.CriteriaID,
+                    s.Criteria?.CriteriaName,
+
+                }).ToList<object>(),
+
+                
                 s.SlotID,
                 s.RequestedDate,
                 s.Slot.ProviderAvailability.DayOfWeek,
                 s.Slot.StartTime,
-
                 s.providerDistrict.DistrictID,
                 s.providerDistrict.District.DistrictName,
                 s.Address,
@@ -415,7 +446,7 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        public async Task<Response<object>> OrderCart(string customerId, PaymentMethod PayemntMethod)
+        public async Task<Response<object>> OrderCart(string customerId)
         {
             #region validation_for_Data
             var spec = new CustomerWithCartSpecification(customerId);
@@ -442,8 +473,8 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            var serviceRequests = cart.ServiceRequests;
-            if (serviceRequests.Count() == 0)
+            var cartServiceRequests = cart.CartServiceRequests;
+            if (cartServiceRequests.Count() == 0)
             {
                 return new Response<object>()
                 {
@@ -454,7 +485,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            var deleted = serviceRequests.Any(r => r.Slot == null);
+            var deleted = cartServiceRequests.Any(r => r.Slot == null);
             if(deleted)
             {
                 return new Response<object>
@@ -465,7 +496,7 @@ namespace Sarvicny.Application.Services
                     Message = "Request slots seams to be not found anymore ,may be deleted",
                 };
             }
-            var reserved = serviceRequests.Any(r => r.Slot.isActive == false);
+            var reserved = cartServiceRequests.Any(r => r.Slot.isActive == false);
 
             if (reserved)
             {
@@ -480,129 +511,116 @@ namespace Sarvicny.Application.Services
             #endregion
 
 
+            var totalPrice = cartServiceRequests.Sum(s => s.Price);
 
-            var totalPrice = serviceRequests.Sum(s => s.providerService.Price);
+            List<object > result= new List<object>();
 
-            var newOrder = new Order
-            {
-                Customer = customer,
-                CustomerID = customerId,
-                OrderStatus = OrderStatusEnum.Pending,
-                TotalPrice = totalPrice,
-                OrderDate = DateTime.UtcNow
-            };
-
-            var order = await _orderRepository.AddOrder(newOrder);
-
-            foreach( var request in serviceRequests)
+            foreach (var request in cartServiceRequests)
             {
                 var newRequestedSlot = new RequestedSlot
                 {
                     RequestedDay = request.RequestedDate,
-                    DayOfWeek= request.Slot.ProviderAvailability.DayOfWeek,
-                    StartTime=request.Slot.StartTime
+                    DayOfWeek = request.Slot.ProviderAvailability.DayOfWeek,
+                    StartTime = request.Slot.StartTime
 
                 };
-                var neworderRequest = new OrderServiceRequest
+                var newOrderDetails = new OrderDetails
                 {
-                    Order = order,
-                    OrderId=order.OrderID,
-                    providerService=request.providerService,
-                    ProviderServiceID=request.ProviderServiceID,
-                    providerDistrict=request.providerDistrict,
-                    ProviderDistrictID=request.ProviderDistrictID,
-
-                    Address = request.Address,
+                    ProviderID = request.ProviderID,
+                    Provider = request.Provider,
+                    RequestedServicesID = request.RequestedServicesID,
+                    RequestedServices = request.RequestedServices,
                     Price = request.Price,
+                    RequestedSlot = newRequestedSlot,
+                    RequestedSlotID = newRequestedSlot.RequestedSlotId,
+                    providerDistrict = request.providerDistrict,
+                    ProviderDistrictID = request.ProviderDistrictID,
+                    Address = request.Address,
                     ProblemDescription = request.ProblemDescription,
-                    RequestedSlot=newRequestedSlot,
-                    RequestedSlotID=newRequestedSlot.SlotId
 
+                };
+                var newOrder = new Order
+                {
+                    Customer = customer,
+                    CustomerID = customerId,
+                    OrderDate = DateTime.UtcNow,
+                    OrderDetails = newOrderDetails,
+                    OrderDetailsId = newOrderDetails.OrderDetailsID,
+                };
 
-                    
+                newOrderDetails.OrderId = newOrder.OrderID;
+                newOrderDetails.Order= newOrder;
+
+                var order = await _orderRepository.AddOrder(newOrder);
+
+                var orderAsObject = new
+                {
+                    OrderId = order.OrderID,
+                    CustomerId = order.CustomerID,
+                    OrderDate = order.OrderDate,
+                    ProviderID = order.OrderDetails.ProviderID,
+                    ProviderFName= order.OrderDetails.Provider.FirstName,
+                    ProviderLName = order.OrderDetails.Provider.LastName,
+
+                    RequestedServicesID = order.OrderDetails.RequestedServicesID,
+                    RequestedServices = order.OrderDetails.RequestedServices.Services.Select(s=> new
+                    {
+                        s.ServiceID,
+                        s.ServiceName
+                    }).ToList<object>(),
+                    Price = order.OrderDetails.Price,
+                    RequestedSlotID = newRequestedSlot.RequestedSlotId,
+                    ProviderDistrictID = request.ProviderDistrictID,
+                    Address = request.Address,
+                    ProblemDescription = request.ProblemDescription,
 
 
                 };
-                
-                order.OrderRequests.Add(neworderRequest);
-                
 
+                result.Add(orderAsObject);
+                
             }
-            //cart.ServiceRequests = null;
+
             await _cartRepository.ClearCart(cart);
             
-
-         
             _unitOfWork.Commit();
 
+            var output = new
+            {
+                orders = result,
+
+                OrdersTotalPrice = totalPrice
+
+            };
+            return new Response<object>()
+            {
+                Payload = output,
+                Message = "Orders are requested successfully",
+                isError = false
+
+            };
+        }
+
+        public async Task<Response<object>> PayOrder(string orderId,PaymentMethod PayemntMethod)
+        {
+            var spec = new OrderWithDetailsSpecification(orderId);
+            var order = await _orderRepository.GetOrder(spec);
+
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
             var response = await _paymentService.PayOrder(order, PayemntMethod);
 
             return response;
 
-            //foreach (var serviceRequest in serviceRequests)
-            //{
-            //    var newRequest = new ServiceRequest();
-            //    newRequest.ProviderServiceID = serviceRequest.ProviderServiceID;
-            //    newRequest.providerService = serviceRequest.providerService;
-            //    newRequest.Price = serviceRequest.Price;
-            //    newRequest.Slot = serviceRequest.Slot;
-            //    newRequest.SlotID = serviceRequest.SlotID;
-            //    newRequest.AddedTime = serviceRequest.AddedTime;
-            //    newRequest.OrderId = order.OrderID;
-            //    newRequest.CartID = null;
-            //    newRequest.Cart = null;
-            //    newRequest.ProblemDescription = serviceRequest.ProblemDescription;
-
-
-            //    await _customerRepository.AddRequest(newRequest);
-            //    orderRequests.Add(newRequest);
-
-            //    var specProvider = new ProviderWithAvailabilitesSpecification(serviceRequest.providerService.ProviderID);
-            //    var provider = await _providerRepository.FindByIdAsync(specProvider);
-
-            //    var slots = provider.Availabilities.SelectMany(p => p.Slots);
-
-            //    var slotExist = slots.SingleOrDefault(s => s.TimeSlotID == serviceRequest.SlotID);
-            //    slotExist.enable = false;
-
-            //    await _customerRepository.RemoveRequest(serviceRequest);
-
-            //}
-
-            // serviceRequests = await _orderRepository.SetOrderToServiceRequest(serviceRequests, order);
-
-
-
-            //await _customerRepository.EmptyCart(cart);
-
-
-
-            //cart.ServiceRequests = null;
-            //var spec2 = new OrderWithRequestsSpecification(order.OrderID);
-
-            //var orders = await _orderRepository.GetOrder(spec2);
-
-
-            //var result = new
-            //{
-            //    order.OrderID,
-            //    order.CustomerID,
-            //    order.OrderStatusID,
-            //    order.OrderStatus.StatusName,
-            //    order.TotalPrice,
-            //    details = order.ServiceRequests.Select(s => new
-            //    {
-            //        s.ServiceRequestID,
-            //        s.SlotID,
-            //        s.Slot.StartTime,
-            //        s.providerService.Provider.Id,
-            //        Provider = s.providerService.Provider.FirstName,
-            //        s.providerService.Service.ServiceID,
-            //        s.providerService.Service.ServiceName,
-            //        s.Price,
-            //        s.ProblemDescription,
-            //    }),
-            //};
         }
 
         public async Task<Response<object>> ShowCustomerProfile(string customerId)

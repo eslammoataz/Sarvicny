@@ -4,6 +4,7 @@ using Sarvicny.Application.Services.Email;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
+using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
@@ -20,32 +21,10 @@ namespace Sarvicny.Infrastructure.Persistence
         }
 
 
-        //public async Task<object> ShowOrderDetails(string orderId, ISpecifications<Order> spec)
-        //{
-        //    var order = await ApplySpecification(spec).FirstOrDefaultAsync(o => o.OrderID == orderId);
-
-        //    var customer = order.Customer;
-
-        //    var response = new
-        //    {
-        //        CustomerData = new
-        //        {
-        //            customer.FirstName,
-        //            customer.Address,
-        //            // Add other customer properties as needed
-        //        },
-        //        ServiceData = customer.Cart.ServiceRequests.Select(s => new
-        //        {
-        //            ServiceId = s.providerService.Service.ServiceName
-        //        }).ToList<object>(),
-        //    };
-        //    return response;
-        //}
-
         public async Task ApproveOrder(Order order)
         {
 
-            order.OrderStatus = OrderStatusEnum.Approved;
+            order.OrderStatus= OrderStatusEnum.Approved;
 
         }
 
@@ -67,36 +46,18 @@ namespace Sarvicny.Infrastructure.Persistence
             return SpecificationBuilder<Order>.Build(_context.Orders, spec);
         }
 
-        private IQueryable<OrderServiceRequest> ApplySpecificationSR(ISpecifications<OrderServiceRequest> spec)
-        {
-            return SpecificationBuilder<OrderServiceRequest>.Build(_context.OrderServiceRequests, spec);
-        }
         public async Task<Order?> GetOrder(ISpecifications<Order> specifications)
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync();
         }
 
 
-        public async Task<object> RejectOrder(ISpecifications<Order> spec)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<object> CancelOrder(ISpecifications<Order> spec)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public async Task<object> ShowOrderDetails(ISpecifications<Order> spec)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public async Task<Order> AddOrder(Order order)
         {
 
             var orderStatus = _context.OrderStatuses;
-            order.OrderStatus = OrderStatusEnum.Pending;
+         
 
 
             _context.Orders.Add(order);
@@ -110,17 +71,58 @@ namespace Sarvicny.Infrastructure.Persistence
             return orders;
 
         }
-
-        public async Task<List<OrderServiceRequest>> SetOrderToServiceRequest(List<OrderServiceRequest> serviceRequests, Order order)
+        public async Task<List<Order>> GetAllOrdersForProvider(ISpecifications<Order> spec,string providerId)
         {
-            foreach (var serviceRequest in serviceRequests)
-            {
-                serviceRequest.OrderId = order.OrderID;
-            }
-            return serviceRequests;
+
+            var orders = await ApplySpecification(spec).Where(or=>or.OrderDetails.ProviderID==providerId).ToListAsync();
+            return orders;
+
         }
 
-        public async Task ChangeOrderStatus(Order order, string transactionId, PaymentMethod PaymentMethod, bool TransactionStatus)
+        public async Task<List<Order>> GetAllApprovedOrdersForProvider(ISpecifications<Order> spec, string providerId)
+        {
+
+            var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId && or.OrderStatus== OrderStatusEnum.Approved).ToListAsync();
+            return orders;
+
+        }
+        public async Task<List<Order>> GetAllPendingOrdersForProvider(ISpecifications<Order> spec, string providerId)
+        {
+
+            var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId && or.OrderStatus == OrderStatusEnum.Pending).ToListAsync();
+            return orders;
+
+        }
+
+        public async Task<List<Order>> GetAllCanceledOrders(ISpecifications<Order> spec)
+        {
+
+            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Canceled).ToListAsync();
+            return orders;
+
+        }
+        public async Task<List<Order>> GetAllPendingOrders(ISpecifications<Order> spec)
+        {
+
+            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Pending).ToListAsync();
+            return orders;
+
+        }
+        public async Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec)
+        {
+            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Approved).ToListAsync();
+            return orders;
+        }
+        public async Task<List<Order>> GetAllRejectedOrders(ISpecifications<Order> spec)
+        {
+
+            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Rejected).ToListAsync();
+            return orders;
+
+        }
+
+
+        public async Task ChangeOrderPaidStatus(Order order, string transactionId, PaymentMethod PaymentMethod, bool TransactionStatus)
         {
             order.IsPaid = TransactionStatus;
             order.TransactionID = transactionId;
@@ -130,32 +132,16 @@ namespace Sarvicny.Infrastructure.Persistence
 
 
 
-        public async Task<OrderServiceRequest> GetOrderServiceRequestByID(ISpecifications<OrderServiceRequest> spec)
-        {
-            return await ApplySpecificationSR(spec).FirstOrDefaultAsync();
-        }
 
-        public async Task<CustomerRating> AddCustomerRating(CustomerRating rate)
+        public async Task<OrderRating> AddRating(OrderRating rate)
         {
-           _context.customerRatings.AddAsync(rate);
+            await _context.OrderRatings.AddAsync(rate);
             return rate;
         }
          
 
-        public async Task<ProviderRating> AddProviderRating(ProviderRating rate)
-        {
-          _context.ProviderRatings.AddAsync(rate);
-            return rate;
-        }
 
-        public async Task<List<ProviderRating>> GetAllProviderRating()
-        {
-          return await _context.ProviderRatings.ToListAsync();
-        }
 
-        public async Task<List<CustomerRating>> GetAllCustomerRating()
-        {
-            return await _context.customerRatings.ToListAsync();
-        }
+
     }
 }

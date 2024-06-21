@@ -22,7 +22,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
         [HttpPost]
-        [Route("SetAvailability")]
+        [Route("setAvailability")]
         public async Task<IActionResult> AddAvailability(AvailabilityDto availabilityDto, string workerID)
         {
             var Response = await _serviceProviderService.AddAvailability(availabilityDto, workerID);
@@ -36,7 +36,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("RemoveAvailability")]
+        [Route("removeAvailability")]
         public async Task<IActionResult> RemoveAvailability(string availabilityId, string providerId)
         {
             var Response = await _serviceProviderService.RemoveAvailability(availabilityId, providerId);
@@ -50,7 +50,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
 
-        [HttpGet("GetServiceProviderAvailability/{providerId}")]
+        [HttpGet("getServiceProviderAvailability/{providerId}")]
         public async Task<IActionResult> GetServiceProviderAvailabilityAsync(string providerId)
 
         {
@@ -65,7 +65,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("approveorder")]
+        [Route("approveOrderRequest")]
         public async Task<IActionResult> ApproveOrder(string orderId)
         {
             var Response = await _serviceProviderService.ApproveOrder(orderId);
@@ -79,7 +79,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("rejectorder")]
+        [Route("rejectOrderRequest")]
         public async Task<IActionResult> RejectOrder(string orderId)
         {
             var Response = await _serviceProviderService.RejectOrder(orderId);
@@ -93,7 +93,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("Cancelorder")]
+        [Route("cancelOrderRequest")]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
             var Response = await _serviceProviderService.CancelOrder(orderId);
@@ -107,10 +107,10 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
 
-        [HttpGet("ShowOrderDetails")]
-        public async Task<IActionResult> ShowOrderDetails(string orderId)
+        [HttpGet("showOrderDetails")]
+        public async Task<IActionResult> ShowOrderDetails(string orderRequestId)
         {
-            var Response = await _orderService.ShowOrderDetailsForProvider(orderId);
+            var Response = await _orderService.ShowAllOrderDetailsForProvider(orderRequestId);
 
             if (Response.isError)
             {
@@ -120,20 +120,10 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
         }
 
-        //[HttpGet("GetProviders")]
-        //public async Task<IActionResult> GetAllServiceProviders()
-        //{
-        //    var Response = await _serviceProviderService.GetAllServiceProviders();
 
-        //    if (Response.isError)
-        //    {
-        //        return BadRequest(Response);
-        //    }
-        //    return Ok(Response);
-        //}
 
         [HttpPost]
-        [Route("RegisterService")]
+        [Route("registerService")]
         public async Task<IActionResult> RegisterService(string workerId, string serviceId, decimal price)
         {
             var response = await _serviceProviderService.RegisterServiceAsync(workerId, serviceId, price);
@@ -146,52 +136,12 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-        //[HttpPost]
-        //[Route("AddDistrict")]
-        //public async Task<IActionResult> AddDistrict(string providerId, string districtName)
-        //{
-        //    var response = await _serviceProviderService.AddDistrictToProvider(providerId, districtName);
-
-        //    if (response.isError)
-        //    {
-        //        return BadRequest(response);
-        //    }
-
-        //    return Ok(response);
-        //}
-
-        //[HttpPost]
-        //[Route("RequestDistrict")]
-        //public async Task<IActionResult> RequestNewDistrictToBeAdded(string districtName)
-        //{
-        //    var response = await _serviceProviderService.RequestNewDistrictToBeAdded(districtName);
-
-        //    if (response.isError)
-        //    {
-        //        return BadRequest(response);
-        //    }
-
-        //    return Ok(response);
-        //}
-
-        //[HttpGet("getProviderDistricts/{providerid}")]
-        //public async Task<IActionResult> GetProviderDistricts(string providerID)
-        //{
-        //    var response = await _serviceProviderService.GetProviderDistricts(providerID);
-
-        //    if (response.isError)
-        //    {
-        //        return NotFound(response);
-        //    }
 
 
-        //    return Ok(response);
-        //}
-
-        [HttpGet("getAllOrders")]
+        [HttpGet("getAllOrdersForProvider")]
         public async Task<IActionResult> getAllOrders(string providerID)
         {
-            var response = await _serviceProviderService.getAllOrders(providerID);
+            var response = await _serviceProviderService.getAllOrdersForProvider(providerID);
 
             if (response.isError)
             {
@@ -205,7 +155,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [HttpGet("getAllApprovedOrders")]
         public async Task<IActionResult> getAllApprovedOrders(string providerID)
         {
-            var response = await _serviceProviderService.getAllApprovedOrders(providerID);
+            var response = await _serviceProviderService.getAllApprovedOrderForProvider(providerID);
 
             if (response.isError)
             {
@@ -219,7 +169,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [HttpGet("getAllRequestededOrders")]
         public async Task<IActionResult> getAllRequestededOrders(string providerID)
         {
-            var response = await _serviceProviderService.getAllRequestedOrders(providerID);
+            var response = await _serviceProviderService.getAllPendingOrderForProvider(providerID);
 
             if (response.isError)
             {
@@ -244,7 +194,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
         [HttpGet]
-        [Route("ShowProviderProfile")]
+        [Route("showProviderProfile")]
         public async Task<IActionResult> ShowProviderProfile(string providerId)
         {
             var response = await _serviceProviderService.ShowProviderProfile(providerId);
@@ -259,22 +209,28 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
         [HttpPost]
-        [Route("AddProviderRating")]
-        public async Task<IActionResult> AddPoviderRating(ProviderRatingDto providerRatingDto)
+        [Route("addProviderRating/{orderId}")]
+        public async Task<IActionResult> AddPoviderRating(RatingDto providerRatingDto, string orderId)
         {
-            var newRate = new ProviderRating
-            {
-                ServiceRequestID = providerRatingDto.serviceRequestID,
-                Rating = providerRatingDto.ServiceProviderRating,
-                Comment = providerRatingDto.Comment
-            };
-            var response = await _orderService.AddProviderRating(newRate);
+
+            var response = await _orderService.AddProviderRating(providerRatingDto, orderId);
             if (response.isError)
             {
                 return BadRequest(response);
             }
             return Ok(response);
         }
+        [HttpGet]
+        [Route("GetProviderRating/{orderId}")]
+        public async Task<IActionResult> GetProviderRating(string orderId)
+        {
 
+            var response = await _orderService.GetProviderRatingForOrder(orderId);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
     }
 }

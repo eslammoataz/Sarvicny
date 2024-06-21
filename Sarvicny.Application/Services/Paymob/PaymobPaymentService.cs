@@ -60,7 +60,7 @@ public class PaymobPaymentService : IPaymobPaymentService
 
         string authToken = await GetAuthToken();
 
-        var orderPriceInCents = order.TotalPrice * 100;
+        var orderPriceInCents = order.OrderDetails.Price * 100;
 
         var orderRequest = new OrderRequest
         {
@@ -111,7 +111,7 @@ public class PaymobPaymentService : IPaymobPaymentService
         }
 
         var customer = order.Customer;
-        var orderPriceInCents = order.TotalPrice * 100;
+        var orderPriceInCents = order.OrderDetails.Price * 100;
 
         var requestBody = new PaymentKeyRequest()
         {

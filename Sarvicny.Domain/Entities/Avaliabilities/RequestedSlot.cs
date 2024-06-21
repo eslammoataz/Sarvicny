@@ -12,7 +12,7 @@ namespace Sarvicny.Domain.Entities.Avaliabilities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string SlotId { get; set; }
+        public string RequestedSlotId { get; set; }
 
         public DateTime RequestedDay { get; set; }
         public string DayOfWeek { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Sarvicny.Domain.Entities.Avaliabilities;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 
 namespace Sarvicny.Domain.Entities
 {
@@ -10,14 +11,21 @@ namespace Sarvicny.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string CartServiceRequestID { get; set; }
 
-        public string? CartID { get; set; }
+
+        public string CartID { get; set; }
 
         [ForeignKey("CartID")]
-        public Cart? Cart { get; set; }
+        public Cart Cart { get; set; }
+        
+        public string ProviderID { get; set; }
 
-        [ForeignKey("ProviderServiceID")]
-        public string ProviderServiceID { get; set; }
-        public ProviderService providerService { get; set; }
+        [ForeignKey("ProviderID")]
+        public Provider Provider{ get; set; }
+
+        public string RequestedServicesID { get; set; }
+
+        [ForeignKey("RequestedServicesID")]
+        public RequestedService RequestedServices { get; set; }
 
         public DateTime RequestedDate { get; set; }
 

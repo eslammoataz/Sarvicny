@@ -55,7 +55,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("addtocart")]
         public async Task<IActionResult> AddToCart(RequestServiceDto requestServiceDto, string customerId)
         {
-            var Response = await _customerService.RequestService(requestServiceDto, customerId);
+            var Response = await _customerService.addToCart(requestServiceDto, customerId);
 
             if (Response.isError)
             {
@@ -68,7 +68,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("removeFromCart")]
         public async Task<IActionResult> RemoveFromCart(string customerId, string requestId)
         {
-            var Response = await _customerService.CancelRequestService(customerId, requestId);
+            var Response = await _customerService.RemoveFromCart(customerId, requestId);
 
             if (Response.isError)
             {
@@ -87,9 +87,22 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         [HttpPost]
         [Route("orderCart")]
-        public async Task<IActionResult> OrderCart(string customerId, PaymentMethod paymentMethod)
+        public async Task<IActionResult> OrderCart(string customerId)
         {
-            var Response = await _customerService.OrderCart(customerId, paymentMethod);
+            var Response = await _customerService.OrderCart(customerId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+            return Ok(Response);
+
+        }
+        [HttpPost]
+        [Route("payOrder/{orderId}")]
+        public async Task<IActionResult> PayOrder(string orderId, PaymentMethod paymentMethod)
+        {
+            var Response = await _customerService.PayOrder(orderId, paymentMethod);
 
             if (Response.isError)
             {
@@ -166,16 +179,24 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("AddCustomerRating")]
-        public async Task<IActionResult> AddCustomerRating(CustomerRatingDto customerRatingDto)
+        [Route("addCustomerRating/{orderId}")]
+        public async Task<IActionResult> AddCustomerRating(RatingDto customerRatingDto, string orderId)
         {
-            var newRate = new CustomerRating
-            { 
-               ServiceRequestID = customerRatingDto.serviceRequestID,
-               Rating= customerRatingDto.customerRating,
-               Comment = customerRatingDto.Comment
-            };
-            var response = await _orderService.AddCustomerRating(newRate);
+
+            var response = await _orderService.AddCustomerRating(customerRatingDto, orderId);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("GetCustomerRating/{orderId}")]
+        public async Task<IActionResult> GetCustomerRating(string orderId)
+        {
+
+            var response = await _orderService.GetCustomerRatingForOrder(orderId);
             if (response.isError)
             {
                 return BadRequest(response);

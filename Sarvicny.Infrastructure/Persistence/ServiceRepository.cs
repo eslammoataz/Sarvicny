@@ -59,5 +59,13 @@ public class ServiceRepository : IServiceRepository
         throw new NotImplementedException();
     }
 
+    public async Task<ICollection<Service>> GetAllParentServices(ISpecifications<Service> spec)
+    {
+        return await ApplySpecificationS(spec).Where(s=>s.ParentServiceID==null).ToListAsync();
+    }
 
+    public  async Task AddRequestedService(RequestedService requestedService)
+    {
+        await _context.RequestedServices.AddAsync(requestedService);
+    }
 }

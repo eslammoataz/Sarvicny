@@ -175,7 +175,7 @@ namespace Sarvicny.Infrastructure.Migrations
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.Avaliabilities.RequestedSlot", b =>
                 {
-                    b.Property<string>("SlotId")
+                    b.Property<string>("RequestedSlotId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(255)");
 
@@ -189,7 +189,7 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<TimeSpan>("StartTime")
                         .HasColumnType("time(6)");
 
-                    b.HasKey("SlotId");
+                    b.HasKey("RequestedSlotId");
 
                     b.ToTable("RequestedSlots");
                 });
@@ -223,6 +223,7 @@ namespace Sarvicny.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("CartID")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<decimal>("Price")
@@ -236,15 +237,18 @@ namespace Sarvicny.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("ProviderServiceID")
+                    b.Property<string>("ProviderID")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<DateTime>("RequestedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("SlotID")
+                    b.Property<string>("RequestedServicesID")
                         .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("SlotID")
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("CartServiceRequestID");
@@ -253,7 +257,9 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.HasIndex("ProviderDistrictID");
 
-                    b.HasIndex("ProviderServiceID");
+                    b.HasIndex("ProviderID");
+
+                    b.HasIndex("RequestedServicesID");
 
                     b.HasIndex("SlotID");
 
@@ -277,39 +283,6 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.HasKey("CriteriaID");
 
                     b.ToTable("Criterias", (string)null);
-                });
-
-            modelBuilder.Entity("Sarvicny.Domain.Entities.CustomerRating", b =>
-                {
-                    b.Property<string>("RatingId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("OrderID")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ServiceRequestID")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("customerID")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("RatingId");
-
-                    b.HasIndex("ServiceRequestID")
-                        .IsUnique();
-
-                    b.ToTable("customerRatings");
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.District", b =>
@@ -346,6 +319,10 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("OrderDetailsId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("OrderStatusString")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -353,22 +330,33 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<int?>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("TotalPrice")
-                        .HasColumnType("decimal(65,30)");
-
                     b.Property<string>("TransactionID")
                         .HasColumnType("longtext");
+
+                    b.Property<string>("customerRatingId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("providerRatingId")
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("OrderID");
 
                     b.HasIndex("CustomerID");
 
+                    b.HasIndex("OrderDetailsId");
+
+                    b.HasIndex("customerRatingId")
+                        .IsUnique();
+
+                    b.HasIndex("providerRatingId")
+                        .IsUnique();
+
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderServiceRequest", b =>
+            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderDetails", b =>
                 {
-                    b.Property<string>("OrderServiceRequestID")
+                    b.Property<string>("OrderDetailsID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(255)");
 
@@ -377,6 +365,7 @@ namespace Sarvicny.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("OrderId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<decimal>("Price")
@@ -390,7 +379,11 @@ namespace Sarvicny.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("ProviderServiceID")
+                    b.Property<string>("ProviderID")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("RequestedServicesID")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
@@ -398,23 +391,43 @@ namespace Sarvicny.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("customerRatingId")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("providerRatingId")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("OrderServiceRequestID");
+                    b.HasKey("OrderDetailsID");
 
                     b.HasIndex("OrderId");
 
                     b.HasIndex("ProviderDistrictID");
 
-                    b.HasIndex("ProviderServiceID");
+                    b.HasIndex("ProviderID");
+
+                    b.HasIndex("RequestedServicesID");
 
                     b.HasIndex("RequestedSlotID");
 
-                    b.ToTable("OrderServiceRequests");
+                    b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderRating", b =>
+                {
+                    b.Property<string>("RatingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("OrderID")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Rate")
+                        .HasColumnType("int");
+
+                    b.HasKey("RatingId");
+
+                    b.HasIndex("OrderID");
+
+                    b.ToTable("OrderRatings");
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.OrderStatus", b =>
@@ -479,39 +492,6 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.ToTable("ProviderDistricts");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderRating", b =>
-                {
-                    b.Property<string>("RatingId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ServiceRequestID")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("orderId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("providerId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("RatingId");
-
-                    b.HasIndex("ServiceRequestID")
-                        .IsUnique();
-
-                    b.ToTable("ProviderRatings");
-                });
-
             modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderService", b =>
                 {
                     b.Property<string>("ProviderServiceID")
@@ -538,6 +518,17 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.ToTable("ProviderServices");
                 });
 
+            modelBuilder.Entity("Sarvicny.Domain.Entities.RequestedService", b =>
+                {
+                    b.Property<string>("RequestedServicesId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("RequestedServicesId");
+
+                    b.ToTable("RequestedServices");
+                });
+
             modelBuilder.Entity("Sarvicny.Domain.Entities.Service", b =>
                 {
                     b.Property<string>("ServiceID")
@@ -560,6 +551,9 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(65,30)");
 
+                    b.Property<string>("RequestedServicesId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -569,6 +563,8 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.HasIndex("CriteriaID");
 
                     b.HasIndex("ParentServiceID");
+
+                    b.HasIndex("RequestedServicesId");
 
                     b.ToTable("Services");
                 });
@@ -783,8 +779,10 @@ namespace Sarvicny.Infrastructure.Migrations
             modelBuilder.Entity("Sarvicny.Domain.Entities.CartServiceRequest", b =>
                 {
                     b.HasOne("Sarvicny.Domain.Entities.Cart", "Cart")
-                        .WithMany("ServiceRequests")
-                        .HasForeignKey("CartID");
+                        .WithMany("CartServiceRequests")
+                        .HasForeignKey("CartID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Sarvicny.Domain.Entities.ProviderDistrict", "providerDistrict")
                         .WithMany()
@@ -792,36 +790,32 @@ namespace Sarvicny.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sarvicny.Domain.Entities.ProviderService", "providerService")
+                    b.HasOne("Sarvicny.Domain.Entities.Users.ServicProviders.Provider", "Provider")
                         .WithMany()
-                        .HasForeignKey("ProviderServiceID")
+                        .HasForeignKey("ProviderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sarvicny.Domain.Entities.RequestedService", "RequestedServices")
+                        .WithMany()
+                        .HasForeignKey("RequestedServicesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Sarvicny.Domain.Entities.Avaliabilities.AvailabilityTimeSlot", "Slot")
                         .WithMany()
                         .HasForeignKey("SlotID")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Cart");
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("RequestedServices");
 
                     b.Navigation("Slot");
 
                     b.Navigation("providerDistrict");
-
-                    b.Navigation("providerService");
-                });
-
-            modelBuilder.Entity("Sarvicny.Domain.Entities.CustomerRating", b =>
-                {
-                    b.HasOne("Sarvicny.Domain.Entities.OrderServiceRequest", "serviceRequest")
-                        .WithOne("CRate")
-                        .HasForeignKey("Sarvicny.Domain.Entities.CustomerRating", "ServiceRequestID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("serviceRequest");
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.Order", b =>
@@ -832,14 +826,38 @@ namespace Sarvicny.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Sarvicny.Domain.Entities.OrderDetails", "OrderDetails")
+                        .WithMany()
+                        .HasForeignKey("OrderDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sarvicny.Domain.Entities.OrderRating", "CRate")
+                        .WithOne()
+                        .HasForeignKey("Sarvicny.Domain.Entities.Order", "customerRatingId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Sarvicny.Domain.Entities.OrderRating", "PRate")
+                        .WithOne()
+                        .HasForeignKey("Sarvicny.Domain.Entities.Order", "providerRatingId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("CRate");
+
                     b.Navigation("Customer");
+
+                    b.Navigation("OrderDetails");
+
+                    b.Navigation("PRate");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderServiceRequest", b =>
+            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderDetails", b =>
                 {
                     b.HasOne("Sarvicny.Domain.Entities.Order", "Order")
-                        .WithMany("OrderRequests")
-                        .HasForeignKey("OrderId");
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Sarvicny.Domain.Entities.ProviderDistrict", "providerDistrict")
                         .WithMany()
@@ -847,9 +865,15 @@ namespace Sarvicny.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sarvicny.Domain.Entities.ProviderService", "providerService")
+                    b.HasOne("Sarvicny.Domain.Entities.Users.ServicProviders.Provider", "Provider")
                         .WithMany()
-                        .HasForeignKey("ProviderServiceID")
+                        .HasForeignKey("ProviderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Sarvicny.Domain.Entities.RequestedService", "RequestedServices")
+                        .WithMany()
+                        .HasForeignKey("RequestedServicesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -861,11 +885,24 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.Navigation("Order");
 
+                    b.Navigation("Provider");
+
+                    b.Navigation("RequestedServices");
+
                     b.Navigation("RequestedSlot");
 
                     b.Navigation("providerDistrict");
+                });
 
-                    b.Navigation("providerService");
+            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderRating", b =>
+                {
+                    b.HasOne("Sarvicny.Domain.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderAvailability", b =>
@@ -898,17 +935,6 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Navigation("Provider");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderRating", b =>
-                {
-                    b.HasOne("Sarvicny.Domain.Entities.OrderServiceRequest", "serviceRequest")
-                        .WithOne("PRate")
-                        .HasForeignKey("Sarvicny.Domain.Entities.ProviderRating", "ServiceRequestID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("serviceRequest");
-                });
-
             modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderService", b =>
                 {
                     b.HasOne("Sarvicny.Domain.Entities.Users.ServicProviders.Provider", "Provider")
@@ -939,6 +965,10 @@ namespace Sarvicny.Infrastructure.Migrations
                         .WithMany("ChildServices")
                         .HasForeignKey("ParentServiceID")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Sarvicny.Domain.Entities.RequestedService", null)
+                        .WithMany("Services")
+                        .HasForeignKey("RequestedServicesId");
 
                     b.Navigation("Criteria");
 
@@ -1007,10 +1037,10 @@ namespace Sarvicny.Infrastructure.Migrations
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.Cart", b =>
                 {
+                    b.Navigation("CartServiceRequests");
+
                     b.Navigation("Customer")
                         .IsRequired();
-
-                    b.Navigation("ServiceRequests");
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.Criteria", b =>
@@ -1023,21 +1053,14 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Navigation("ProviderDistricts");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.Order", b =>
-                {
-                    b.Navigation("OrderRequests");
-                });
-
-            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderServiceRequest", b =>
-                {
-                    b.Navigation("CRate");
-
-                    b.Navigation("PRate");
-                });
-
             modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderAvailability", b =>
                 {
                     b.Navigation("Slots");
+                });
+
+            modelBuilder.Entity("Sarvicny.Domain.Entities.RequestedService", b =>
+                {
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.Service", b =>

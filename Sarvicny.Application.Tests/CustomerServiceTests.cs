@@ -78,7 +78,7 @@ namespace Sarvicny.Application.Tests
             var cart = new Cart
             {
                 CartID = "testCartId",
-                ServiceRequests = new List<CartServiceRequest>()
+                CartServiceRequests = new List<CartServiceRequest>()
             };
             var testCustomer = new Customer { Id = testCustomerId, Cart = cart };
 

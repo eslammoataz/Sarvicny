@@ -16,7 +16,7 @@ public class CartRepository : ICartRepository
 
     public async Task ClearCart(Cart cart)
     {
-        var requests = cart.ServiceRequests;
+        var requests = cart.CartServiceRequests;
         foreach (var request in requests)
         {
             _context.CartServiceRequests.Remove(request);

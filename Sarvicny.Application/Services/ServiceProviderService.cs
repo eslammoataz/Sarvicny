@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using MailKit.Search;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
@@ -15,6 +16,7 @@ using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
+using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Application.Services
 {
@@ -120,10 +122,7 @@ namespace Sarvicny.Application.Services
             return response;
 
         }
-        public async Task<Response<ICollection<object>>> GetRegisteredServices(string workerId)
-        {
-            throw new NotImplementedException();
-        }
+
 
         public async Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string workerId)
         {
@@ -291,10 +290,24 @@ namespace Sarvicny.Application.Services
 
 
         }
+
+        string GenerateOrderDetailsMessage(Order order)
+        {
+            // Construct the order details message here
+            // This is just an example. Adjust based on your actual order details structure.
+            return $"Order ID: {order.OrderID}\n" +
+                   $"Provider: {order.OrderDetails.Provider.FirstName}\n" +
+                   $"Service: {order.OrderDetails.RequestedServices.Services.Select(s=>s.ServiceName)}\n" +
+                   $"Requested Day: {order.OrderDetails.RequestedSlot.RequestedDay}\n" +
+                   $"Day Of Week: {order.OrderDetails.RequestedSlot.RequestedDay}\n" +
+                   $"Requested Slot: {order.OrderDetails.RequestedSlot.StartTime}\n" +
+                   $"Order Status: {order.OrderStatus}\n" +
+                   $" Price: {order.OrderDetails.Price:C}\n";
+        }
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
 
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
 
             if (order == null)
@@ -323,31 +336,25 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-
             await _orderRepository.ApproveOrder(order);
 
-            var orderRequests = order.OrderRequests;
-
-            foreach (var request in orderRequests)
+            var originalSlot = await getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+            if (originalSlot != null)
             {
-                var originalSlot = await getOriginalSlot(request.RequestedSlot, request.providerService.ProviderID);
-                if (originalSlot == null)
-                {
-                    continue;
-                }
                 originalSlot.isActive = false;
-
-
             }
+ 
+
             _unitOfWork.Commit();
 
             
-            var details = await _orderService.ShowOrderDetailsForProvider(orderId);
+            var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
 
 
             var customer = order.Customer;
-            var message = new EmailDto(customer.Email!, "Sarvicny: Order Approved", "Thank you for using our system! Your order is approved ");  // akedd momkn yet7sn
 
+            var orderDetailsForCustomer = GenerateOrderDetailsMessage(order);
+            var message = new EmailDto(customer.Email!, "Sarvicny: Request Approved", $"Thank you for using our system! Your Request is approved. \n\nOrder Details:\n{orderDetailsForCustomer}");
             _emailService.SendEmail(message);
 
             return new Response<object>()
@@ -363,7 +370,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> CancelOrder(string orderId)
         {
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
 
             if (order == null)
@@ -377,13 +384,12 @@ namespace Sarvicny.Application.Services
                     Errors = new List<string>() { "Error with order" },
 
                 };
+
             }
-            if (order.OrderStatus != OrderStatusEnum.Approved) // if not approved
+            if (order.OrderStatus != OrderStatusEnum.Approved)
             {
-
-                if (order.OrderStatus == OrderStatusEnum.Canceled) // if canceled
+                if (order.OrderStatus == OrderStatusEnum.Canceled)
                 {
-
                     return new Response<object>()
                     {
                         isError = true,
@@ -397,48 +403,49 @@ namespace Sarvicny.Application.Services
                 {
                     isError = true,
                     Payload = null,
-                    Message = "Order is not intially approved",
+                    Message = "Order is not approved to be canceled",
                     Errors = new List<string>() { "Error with order" },
 
                 };
 
             }
+
             await _orderRepository.CancelOrder(order);
 
-            var orderRequests = order.OrderRequests;
-            foreach (var request in orderRequests)
+            var originalSlot = await getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+            if (originalSlot != null)
             {
-                var originalSlot = await getOriginalSlot(request.RequestedSlot, request.providerService.ProviderID);
-                if (originalSlot == null)
-                {
-                    continue;
-                }
                 originalSlot.isActive = true;
             }
 
 
             _unitOfWork.Commit();
 
-            var customer = order.Customer;
-            var message = new EmailDto(customer.Email!, "Sarvicny: Canceled", "Unfortunally! Your order is Canceled ");  // akedd momkn yet7sn
 
+            var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
+
+
+            var customer = order.Customer;
+
+            var orderDetailsForCustomer = GenerateOrderDetailsMessage(order);
+            var message = new EmailDto(customer.Email!, "Sarvicny: Request Canceled", $"Unfortunately! Your Request is Canceled. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
 
-            ///ReAsignnnnnn??
-            var details = await _orderService.ShowOrderDetailsForProvider(orderId);
-
             return new Response<object>()
+
             {
                 isError = false,
-                Message = "Order is Canceled Successfully",
-                Payload = details
+                Payload = details,
+                Message = "Order Canceled Succesfully",
+
+
             };
         }
 
 
         public async Task<Response<object>> RejectOrder(string orderId)
         {
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
 
             if (order == null)
@@ -452,63 +459,64 @@ namespace Sarvicny.Application.Services
                     Errors = new List<string>() { "Error with order" },
 
                 };
+
             }
-            if (order.OrderStatus != OrderStatusEnum.Pending) //if not pending
+            if (order.OrderStatus == OrderStatusEnum.Approved)
             {
-                if (order.OrderStatus == OrderStatusEnum.Approved)
-                {
-                    return new Response<object>()
-                    {
-                        isError = true,
-                        Payload = null,
-                        Message = "Order is already approved",
-                        Errors = new List<string>() { "Error with order" },
-
-                    };
-                }
-                if (order.OrderStatus == OrderStatusEnum.Rejected)
-                {
-                    return new Response<object>()
-                    {
-                        isError = true,
-                        Payload = null,
-                        Message = "Order is already rejected",
-                        Errors = new List<string>() { "Error with order" },
-
-                    };
-                }
                 return new Response<object>()
+
                 {
                     isError = true,
                     Payload = null,
-                    Message = "Order is either canceled or completed",
+                    Message = "Order is already approved",
                     Errors = new List<string>() { "Error with order" },
+
+                };
+
+            }
+            if (order.OrderStatus == OrderStatusEnum.Rejected)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Order is already Rejected",
+                    Errors = new List<string>() { "Error with order" },
+
                 };
             }
+
             await _orderRepository.RejectOrder(order);
+
+
             _unitOfWork.Commit();
 
-            var customer = order.Customer;
-            var message = new EmailDto(customer.Email!, "Sarvicny: Rejected", "Unfortunally! Your order is Rejected ");  // akedd momkn yet7sn (n2ol feeh al details mslun)
 
+            var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
+
+
+            var customer = order.Customer;
+
+            var orderDetailsForCustomer = GenerateOrderDetailsMessage(order);
+            var message = new EmailDto(customer.Email!, "Sarvicny: Request Rejected", $"Unfortunately! Your Request is Rejected. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
 
-            ///ReAsignnnnnn??
-            var details = await _orderService.ShowOrderDetailsForProvider(orderId);
-
             return new Response<object>()
+
             {
                 isError = false,
-                Message = "Order is Rejected Successfully",
-                Payload = details
+                Payload = details,
+                Message = "Order Rejected Succesfully",
+
+
             };
         }
 
 
-        public async Task<Response<List<object>>> getAllOrders(string workerId)
+        public async Task<Response<List<object>>> getAllOrdersForProvider(string workerId)
         {
-            var spec = new OrderWithRequestsSpecification();
-            var orders = await _orderRepository.GetAllOrders(spec);
+
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
             {
@@ -521,20 +529,11 @@ namespace Sarvicny.Application.Services
                 };
             };
 
-            List<object> result = new List<object>();
-            foreach (var order in orders)
-            {
-                if (order.OrderRequests.Any(s => s.providerService.ProviderID == workerId))
-                {
-                    var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
+            var spec = new OrderWithDetailsSpecification();
+            var orders = await _orderRepository.GetAllOrdersForProvider(spec,workerId);
 
-                    result.Add(orderDetails);
-                }
-            }
+            if(orders.Count()== 0) {
 
-
-            if (result.Count == 0)
-            {
                 return new Response<List<object>>()
                 {
                     Status = "failed",
@@ -542,6 +541,15 @@ namespace Sarvicny.Application.Services
                     Payload = null,
                     isError = true
                 };
+            }
+            
+
+            List<object> result = new List<object>();
+            foreach (var order in orders)
+            {
+                var orderDetails = await _orderService.ShowAllOrderDetailsForProvider(order.OrderID);
+
+                result.Add(orderDetails);
             }
 
             return new Response<List<object>>()
@@ -554,10 +562,8 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<List<object>>> getAllApprovedOrders(string workerId)
+        public async Task<Response<List<object>>> getAllApprovedOrderForProvider(string workerId)
         {
-            var spec = new OrderWithRequestsSpecification();
-            var orders = await _orderRepository.GetAllOrders(spec);
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
             {
@@ -569,37 +575,27 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             };
+            var spec = new OrderWithDetailsSpecification();
+            var orders = await _orderRepository.GetAllApprovedOrdersForProvider(spec, workerId);
+
+            if (orders.Count() == 0)
+            {
+
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "No Approved Orders Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
 
             List<object> result = new List<object>();
             foreach (var order in orders)
             {
-                if (order.OrderStatus == OrderStatusEnum.Approved) //2 means approved 
-                {
-                    if (order.OrderRequests.Any(s => s.providerService.ProviderID == workerId))
-                    {
-                        var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
+                var orderDetails = await _orderService.ShowAllOrderDetailsForProvider(order.OrderID);
 
-                        result.Add(orderDetails);
-
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else { continue; }
-
-            }
-
-            if (result.Count == 0)
-            {
-                return new Response<List<object>>()
-                {
-                    Status = "failed",
-                    Message = "No Orders Found",
-                    Payload = null,
-                    isError = true
-                };
+                result.Add(orderDetails);
             }
 
             return new Response<List<object>>()
@@ -610,12 +606,13 @@ namespace Sarvicny.Application.Services
 
             };
 
+
+           
+
         }
 
-        public async Task<Response<List<object>>> getAllRequestedOrders(string workerId)
+        public async Task<Response<List<object>>> getAllPendingOrderForProvider(string workerId)
         {
-            var spec = new OrderWithRequestsSpecification();
-            var orders = await _orderRepository.GetAllOrders(spec);
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
             {
@@ -627,38 +624,27 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             };
+            var spec = new OrderWithDetailsSpecification();
+            var orders = await _orderRepository.GetAllPendingOrdersForProvider(spec, workerId);
+
+            if (orders.Count() == 0)
+            {
+
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "No Approved Orders Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
 
             List<object> result = new List<object>();
             foreach (var order in orders)
             {
-                if (order.OrderStatus == OrderStatusEnum.Pending) // 1 means request
-                {
-                    if (order.OrderRequests.Any(s => s.providerService.ProviderID == workerId))
-                    {
-                        var orderDetails = await _orderService.ShowOrderDetailsForProvider(order.OrderID);
+                var orderDetails = await _orderService.ShowAllOrderDetailsForProvider(order.OrderID);
 
-                        result.Add(orderDetails);
-
-                    }
-
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else { continue; }
-
-            }
-
-            if (result.Count == 0)
-            {
-                return new Response<List<object>>()
-                {
-                    Status = "failed",
-                    Message = "No Orders Found",
-                    Payload = null,
-                    isError = true
-                };
+                result.Add(orderDetails);
             }
 
             return new Response<List<object>>()

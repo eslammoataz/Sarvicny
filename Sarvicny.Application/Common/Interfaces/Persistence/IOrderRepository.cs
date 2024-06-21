@@ -8,23 +8,28 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<Order?> GetOrder(ISpecifications<Order> specifications);
 
 
-        Task ApproveOrder(Order order);
-        Task RejectOrder(Order order);
-        Task CancelOrder(Order order);
-        //Task<object> ShowOrderDetails(ISpecifications<Order> spec);
+        Task ApproveOrder(Order orderId);
+        Task RejectOrder(Order orderId);
+        Task CancelOrder(Order orderId);
+        
         Task<Order> AddOrder(Order order);
         Task<List<Order>> GetAllOrders(ISpecifications<Order> spec);
 
-        Task ChangeOrderStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
-        Task<List<OrderServiceRequest>> SetOrderToServiceRequest(List<OrderServiceRequest> serviceRequests, Order order);
+        Task<List<Order>> GetAllOrdersForProvider(ISpecifications<Order> spec, string providerId);
+        Task<List<Order>> GetAllPendingOrdersForProvider(ISpecifications<Order> spec, string providerId);
+        Task<List<Order>> GetAllApprovedOrdersForProvider(ISpecifications<Order> spec, string providerId);
 
-        Task<CustomerRating> AddCustomerRating(CustomerRating rate);
-        Task<ProviderRating> AddProviderRating(ProviderRating rating);
+        Task<List<Order>> GetAllRejectedOrders(ISpecifications<Order> spec);
+        Task<List<Order>> GetAllPendingOrders(ISpecifications<Order> spec);
+        Task<List<Order>> GetAllCanceledOrders(ISpecifications<Order> spec);
+        Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec);
 
-     
-         Task<OrderServiceRequest> GetOrderServiceRequestByID(ISpecifications<OrderServiceRequest> spec);
-        Task<List<ProviderRating>> GetAllProviderRating();
-        Task<List<CustomerRating>> GetAllCustomerRating();
+        Task ChangeOrderPaidStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
+
+        Task<OrderRating> AddRating(OrderRating rate);
+
+        //Task<List<ProviderRating>> GetAllProviderRating();
+        //Task<List<OrderRating>> GetAllCustomerRating();
 
 
 

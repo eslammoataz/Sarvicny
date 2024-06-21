@@ -8,7 +8,7 @@ namespace Sarvicny.Application.Services.Abstractions
     public interface IServiceProviderService
     {
         Task<Response<object>> RegisterServiceAsync(string workerId, string serviceId, decimal Price); //done
-        Task<Response<ICollection<object>>> GetRegisteredServices(string workerId); //done
+        
 
         Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string providerId); //done
 
@@ -20,17 +20,15 @@ namespace Sarvicny.Application.Services.Abstractions
 
        
 
-        Task<Response<object>> ApproveOrder(string orderId); //done
-        Task<Response<object>> RejectOrder(string orderId); //done
-        Task<Response<object>> CancelOrder(string orderId); //done
+        Task<Response<object>> ApproveOrder(string orderRequestId); 
+        Task<Response<object>> RejectOrder(string orderRequestId); 
+        Task<Response<object>> CancelOrder(string orderRequestId);
 
-        
-        ////Task<Response<ICollection<Object>>> GetAllServiceProviders(); b2t fe al admin bs
 
-        Task<Response<List<object>>> getAllOrders(string workerId);
+        Task<Response<List<object>>> getAllOrdersForProvider(string workerId);
 
-        Task<Response<List<object>>> getAllApprovedOrders(string workerId);
-        Task<Response<List<object>>> getAllRequestedOrders(string workerId);
+        Task<Response<List<object>>> getAllApprovedOrderForProvider(string workerId);
+        Task<Response<List<object>>> getAllPendingOrderForProvider(string workerId);
         Task<Response<object>> getRegisteredServices(string providerId);
 
         Task<Response<object>> ShowProviderProfile(string workerId);

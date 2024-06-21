@@ -1,9 +1,15 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using MailKit.Search;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
+using Sarvicny.Contracts.Dtos;
+using Sarvicny.Contracts.Payment;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
+using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
 {
@@ -19,52 +25,67 @@ namespace Sarvicny.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Response<object>> AddCustomerRating(CustomerRating customerRating)
+        public async Task<Response<object>> AddCustomerRating(RatingDto ratingDto, string orderID)
         {
-            var spec = new ServiceRequest_RatingSpecification(customerRating.ServiceRequestID);
-            var request = await _orderRepository.GetOrderServiceRequestByID(spec);
+            var spec = new OrderWithDetailsSpecification(orderID);
+            var order = await _orderRepository.GetOrder(spec);
 
-            if (request == null)
+            if (order == null)
             {
                 return new Response<object>()
                 {
                     Status = "failed",
-                    Message = "ServiceRequest Not Found",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            if (order.OrderStatus != OrderStatusEnum.Completed)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Status is not Completed",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            var rate = order.CRate;
+            if(rate != null)
+            {
+                return new Response<object>()
+                {
+                    Status = "Failed",
+                    Message = " Order is already rated ",
                     Payload = null,
                     isError = true
 
                 };
             }
 
-            var rates = await _orderRepository.GetAllCustomerRating();
-            if (rates.Any(s => s.ServiceRequestID == customerRating.ServiceRequestID))
+            var customerRate = new OrderRating
             {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Dublicate Rate",
-                    Payload = null,
-                    isError = true
+                Order = order,
+                OrderID = orderID,
+                Rate = ratingDto.Rate,
+                Comment = ratingDto.Comment,
 
-                };
-            }
+            };
 
-            customerRating.customerID = request.Order.CustomerID;
-            customerRating.OrderID = request.OrderId;
+           
+            var rating = await _orderRepository.AddRating(customerRate);
 
-            var rating = await _orderRepository.AddCustomerRating(customerRating);
-
-            request.customerRatingId = rating.RatingId;
-            request.CRate = rating;
+            order.customerRatingId = rating.RatingId;
+            order.CRate = rating;
 
             _unitOfWork.Commit();
             var ratingAsObj = new
             {
                 rating.RatingId,
-                rating.ServiceRequestID,
                 rating.OrderID,
-                rating.customerID,
-                rating.Rating,
+                rating.Rate,
                 rating.Comment
 
 
@@ -80,52 +101,67 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        public async Task<Response<object>> AddProviderRating(ProviderRating providerRating)
+        public async Task<Response<object>> AddProviderRating(RatingDto ratingDto, string orderID)
         {
-            var spec = new ServiceRequest_RatingSpecification(providerRating.ServiceRequestID);
-            var request = await _orderRepository.GetOrderServiceRequestByID(spec);
+            var spec = new OrderWithDetailsSpecification(orderID);
+            var order = await _orderRepository.GetOrder(spec);
 
-            if (request == null)
+            if (order == null)
             {
                 return new Response<object>()
                 {
                     Status = "failed",
-                    Message = "ServiceRequest Not Found",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            if (order.OrderStatus != OrderStatusEnum.Completed)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Status is not Completed",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            var rate = order.CRate;
+            if (rate != null)
+            {
+                return new Response<object>()
+                {
+                    Status = "Failed",
+                    Message = " Order is already rated ",
                     Payload = null,
                     isError = true
 
                 };
             }
 
-            var rates = await _orderRepository.GetAllProviderRating();
-            if (rates.Any(s => s.ServiceRequestID == providerRating.ServiceRequestID))
+            var customerRate = new OrderRating
             {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Dublicate Rate",
-                    Payload = null,
-                    isError = true
+                Order = order,
+                OrderID = orderID,
+                Rate = ratingDto.Rate,
+                Comment = ratingDto.Comment,
 
-                };
-            }
+            };
 
-            providerRating.providerId = request.providerService.ProviderID;
-            providerRating.orderId = request.OrderId;
 
-            var rating = await _orderRepository.AddProviderRating(providerRating);
+            var rating = await _orderRepository.AddRating(customerRate);
 
-            request.providerRatingId = rating.RatingId;
-            request.PRate = rating;
+            order.providerRatingId = rating.RatingId;
+            order.PRate = rating;
 
             _unitOfWork.Commit();
             var ratingAsObj = new
             {
                 rating.RatingId,
-                rating.ServiceRequestID,
-                rating.orderId,
-                rating.providerId,
-                rating.Rating,
+                rating.OrderID,
+                rating.Rate,
                 rating.Comment
 
 
@@ -141,9 +177,83 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        public async Task<Response<object>> ShowAllOrderDetails(string orderId)
+        public async Task<Response<object>> GetCustomerRatingForOrder(string orderID)
         {
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new OrderWithDetailsSpecification(orderID);
+            var order = await _orderRepository.GetOrder(spec);
+
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            var CRate= order.CRate;
+
+            var rateAsobject = new
+            {
+                orderID = orderID,
+                OrderRateId = CRate.RatingId,
+                Rate = CRate.Rate,
+                Comment = CRate.Comment,
+            };
+
+            return new Response<object>()
+            {
+                Status = "success",
+                Message = "Action done",
+                Payload = rateAsobject,
+                isError = false
+
+            };
+
+        }
+
+        public async Task<Response<object>> GetProviderRatingForOrder(string orderID)
+        {
+            var spec = new OrderWithDetailsSpecification(orderID);
+            var order = await _orderRepository.GetOrder(spec);
+
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            var PRate = order.PRate;
+
+            var rateAsobject = new
+            {
+                orderID = orderID,
+                OrderRateId = PRate.RatingId,
+                Rate = PRate.Rate,
+                Comment = PRate.Comment,
+            };
+
+            return new Response<object>()
+            {
+                Status = "success",
+                Message = "Action done",
+                Payload = rateAsobject,
+                isError = false
+
+            };
+
+        }
+
+        public async Task<Response<object>> ShowAllOrderDetailsForAdmin(string orderId)
+        {
+            var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
             if (order == null)
             {
@@ -158,37 +268,46 @@ namespace Sarvicny.Application.Services
             }
 
             var customer = order.Customer;
+            var provider = order.OrderDetails.Provider;
+            var services = order.OrderDetails.RequestedServices.Services;
             var orderAsObject = new
             {
                 orderId = order.OrderID,
+                orderDate = order.OrderDate,
+                OrderStatus = order.OrderStatus,
+
                 customerId = order.CustomerID,
                 customerFN = customer.FirstName,
-                orderStatus = order.OrderStatus,
-                orderDate = order.OrderDate,
+                customerLastName = customer.LastName,
 
-                orderPrice = order.TotalPrice,
-                orderService = order.OrderRequests.Select(s => new
+                providerId= provider.Id,
+                providerFN=  provider.FirstName,
+                providerLN= provider.LastName,
+           
+                orderPrice = order.OrderDetails.Price,
+                
+                orderService = services.Select(s => new
                 {
-                    s.providerService.Provider.Id,
-                    s.providerService.Provider.FirstName,
-                    s.providerService.Provider.LastName,
-                    s.providerService.Service.ServiceID,
-                    s.providerService.Service.ServiceName,
-                    s.providerService.Service.ParentServiceID,
-                    parentServiceName = s.providerService.Service.ParentService?.ServiceName,
-                    s.providerService.Service.CriteriaID,
-                    s.providerService.Service.Criteria?.CriteriaName,
-                    s.RequestedSlotID,
-                    s.RequestedSlot.RequestedDay,
-                    s.RequestedSlot.DayOfWeek,
-                    s.RequestedSlot.StartTime,
                     
-                    s.providerDistrict.DistrictID,
-                    s.providerDistrict.District.DistrictName,
-                    s.Address,
-                    s.Price,
-                    s.ProblemDescription
+                    s.ServiceID,
+                    s.ServiceName,
+                    s.ParentServiceID,
+                    parentServiceName = s.ParentService?.ServiceName,
+                    s.CriteriaID,
+                    s.Criteria?.CriteriaName,
+                   
                 }).ToList<object>(),
+
+                RequestedSlotID=order.OrderDetails.RequestedSlotID,
+                RequestedDay=order.OrderDetails.RequestedSlot.RequestedDay,
+                DayOfWeek=order.OrderDetails.RequestedSlot.DayOfWeek,
+                StartTime = order.OrderDetails.RequestedSlot.StartTime,
+
+                DistrictID=order.OrderDetails.providerDistrict.DistrictID,
+                DistrictName=order.OrderDetails.providerDistrict.District.DistrictName,
+                Address=order.OrderDetails.Address,
+                Price=order.OrderDetails.Price,
+                Problem=order.OrderDetails.ProblemDescription
             };
 
             return new Response<object>()
@@ -199,9 +318,10 @@ namespace Sarvicny.Application.Services
             };
         }  //feha tfasel provider
 
+       
         public async Task<Response<object>> ShowAllOrderDetailsForCustomer(string orderId)
         {
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
             if (order == null)
             {
@@ -215,33 +335,43 @@ namespace Sarvicny.Application.Services
                 };
             }
 
+            
+            var provider = order.OrderDetails.Provider;
+            var services = order.OrderDetails.RequestedServices.Services;
             var orderAsObject = new
             {
                 orderId = order.OrderID,
-                orderStatus = order.OrderStatus,
-                orderPrice = order.TotalPrice,
                 orderDate = order.OrderDate,
-                orderService = order.OrderRequests.Select(s => new
+                OrderStatus = order.OrderStatus,
+
+                providerId = provider.Id,
+                providerFN = provider.FirstName,
+                providerLN = provider.LastName,
+
+                orderPrice = order.OrderDetails.Price,
+
+                orderService = services.Select(s => new
                 {
-                    s.providerService.Provider.Id,
-                    s.providerService.Provider.FirstName,
-                    s.providerService.Provider.LastName,
-                    s.providerService.Service.ServiceID,
-                    s.providerService.Service.ServiceName,
-                    s.providerService.Service.ParentServiceID,
-                    parentServiceName = s.providerService.Service.ParentService?.ServiceName,
-                    s.providerService.Service.CriteriaID,
-                    s.providerService.Service.Criteria?.CriteriaName,
-                    s.RequestedSlotID,
-                    s.RequestedSlot.RequestedDay,
-                    s.RequestedSlot.DayOfWeek,
-                    s.RequestedSlot.StartTime,
-                    s.providerDistrict.DistrictID,
-                    s.providerDistrict.District.DistrictName,
-                    s.Address,
-                    s.Price,
-                    s.ProblemDescription
+
+                    s.ServiceID,
+                    s.ServiceName,
+                    s.ParentServiceID,
+                    parentServiceName = s.ParentService?.ServiceName,
+                    s.CriteriaID,
+                    s.Criteria?.CriteriaName,
+
                 }).ToList<object>(),
+
+                RequestedSlotID = order.OrderDetails.RequestedSlotID,
+                RequestedDay = order.OrderDetails.RequestedSlot.RequestedDay,
+                DayOfWeek = order.OrderDetails.RequestedSlot.DayOfWeek,
+                StartTime = order.OrderDetails.RequestedSlot.StartTime,
+
+                DistrictID = order.OrderDetails.providerDistrict.DistrictID,
+                DistrictName = order.OrderDetails.providerDistrict.District.DistrictName,
+                Address = order.OrderDetails.Address,
+                Price = order.OrderDetails.Price,
+                Problem = order.OrderDetails.ProblemDescription
             };
 
             return new Response<object>()
@@ -254,9 +384,9 @@ namespace Sarvicny.Application.Services
 
 
 
-        public async Task<Response<object>> ShowOrderDetailsForProvider(string orderId) //feha tfasel customer
+        public async Task<Response<object>> ShowAllOrderDetailsForProvider(string orderId) //feha tfasel customer
         {
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
             if (order == null)
             {
@@ -265,42 +395,50 @@ namespace Sarvicny.Application.Services
                     Status = "failed",
                     Message = "Order Not Found",
                     Payload = null,
-                    isError = true,
+                    isError = true
+
                 };
             }
 
             var customer = order.Customer;
+           
+            var services = order.OrderDetails.RequestedServices.Services;
             var orderAsObject = new
             {
                 orderId = order.OrderID,
+                orderDate = order.OrderDate,
+                OrderStatus = order.OrderStatus,
+
                 customerId = order.CustomerID,
                 customerFN = customer.FirstName,
-                customerLN = customer.LastName,
-                
+                customerLastName = customer.LastName,
 
+      
 
-                orderStatus = order.OrderStatus,
-                orderPrice = order.TotalPrice,
-                orderDate = order.OrderDate,
-                orderService = order.OrderRequests.Select(s => new
+                orderPrice = order.OrderDetails.Price,
+
+                orderService = services.Select(s => new
                 {
 
-                    s.providerService.Service.ServiceID,
-                    s.providerService.Service.ServiceName,
-                    s.providerService.Service.ParentServiceID,
-                    parentServiceName = s.providerService.Service.ParentService?.ServiceName,
-                    s.providerService.Service.CriteriaID,
-                    s.providerService.Service.Criteria?.CriteriaName,
-                    s.RequestedSlotID,
-                    s.RequestedSlot.RequestedDay,
-                    s.RequestedSlot.DayOfWeek,
-                    s.RequestedSlot.StartTime,
-                    s.providerDistrict.DistrictID,
-                    s.providerDistrict.District.DistrictName,
-                    s.Address,
-                    s.Price,
-                    s.ProblemDescription
+                    s.ServiceID,
+                    s.ServiceName,
+                    s.ParentServiceID,
+                    parentServiceName = s.ParentService?.ServiceName,
+                    s.CriteriaID,
+                    s.Criteria?.CriteriaName,
+
                 }).ToList<object>(),
+
+                RequestedSlotID = order.OrderDetails.RequestedSlotID,
+                RequestedDay = order.OrderDetails.RequestedSlot.RequestedDay,
+                DayOfWeek = order.OrderDetails.RequestedSlot.DayOfWeek,
+                StartTime = order.OrderDetails.RequestedSlot.StartTime,
+
+                DistrictID = order.OrderDetails.providerDistrict.DistrictID,
+                DistrictName = order.OrderDetails.providerDistrict.District.DistrictName,
+                Address = order.OrderDetails.Address,
+                Price = order.OrderDetails.Price,
+                Problem = order.OrderDetails.ProblemDescription
             };
 
             return new Response<object>()
@@ -313,9 +451,9 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> ShowOrderStatus(string orderId)
         {
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new BaseSpecifications<Order>(or=>or.OrderID==orderId);
 
-            var order = await _orderRepository.GetOrder(spec);
+            var order= await _orderRepository.GetOrder(spec);
             if (order == null)
             {
                 return new Response<object>()

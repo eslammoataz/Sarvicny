@@ -4,6 +4,7 @@ using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
+using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Application.Services
 {
@@ -25,7 +26,7 @@ namespace Sarvicny.Application.Services
         {
 
             #region Validation_Data
-            var spec = new OrderWithRequestsSpecification(orderId);
+            var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
             if (order == null)
             {
@@ -58,11 +59,12 @@ namespace Sarvicny.Application.Services
 
             if (transactionStatus)
             {
-                //order.OrderRequests.ForEach(sr => sr.Slot.isActive = false);
+                
+
                 order.OrderStatus = OrderStatusEnum.Paid; //value (status name)=cancelled
 
                 // change order paid status
-                await _orderRepository.ChangeOrderStatus(order, transactionID, paymentMethod, transactionStatus);
+                await _orderRepository.ChangeOrderPaidStatus(order, transactionID, paymentMethod, transactionStatus);
 
                 //customer.Cart.ServiceRequests = null; // empty cart of the customer
                 try
@@ -96,7 +98,7 @@ namespace Sarvicny.Application.Services
                 order.OrderStatus = OrderStatusEnum.Canceled;
 
                 // change order Cancelled and saving transaction id and payment method
-                await _orderRepository.ChangeOrderStatus(order, transactionID, paymentMethod, transactionStatus);
+                await _orderRepository.ChangeOrderPaidStatus(order, transactionID, paymentMethod, transactionStatus);
 
                 _unitOfWork.Commit();
                 return new Response<object>()

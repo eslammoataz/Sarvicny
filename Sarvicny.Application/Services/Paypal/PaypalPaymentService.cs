@@ -238,7 +238,7 @@ namespace Sarvicny.Application.Services.Paypal
                         amount = new
                         {
                             currency = "USD",
-                            total = order.TotalPrice?.ToString("0.00")
+                            total = order.OrderDetails.Price.ToString("0.00")
                         },
                         description = "this is the payment transaction description",
                         invoice_number = invoiceNumber,

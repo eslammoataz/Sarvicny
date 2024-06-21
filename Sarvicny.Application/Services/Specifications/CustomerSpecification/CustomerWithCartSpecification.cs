@@ -11,18 +11,19 @@ public class CustomerWithCartSpecification : BaseSpecifications<Customer>
     public CustomerWithCartSpecification()
     {
         Includes.Add(c => c.Cart);
-        Includes.Add(c => c.Cart.ServiceRequests);
-        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(CartServiceRequest.providerService)}");
-        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
+        Includes.Add(c => c.Cart.CartServiceRequests);
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Provider)}");
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}");
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
     }
 
     public CustomerWithCartSpecification(string customerId) : base(c => c.Id == customerId)
     {
         Includes.Add(c => c.Cart);
-        Includes.Add(c => c.Cart.ServiceRequests);
-        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(CartServiceRequest.providerService)}");
-        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.ServiceRequests)}.{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
-
+        Includes.Add(c => c.Cart.CartServiceRequests);
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Provider)}");
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}");
+        AddInclude($"{nameof(Customer.Cart)}.{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
     }
 
 }

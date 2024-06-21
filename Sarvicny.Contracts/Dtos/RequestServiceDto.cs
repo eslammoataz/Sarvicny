@@ -13,7 +13,7 @@ namespace Sarvicny.Contracts.Dtos
         public string ProviderId { get; set; }
 
         [Required(ErrorMessage = "Service ID is Required ")]
-        public string ServiceId { get; set; }
+        public List<String> ServiceIDs { get; set; }
         
         [Required(ErrorMessage = "Slot ID is Required ")] 
         public string SlotID { get; set; }

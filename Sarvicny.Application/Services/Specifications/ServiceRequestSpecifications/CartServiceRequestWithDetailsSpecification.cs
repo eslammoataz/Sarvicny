@@ -10,8 +10,8 @@ public class CartServiceRequestWithDetailsSpecification : BaseSpecifications<Car
     public CartServiceRequestWithDetailsSpecification()
     {
         AddInclude($"{nameof(CartServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
-        AddInclude($"{nameof(CartServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-        AddInclude($"{nameof(CartServiceRequest.providerService)}.{nameof(ProviderService.Service)}");
+        AddInclude($"{nameof(CartServiceRequest.Provider)}");
+        AddInclude($"{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}");
         AddInclude($"{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
         
 
@@ -20,9 +20,10 @@ public class CartServiceRequestWithDetailsSpecification : BaseSpecifications<Car
     public CartServiceRequestWithDetailsSpecification(string serviceRequestId) : base(x => x.CartServiceRequestID == serviceRequestId)
     {
         AddInclude($"{nameof(CartServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
-        AddInclude($"{nameof(CartServiceRequest.providerService)}.{nameof(ProviderService.Provider)}");
-        AddInclude($"{nameof(CartServiceRequest.providerService)}.{nameof(ProviderService.Service)}");
-        AddInclude($"{nameof(CartServiceRequest.Slot)}");
+        AddInclude($"{nameof(CartServiceRequest.Provider)}");
+        AddInclude($"{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}");
+        AddInclude($"{nameof(CartServiceRequest.Slot)}.{nameof(AvailabilityTimeSlot.ProviderAvailability)}");
+        
 
     }
 

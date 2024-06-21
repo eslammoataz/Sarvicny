@@ -2,7 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
+using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Domain.Entities
 {
@@ -12,6 +15,33 @@ namespace Sarvicny.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string OrderID { get; set; }
         public string CustomerID { get; set; }
+        
+        [ForeignKey("CustomerID")]
+        public Customer Customer { get; set; }
+
+        public string OrderDetailsId { get; set; }
+
+
+        [ForeignKey("OrderDetailsId")]
+        public OrderDetails OrderDetails { get; set; }
+
+
+        public string? customerRatingId { get; set; }
+
+        public OrderRating? CRate { get; set; }
+
+        public string? providerRatingId { get; set; }
+
+        public OrderRating? PRate { get; set; }
+
+        public DateTime OrderDate { get; set; }
+
+        public bool IsPaid { get; set; }
+
+        public string? TransactionID { get; set; }
+
+        public PaymentMethod? PaymentMethod { get; set; }
+
 
         [NotMapped]
         public OrderStatusEnum OrderStatus { get; set; } = OrderStatusEnum.Pending;
@@ -24,25 +54,6 @@ namespace Sarvicny.Domain.Entities
         }
 
 
-        public List<OrderServiceRequest> OrderRequests { get; set; } = new List<OrderServiceRequest>();
-        public decimal? TotalPrice { get; set; }
-
-        [ForeignKey("CustomerID")]
-        public Customer Customer { get; set; }
-
-        //[ForeignKey("OrderStatusID")]
-        //public OrderStatus OrderStatus { get; set; }
-
-        public DateTime OrderDate { get; set; }
-
-        public bool IsPaid { get; set; }
-
-
-
-        public string? TransactionID { get; set; }
-
-        public PaymentMethod? PaymentMethod { get; set; }
-
     }
 
     public enum PaymentMethod
@@ -53,7 +64,6 @@ namespace Sarvicny.Domain.Entities
         [EnumMember(Value = "Paymob")]
         Paymob = 2
     }
-
     // Define the enum for order statuses
     public enum OrderStatusEnum
     {
@@ -76,6 +86,7 @@ namespace Sarvicny.Domain.Entities
         Completed = 6
 
     }
+
 
 }
 

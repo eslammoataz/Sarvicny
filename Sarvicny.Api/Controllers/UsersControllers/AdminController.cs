@@ -113,12 +113,26 @@ public class AdminController : ControllerBase
     [HttpGet("getAllRequestedOrders")]
     public async Task<IActionResult> getAllRequestedOrders()
     {
-        var response = await _adminService.getAllRequestedOrders();
+        var response = await _adminService.getAllPendingOrders();
 
         if (response.isError)
         {
             return NotFound(response);
         }
+        return Ok(response);
+
+    }
+    [HttpGet("getAllCanceledOrders")]
+    public async Task<IActionResult> getAllCanceledOrders()
+    {
+        var response = await _adminService.getAllApprovededOrders();
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+
+
         return Ok(response);
 
     }

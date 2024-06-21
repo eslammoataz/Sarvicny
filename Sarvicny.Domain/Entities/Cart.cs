@@ -11,10 +11,9 @@ namespace Sarvicny.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string CartID { get; set; }
 
-
         public string CustomerID { get; set; }
 
-        public List<CartServiceRequest>? ServiceRequests { get; set; } = new List<CartServiceRequest>();
+        public List<CartServiceRequest>? CartServiceRequests { get; set; } = new List<CartServiceRequest>();
 
         //public DateTime? AddedTime { get; set; }
 
