@@ -20,8 +20,7 @@ namespace Sarvicny.Domain.Entities
 
         public string OrderId { get; set; }
 
-        [ForeignKey("OrderId")]
-        public Order Order { get; set; }
+       
 
         public string ProviderID { get; set; }
 
@@ -30,7 +29,7 @@ namespace Sarvicny.Domain.Entities
 
         public string RequestedServicesID { get; set; }
 
-        [ForeignKey("RequestedServiceID")]
+        [ForeignKey("RequestedServicesID")]
         public RequestedService RequestedServices { get; set; }
 
         public decimal Price { get; set; }

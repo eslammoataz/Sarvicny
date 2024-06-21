@@ -284,82 +284,13 @@ public class AdminService : IAdminService
     public async Task<Response<List<object>>> getAllPendingOrders()
     {
         var spec = new OrderWithDetailsSpecification();
-        var pendingRequests = await _orderRepository.GetAllPendingOrders(spec);
+        var pending = await _orderRepository.GetAllPendingOrders(spec);
 
         List<object> result = new List<object>();
-        foreach (var order in pendingRequests)
+        foreach (var order in pending)
         {
-            var orderDetails = _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
             result.Add(orderDetails);
-
-        }
-
-        if (result.Count == 0)
-        {
-            return new Response<List<object>>()
-            {
-                Status = "failed",
-                Message = "No Pending Orders Found",
-                Payload = null,
-                isError = true
-            };
-        }
-
-        return new Response<List<object>>()
-        {
-            Status = "Success",
-            Message = "Action Done Successfully",
-            Payload = result,
-
-        };
-
-
-    }
-
-    public async Task<Response<List<object>>> getAllApprovededOrders()
-    {
-        var spec = new OrderWithDetailsSpecification();
-        var approvedOrders = await _orderRepository.GetAllApprovedOrders(spec);
-
-        List<object> result = new List<object>();
-        foreach (var order in approvedOrders)
-        {
-            var orderDetails = _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
-
-        }
-
-        if (result.Count == 0)
-        {
-            return new Response<List<object>>()
-            {
-                Status = "failed",
-                Message = "No Approved Orders Found",
-                Payload = null,
-                isError = true
-            };
-        }
-
-        return new Response<List<object>>()
-        {
-            Status = "Success",
-            Message = "Action Done Successfully",
-            Payload = result,
-
-        };
-
-    }
-    public  async Task<Response<List<object>>> getAllRejectedOrders()
-    {
-        var spec = new OrderWithDetailsSpecification();
-        var rejectedOrders = await _orderRepository.GetAllRejectedOrders(spec);
-
-        List<object> result = new List<object>();
-        foreach (var order in rejectedOrders)
-        {
-            var orderDetails = _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
-
         }
 
         if (result.Count == 0)
@@ -378,20 +309,57 @@ public class AdminService : IAdminService
             Status = "Success",
             Message = "Action Done Successfully",
             Payload = result,
-
+            isError = false
         };
+
+
     }
-    public async Task<Response<List<object>>> getAllCanceledOrders()
+
+    public async Task<Response<List<object>>> getAllApprovedOrders()
+    {
+        
+            var spec = new OrderWithDetailsSpecification();
+            var approvedOrders = await _orderRepository.GetAllApprovedOrders(spec);
+
+            List<object> result = new List<object>();
+            foreach (var order in approvedOrders)
+            {
+                var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+                result.Add(orderDetails);
+            }
+
+            if (result.Count == 0)
+            {
+                return new Response<List<object>>()
+                {
+                    Status = "failed",
+                    Message = "No Approved Orders Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+
+            return new Response<List<object>>()
+            {
+                Status = "Success",
+                Message = "Action Done Successfully",
+                Payload = result,
+                isError = false
+            };
+        
+       
+    }
+
+    public async Task<Response<List<object>>> getAllRejectedOrders()
     {
         var spec = new OrderWithDetailsSpecification();
-        var rejectedOrders = await _orderRepository.GetAllCanceledOrders(spec);
+        var Rejected = await _orderRepository.GetAllRejectedOrders(spec);
 
         List<object> result = new List<object>();
-        foreach (var order in rejectedOrders)
+        foreach (var order in Rejected)
         {
-            var orderDetails = _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
             result.Add(orderDetails);
-
         }
 
         if (result.Count == 0)
@@ -399,7 +367,7 @@ public class AdminService : IAdminService
             return new Response<List<object>>()
             {
                 Status = "failed",
-                Message = "No canceled Orders Found",
+                Message = "No Rejected Orders Found",
                 Payload = null,
                 isError = true
             };
@@ -410,8 +378,40 @@ public class AdminService : IAdminService
             Status = "Success",
             Message = "Action Done Successfully",
             Payload = result,
-
+            isError = false
         };
+    }
+    public async Task<Response<List<object>>> getAllCanceledOrders()
+    {
+        var spec = new OrderWithDetailsSpecification();
+        var Canceled = await _orderRepository.GetAllCanceledOrders(spec);
+
+        List<object> result = new List<object>();
+        foreach (var order in Canceled)
+        {
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            result.Add(orderDetails);
+        }
+
+        if (result.Count == 0)
+        {
+            return new Response<List<object>>()
+            {
+                Status = "failed",
+                Message = "No Canceled Orders Found",
+                Payload = null,
+                isError = true
+            };
+        }
+
+        return new Response<List<object>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = result,
+            isError = false
+        };
+
     }
 
     public async Task<Response<bool>> BlockServiceProvider(string workerId)

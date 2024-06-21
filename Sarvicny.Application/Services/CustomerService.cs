@@ -563,32 +563,33 @@ namespace Sarvicny.Application.Services
                         OrderDetailsId = newOrderDetails.OrderDetailsID,
                     };
 
-                    newOrderDetails.OrderId = newOrder.OrderID;
-                    newOrderDetails.Order = newOrder;
-                    await _orderRepository.AddOrderDetails(newOrderDetails);
-                    await _orderRepository.AddOrder(newOrder);
+                   
+                    
 
                     var order = await _orderRepository.AddOrder(newOrder);
+                    newOrderDetails.OrderId = order.OrderID;
+                    // newOrderDetails.Order = newOrder;
+                    var orderDetails = await _orderRepository.AddOrderDetails(newOrderDetails);
 
                     var orderAsObject = new
                     {
                         OrderId = order.OrderID,
                         CustomerId = order.CustomerID,
                         OrderDate = order.OrderDate,
-                        ProviderID = order.OrderDetails.ProviderID,
-                        ProviderFName = order.OrderDetails.Provider.FirstName,
-                        ProviderLName = order.OrderDetails.Provider.LastName,
-                        RequestedServicesID = order.OrderDetails.RequestedServicesID,
-                        RequestedServices = order.OrderDetails.RequestedServices.Services.Select(s => new
+                        ProviderID = orderDetails.ProviderID,
+                        ProviderFName = orderDetails.Provider.FirstName,
+                        ProviderLName = orderDetails.Provider.LastName,
+                        RequestedServicesID = orderDetails.RequestedServicesID,
+                        RequestedServices = orderDetails.RequestedServices.Services.Select(s => new
                         {
                             s.ServiceID,
                             s.ServiceName
                         }).ToList<object>(),
-                        Price = order.OrderDetails.Price,
-                        RequestedSlotID = order.OrderDetails.RequestedSlotID,
-                        ProviderDistrictID = order.OrderDetails.ProviderDistrictID,
-                        Address = order.OrderDetails.Address,
-                        ProblemDescription = order.OrderDetails.ProblemDescription,
+                        Price = orderDetails.Price,
+                        RequestedSlotID = orderDetails.RequestedSlotID,
+                        ProviderDistrictID = orderDetails.ProviderDistrictID,
+                        Address = orderDetails.Address,
+                        ProblemDescription = orderDetails.ProblemDescription,
                     };
                     result.Add(orderAsObject);
 

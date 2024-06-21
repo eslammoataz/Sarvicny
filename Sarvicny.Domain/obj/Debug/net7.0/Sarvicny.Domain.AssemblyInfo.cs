@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sarvicny.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+221814b8806ff3238c4a44d6a78a56c9b36ea6db")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+16907f8a6e4d29eaf5d15c0fb3f50f6d6ad6c357")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sarvicny.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sarvicny.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

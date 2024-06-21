@@ -79,41 +79,59 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<List<Order>> GetAllApprovedOrdersForProvider(ISpecifications<Order> spec, string providerId)
         {
 
-            var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId && or.OrderStatus== OrderStatusEnum.Approved).ToListAsync();
+            var approvedStatus = OrderStatusEnum.Approved.ToString();
+            var orders = await ApplySpecification(spec)
+                .Where(or => or.OrderStatusString == approvedStatus && or.OrderDetails.ProviderID==providerId)
+                .ToListAsync();
             return orders;
 
         }
         public async Task<List<Order>> GetAllPendingOrdersForProvider(ISpecifications<Order> spec, string providerId)
         {
 
-            var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId && or.OrderStatus == OrderStatusEnum.Pending).ToListAsync();
+            var pendingStatus = OrderStatusEnum.Pending.ToString();
+            var orders = await ApplySpecification(spec)
+                .Where(or => or.OrderStatusString == pendingStatus && or.OrderDetails.ProviderID == providerId)
+                .ToListAsync();
             return orders;
 
         }
 
         public async Task<List<Order>> GetAllCanceledOrders(ISpecifications<Order> spec)
         {
-
-            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Canceled).ToListAsync();
+            var canceledStatus = OrderStatusEnum.Canceled.ToString();
+            var orders = await ApplySpecification(spec)
+                .Where(or => or.OrderStatusString == canceledStatus)
+                .ToListAsync();
             return orders;
+
 
         }
         public async Task<List<Order>> GetAllPendingOrders(ISpecifications<Order> spec)
         {
 
-            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Pending).ToListAsync();
+            var PendingStatus = OrderStatusEnum.Pending.ToString();
+            var orders = await ApplySpecification(spec)
+                .Where(or => or.OrderStatusString == PendingStatus)
+                .ToListAsync();
             return orders;
 
         }
         public async Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec)
         {
-            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Approved).ToListAsync();
+            var approvedStatus = OrderStatusEnum.Approved.ToString();
+            var orders = await ApplySpecification(spec)
+                .Where(or => or.OrderStatusString == approvedStatus)
+                .ToListAsync();
             return orders;
         }
         public async Task<List<Order>> GetAllRejectedOrders(ISpecifications<Order> spec)
         {
 
-            var orders = await ApplySpecification(spec).Where(or => or.OrderStatus == OrderStatusEnum.Rejected).ToListAsync();
+            var RejectedStatus = OrderStatusEnum.Rejected.ToString();
+            var orders = await ApplySpecification(spec)
+                .Where(or => or.OrderStatusString == RejectedStatus)
+                .ToListAsync();
             return orders;
 
         }

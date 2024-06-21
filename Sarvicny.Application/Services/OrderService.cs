@@ -128,7 +128,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            var rate = order.CRate;
+            var rate = order.PRate;
             if (rate != null)
             {
                 return new Response<object>()

@@ -98,7 +98,7 @@ public class AdminController : ControllerBase
     [HttpGet("getAllApprovedOrders")]
     public async Task<IActionResult> getAllApprovedOrders()
     {
-        var response = await _adminService.getAllApprovededOrders();
+        var response = await _adminService.getAllApprovedOrders();
 
         if (response.isError)
         {
@@ -125,7 +125,7 @@ public class AdminController : ControllerBase
     [HttpGet("getAllCanceledOrders")]
     public async Task<IActionResult> getAllCanceledOrders()
     {
-        var response = await _adminService.getAllApprovededOrders();
+        var response = await _adminService.getAllCanceledOrders();
 
         if (response.isError)
         {

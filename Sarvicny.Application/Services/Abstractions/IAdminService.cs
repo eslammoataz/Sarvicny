@@ -15,7 +15,8 @@ public interface IAdminService
     Task<Response<List<object>>> GetServiceProvidersRegistrationRequests();
     Task<Response<List<object>>> getAllOrders();
     Task<Response<List<object>>> getAllPendingOrders();
-    Task<Response<List<object>>> getAllApprovededOrders();
+    Task<Response<List<object>>> getAllApprovedOrders();
+
     Task<Response<List<object>>> getAllCanceledOrders();
     Task<Response<List<object>>> ReAssignProvider(string orderId);
 

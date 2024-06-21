@@ -1,4 +1,5 @@
 ﻿using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
@@ -7,9 +8,9 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
     {
         public OrderWithDetailsSpecification()
         {
-            Includes.Add(o => o.Customer);
 
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
+            AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.Criteria)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedSlot)}");
@@ -20,8 +21,8 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
         }
         public OrderWithDetailsSpecification(string orderId) : base(o => o.OrderID == orderId)
         {
-            Includes.Add(o => o.Customer);
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
+            AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.Criteria)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedSlot)}");
