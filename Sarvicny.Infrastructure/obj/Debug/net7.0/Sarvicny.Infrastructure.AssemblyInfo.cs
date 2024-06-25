@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sarvicny.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+16907f8a6e4d29eaf5d15c0fb3f50f6d6ad6c357")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ae49bc635cd440570241f48f6b740e5f3de72fa")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sarvicny.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sarvicny.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

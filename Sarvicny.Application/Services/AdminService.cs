@@ -381,6 +381,41 @@ public class AdminService : IAdminService
             isError = false
         };
     }
+
+
+
+
+    public async Task<Response<List<object>>> getAllExpiredOrders()
+    {
+        var spec = new OrderWithDetailsSpecification();
+        var Expired = await _orderRepository.GetAllExpiredOrders(spec);
+
+        List<object> result = new List<object>();
+        foreach (var order in Expired)
+        {
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            result.Add(orderDetails);
+        }
+
+        if (result.Count == 0)
+        {
+            return new Response<List<object>>()
+            {
+                Status = "failed",
+                Message = "No Expired Orders Found",
+                Payload = null,
+                isError = true
+            };
+        }
+
+        return new Response<List<object>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = result,
+            isError = false
+        };
+    }
     public async Task<Response<List<object>>> getAllCanceledOrders()
     {
         var spec = new OrderWithDetailsSpecification();
@@ -413,7 +448,6 @@ public class AdminService : IAdminService
         };
 
     }
-
     public async Task<Response<bool>> BlockServiceProvider(string workerId)
     {
         var provider = await _providerRepository.FindByIdAsync(new BaseSpecifications<Provider>(p => p.Id == workerId));
@@ -540,25 +574,5 @@ public class AdminService : IAdminService
 
     }
 
-    public Task<Response<List<object>>> GetAllRequestedDistricts()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<Response<List<object>>> ReAssignProvider(string orderId)
-    {
-        throw new NotImplementedException();
-    }
-
-
-
-
-
-
-
-    //public Task<Response<List<object>>> GetAllRequestedDistricts()
-    //{
-    //}
-
-
+   
 }

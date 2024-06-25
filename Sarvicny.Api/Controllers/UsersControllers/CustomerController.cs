@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Authentication.Registers;
 using Sarvicny.Contracts.Dtos;
@@ -87,9 +88,9 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         [HttpPost]
         [Route("orderCart")]
-        public async Task<IActionResult> OrderCart(string customerId)
+        public async Task<IActionResult> OrderCart(string customerId, PaymentMethod paymentMethod)
         {
-            var Response = await _customerService.OrderCart(customerId);
+            var Response = await _customerService.OrderCart(customerId,paymentMethod);
 
             if (Response.isError)
             {
@@ -98,6 +99,50 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
 
         }
+
+        [HttpPost]
+        [Route("AddProviderToFav")]
+        public async Task<IActionResult> AddProviderToFav(string providerId, string customerId)
+        {
+            var Response = await _customerService.AddProviderToFav( providerId, customerId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+            return Ok(Response);
+
+        }
+
+        [HttpPost]
+        [Route("RemoveFavProvider")]
+        public async Task<IActionResult> RemoveFavProvider(string customerId, string providerId)
+        {
+            var Response = await _customerService.RemoveFavProvider(customerId, providerId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+            return Ok(Response);
+
+        }
+
+        [HttpGet]
+        [Route("getCustomerFavourites/{customerId}")]
+        public async Task<IActionResult> getCustomerFavourites(string customerId)
+        {
+
+            var response = await _customerService.getCustomerFavourites(customerId);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+
+
         [HttpPost]
         [Route("payOrder/{orderId}")]
         public async Task<IActionResult> PayOrder(string orderId, PaymentMethod paymentMethod)
@@ -125,6 +170,10 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
 
         }
+
+       
+
+
         [HttpGet]
         [Route("getOrderStatus")]
         public async Task<IActionResult> GetOrderStatus(string orderId)
@@ -205,6 +254,33 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
 
+        [HttpPost]
+        [Route("getAllMatchedProviderSortedbyFav")]
+        public async Task<IActionResult> GetAllMatchedProviderSortedbyFav([FromBody] MatchingProviderDto matchingProviderDto)
+        {
 
+            var response = await _orderService.GetAllMatchedProviderSortedbyFav(matchingProviderDto);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+        [HttpPost]
+        [Route("ReAssignOrder/{orderId}")]
+        public async Task<IActionResult> ReAssignOrder(string orderId)
+        {
+            var response = await _orderService.ReAssignOrder(orderId);
+
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+
+
+            return Ok(response);
+
+        }
     }
+
 }

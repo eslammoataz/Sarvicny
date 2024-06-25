@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sarvicny.Application.Common.Interfaces.Persistence;
+using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 
@@ -16,10 +18,7 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             _context = context;
         }
-        public async Task<Cart> GetCart(ISpecifications<Cart> specifications)
-        {
-            throw new NotImplementedException();
-        }
+        
 
         public async Task<Customer?> GetCustomerById(ISpecifications<Customer> specifications)
         {
@@ -79,14 +78,18 @@ namespace Sarvicny.Infrastructure.Persistence
             customer.CartID = cart.CartID;
             return true;
         }
-        //public List<object> GetServiceRequests()
-        //{
-        //    return _context.CartServiceRequests.Select(s => new
-        //    {
-        //        s.Price,
-        //        s.SlotID,
-        //        s.ProviderServiceID
-        //    }).ToList<object>();
-        //}
+
+        public  async Task AddFavProvider(FavProvider favourite)
+        {
+        
+            await _context.FavProviders.AddAsync(favourite);
+
+        }
+
+        public async Task RemoveFavProvider(FavProvider fav)
+        {
+             _context.FavProviders.Remove(fav);
+
+        }
     }
 }

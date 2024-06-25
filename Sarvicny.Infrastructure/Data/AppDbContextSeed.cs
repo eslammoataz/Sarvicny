@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities;
@@ -222,10 +223,37 @@ namespace Sarvicny.Infrastructure.Data
                     },
                     new OrderStatus
                     {
-                        OrderStatusID = "6",
+                        OrderStatusID = "7",
+                        StatusName = "Start"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "8",
+                        StatusName = "On The Way"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "9",
+                        StatusName = "In Progress"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "10",
+                        StatusName = "Done"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "11",
                         StatusName = "Completed"
+                    },
+                     new OrderStatus
+                    {
+                        OrderStatusID = "12",
+                        StatusName = "Removed"
                     }
+
                 };
+
                 await context.OrderStatuses.AddRangeAsync(orderStatuses);
                 await context.SaveChangesAsync();
             }

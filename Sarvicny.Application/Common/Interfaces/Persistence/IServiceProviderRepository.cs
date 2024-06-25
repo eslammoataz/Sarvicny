@@ -19,6 +19,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<List<AvailabilityTimeSlot>> getAvailabilitySlots(ISpecifications<ProviderAvailability> spec);
     
         Task<ICollection<Provider>> GetAllServiceProviders(ISpecifications<Provider> spec);
+        Task<List<Provider>> GetAllMatchedProviders(List<string> services,TimeSpan startTime,string dayOfWeek, String districtId,string customerId);
         Task<ICollection<Provider>> GetProvidersRegistrationRequest(ISpecifications<Provider> spec);
 
         

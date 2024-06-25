@@ -65,7 +65,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("approveOrderRequest")]
+        [Route("approveOrder")]
         public async Task<IActionResult> ApproveOrder(string orderId)
         {
             var Response = await _serviceProviderService.ApproveOrder(orderId);
@@ -79,7 +79,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("rejectOrderRequest")]
+        [Route("rejectOrder")]
         public async Task<IActionResult> RejectOrder(string orderId)
         {
             var Response = await _serviceProviderService.RejectOrder(orderId);
@@ -93,10 +93,24 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("cancelOrderRequest")]
+        [Route("cancelOrder")]
         public async Task<IActionResult> CancelOrder(string orderId)
         {
             var Response = await _serviceProviderService.CancelOrder(orderId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+
+            return Ok(Response);
+        }
+
+        [HttpPost]
+        [Route("setOrderStatus")]
+        public async Task<IActionResult> SetOrderStatus(string orderId,OrderStatusEnum status)
+        {
+            var Response = await _serviceProviderService.SetOrderStatus(orderId,status);
 
             if (Response.isError)
             {

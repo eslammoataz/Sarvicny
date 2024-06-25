@@ -12,5 +12,6 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
     {
         Task<Provider> ApproveServiceProviderRegister(string providerId);
         Task<Provider> RejectServiceProviderRegister(string providerId);
+
     }
 }

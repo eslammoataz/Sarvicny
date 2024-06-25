@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Paymob;
 using Sarvicny.Application.Services.Paypal;
@@ -12,17 +13,33 @@ namespace Sarvicny.Application.Services
         private readonly ILogger<PaymentService> _logger;
         private readonly IPaymobPaymentService _paymobPaymentService;
         private readonly IPaypalPaymentService _paypalPaymentService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public PaymentService(ILogger<PaymentService> logger, IPaymobPaymentService paymobPaymentService, IPaypalPaymentService paypalPaymentService)
+        public PaymentService(ILogger<PaymentService> logger, IPaymobPaymentService paymobPaymentService, IPaypalPaymentService paypalPaymentService, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _paymobPaymentService = paymobPaymentService;
             _paypalPaymentService = paypalPaymentService;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Response<object>> PayOrder(Order order, PaymentMethod paymentMethod)
         {
             _logger.LogInformation("PaymentService.PayOrder");
+            if (order.PaymentExpiryTime <= DateTime.UtcNow&& order.PaymentExpiryTime !=null)
+            {
+                order.OrderStatus = OrderStatusEnum.Removed;
+               
+                    _unitOfWork.Commit();
+                
 
+                return new Response<object>()
+                {
+                    isError = true,
+                    Message = "Payment Expiry date exceeded, order is canceled",
+                    Payload = null
+                };
+            }
+            
             // Check if paymentMethod is a valid enum value
             if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethod))
             {
@@ -42,6 +59,8 @@ namespace Sarvicny.Application.Services
             {
                 return await _paypalPaymentService.Pay(order);
             }
+           
+            
 
             return new Response<object>()
             {

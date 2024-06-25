@@ -36,6 +36,10 @@ namespace Sarvicny.Domain.Entities
 
         public DateTime OrderDate { get; set; }
 
+        public DateTime? ExpiryDate { get; set; }
+
+        public DateTime? PaymentExpiryTime { get; set; }    
+
         public bool IsPaid { get; set; }
 
         public string? TransactionID { get; set; }
@@ -62,7 +66,10 @@ namespace Sarvicny.Domain.Entities
         Paypal = 1,
 
         [EnumMember(Value = "Paymob")]
-        Paymob = 2
+        Paymob = 2,
+
+        [EnumMember(Value = "Cash")]
+        Cash = 3
     }
     // Define the enum for order statuses
     public enum OrderStatusEnum
@@ -82,8 +89,26 @@ namespace Sarvicny.Domain.Entities
         [Description("Canceled")]
         Canceled = 5,
 
+        [Description("Start")]
+        Start = 6,
+
+        [Description("Preparing")]
+        Preparing = 7,
+
+        [Description("On The Way")]
+        OnTheWay = 8,
+
+        [Description("In Progress")]
+        InProgress = 9,
+
+        [Description("Done")]
+        Done = 10,
+
         [Description("Completed")]
-        Completed = 6
+        Completed = 11,
+
+        [Description("Removed")]
+        Removed = 12
 
     }
 

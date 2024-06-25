@@ -1,6 +1,7 @@
 ﻿using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 
 namespace Sarvicny.Application.Services.Abstractions
 {
@@ -12,7 +13,7 @@ namespace Sarvicny.Application.Services.Abstractions
 
         public Task<Response<object>> GetCustomerCart(string customerId);
 
-        public Task<Response<object>> OrderCart(string customerId);
+        public Task<Response<object>> OrderCart(string customerId,PaymentMethod paymentMethod);
 
         public Task<Response<object>> PayOrder(string orderId,PaymentMethod PayemntMethod);
 
@@ -20,7 +21,13 @@ namespace Sarvicny.Application.Services.Abstractions
         public Task<Response<object>> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto,string customerId);
         public Task<Response<object>> ViewLogRequest(string customerId); // kol al orders ali tlbha ya3ni
 
+        public Task<Response<object>> MarkOrderComplete(string orderId);
 
+        public Task<Response<object>> AddProviderToFav(string providerId, string customerId);
+
+        public Task<Response<List<object>>> getCustomerFavourites(string customerId);
+
+        public Task<Response<object>> RemoveFavProvider(string customerId, string providerId);
 
     }
 }

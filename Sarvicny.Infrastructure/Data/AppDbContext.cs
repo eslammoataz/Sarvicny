@@ -23,6 +23,8 @@ namespace Sarvicny.Infrastructure.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Provider> Provider { get; set; }
 
+        public DbSet<FavProvider> FavProviders { get; set; }
+
         public DbSet<District> Districts { get; set; }
         public DbSet<ProviderDistrict> ProviderDistricts { get; set; }
 

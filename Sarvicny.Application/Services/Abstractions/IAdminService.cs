@@ -18,15 +18,16 @@ public interface IAdminService
     Task<Response<List<object>>> getAllApprovedOrders();
 
     Task<Response<List<object>>> getAllCanceledOrders();
-    Task<Response<List<object>>> ReAssignProvider(string orderId);
-
-
+    Task<Response<List<object>>> getAllRejectedOrders();
+    Task<Response<List<object>>> getAllExpiredOrders();
+    
 
     Task<Response<bool>> BlockServiceProvider(string workerId);
     Task<Response<bool>> UnBlockServiceProvider(string workerId);
     Task<Response<List<object>>>GetAllAvailableDistricts();
-    Task<Response<List<object>>> GetAllRequestedDistricts();
+   
 
     Task<Response<District>> AddDistrict(District district);
+
     
 }

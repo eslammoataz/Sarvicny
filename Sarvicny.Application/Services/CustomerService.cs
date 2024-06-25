@@ -56,7 +56,16 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> addToCart(RequestServiceDto requestServiceDto, string customerId)
         {
-
+            if(requestServiceDto.RequestDay == DateTime.Today)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "you can't schedule in the same day" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            }
             var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(requestServiceDto.ProviderId);
             var provider = await _providerRepository.FindByIdAsync(spec);
 
@@ -68,6 +77,8 @@ namespace Sarvicny.Application.Services
                     Status = "Error",
                     Message = "Failed",
                 };
+
+            
 
             List<Service> services = new List<Service>();
             decimal price = 0;
@@ -459,7 +470,7 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        public async Task<Response<object>> OrderCart(string customerId)
+        public async Task<Response<object>> OrderCart(string customerId,PaymentMethod paymentMethod)
         {
             #region validation_for_Data
             var spec = new CustomerWithCartSpecification(customerId);
@@ -538,7 +549,19 @@ namespace Sarvicny.Application.Services
                         StartTime = request.Slot.StartTime
 
                     };
+
                     var newRequestedSlot =await _orderRepository.AddRequestedSlot(requestedSlot);
+
+                   
+                    DateTime tomorrow = DateTime.Today.AddDays(1);
+                    var expiryDate = tomorrow;
+                    if (request.RequestedDate== tomorrow)
+                    {
+                        expiryDate = DateTime.UtcNow.AddHours(6);
+                    }
+                    
+
+                   
                     var newOrderDetails = new OrderDetails
                     {
                         ProviderID = request.ProviderID,
@@ -559,13 +582,14 @@ namespace Sarvicny.Application.Services
                         Customer = customer,
                         CustomerID = customerId,
                         OrderDate = DateTime.UtcNow,
+                        ExpiryDate = expiryDate,
                         OrderDetails = newOrderDetails,
                         OrderDetailsId = newOrderDetails.OrderDetailsID,
                     };
 
                    
                     
-
+                    newOrder.PaymentMethod = paymentMethod;
                     var order = await _orderRepository.AddOrder(newOrder);
                     newOrderDetails.OrderId = order.OrderID;
                     // newOrderDetails.Order = newOrder;
@@ -831,6 +855,211 @@ namespace Sarvicny.Application.Services
 
         }
 
+        public async Task<Response<object>> MarkOrderComplete(string orderId)
+        {
+            var spec = new OrderWithDetailsSpecification(orderId);
+            var order = await _orderRepository.GetOrder(spec);
 
+            if (order == null)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Order Not Found",
+                    Errors = new List<string>() { "Error with order" },
+
+                };
+
+
+            }
+            if(order.OrderStatus != OrderStatusEnum.Done)
+            {
+                return new Response<object>()
+
+                {
+                    isError = false,
+                    Payload = null,
+                    Message = "provider does't mark order done",
+                    Errors = new List<string>() { "Error with order" },
+
+                };
+
+
+            }
+            order.OrderStatus = OrderStatusEnum.Completed;
+
+            var details = _orderService.ShowAllOrderDetailsForCustomer(orderId);
+            return new Response<object>()
+            {
+                isError = true,
+                Payload = details,
+                Message = "Action Done Successfully",
+                Errors = null,
+            };
+        }
+
+        public async Task<Response<object>> AddProviderToFav(string providerId, string customerId)
+        {
+            var spec = new CustomerWithFavouritesSpecification(customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Customer is not found",
+                    isError = true,
+                    Errors = new List<string> { "Error with customer" },
+                };
+            }
+            var providerSpec = new BaseSpecifications<Provider>(p => p.Id == providerId);
+            var provider = await _providerRepository.FindByIdAsync(providerSpec);
+            if (provider == null)
+            {
+
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Provider is not found",
+                    isError = true,
+                    Errors = new List<string> { "Error with provider" },
+                };
+            }
+            if (!provider.IsVerified || provider.IsBlocked )
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Provider may be not verified or blocked",
+                    isError = true,
+                    Errors = new List<string> { "Error with provider" },
+                };
+            }
+            var customerFav = customer.Favourites;
+            if (customerFav.Any(f => f.providerId == providerId))
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Provider is already favourite",
+                    isError = true,
+                    Errors = new List<string> { "Error with provider" },
+                };
+            }
+
+              
+            
+            var newFav = new FavProvider 
+            { 
+                customerId = customerId,
+                providerId = providerId,
+            };
+            customer.Favourites.Add(newFav);
+            await _customerRepository.AddFavProvider(newFav);
+            _unitOfWork.Commit();
+
+            return new Response<object>()
+            {
+               
+                Message = "Action Done Successfully",
+                isError = false,
+                Errors =null,
+                
+            };
+        }
+
+        public  async Task<Response<object>> RemoveFavProvider(string customerId,string providerId)
+        {
+            var spec = new CustomerWithFavouritesSpecification(customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Customer is not found",
+                    isError = true,
+                    Errors = new List<string> { "Error with customer" },
+                };
+            }
+            var providerSpec = new BaseSpecifications<Provider>(p => p.Id == providerId);
+            var provider = await _providerRepository.FindByIdAsync(providerSpec);
+            if (provider == null)
+            {
+
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Provider is not found",
+                    isError = true,
+                    Errors = new List<string> { "Error with provider" },
+                };
+            }
+            if (!provider.IsVerified || provider.IsBlocked)
+            {
+                return new Response<object>()
+                {
+                    Payload = null,
+                    Message = "Provider may be not verified or blocked",
+                    isError = true,
+                    Errors = new List<string> { "Error with provider" },
+                };
+            }
+      
+
+            var fav =  customer.Favourites.FirstOrDefault(f => f.providerId == providerId);      
+            customer.Favourites.Remove(fav);
+            await _customerRepository.RemoveFavProvider(fav);
+            _unitOfWork.Commit();
+
+            return new Response<object>()
+            {
+
+                Message = "Action Done Successfully",
+                isError = false,
+                Errors = null,
+
+            };
+        
+    }
+        public async Task<Response<List<object>>> getCustomerFavourites(string customerId)
+        {
+            var spec = new CustomerWithFavouritesSpecification(customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<List<object>>()
+                {
+                    Payload = null,
+                    Message = "Customer is not found",
+                    isError = true,
+                    Errors = new List<string> { "Error with customer" },
+                };
+            }
+            var fav = customer.Favourites;
+            List<object> result = new List<object>();   
+            foreach( var provider in fav)
+            {
+                var favAsObj = new
+                {
+                    providerId = provider.providerId
+                };
+                result.Add(favAsObj);
+            }
+           
+
+            return new Response<List<object>>()
+            {
+                Payload = result,
+                Message = "Action Done Successfully",
+                isError = false,
+                Errors = null
+            };
+
+        }
+
+       
     }
 }

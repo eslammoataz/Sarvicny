@@ -1,12 +1,16 @@
-﻿using Sarvicny.Domain.Entities;
+﻿using Sarvicny.Contracts;
+using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
+using System.Threading.Tasks;
 
 namespace Sarvicny.Application.Common.Interfaces.Persistence
 {
     public interface ICustomerRepository
     {
-        Task<Cart> GetCart(ISpecifications<Cart> specifications);
+        
+        
 
         Task<Customer?> GetCustomerById(ISpecifications<Customer> specifications);
 
@@ -16,6 +20,10 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task EmptyCart(Cart cart);
 
         bool CreateCart(string customerID);
-        //List<object> GetServiceRequests();
+
+        Task AddFavProvider(FavProvider favourite);
+        Task RemoveFavProvider(FavProvider fav);
+
+        
     }
 }

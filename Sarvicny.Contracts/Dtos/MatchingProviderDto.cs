@@ -1,0 +1,31 @@
+﻿using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Sarvicny.Contracts.Dtos
+{
+    
+    public class MatchingProviderDto
+    {
+        [Required(ErrorMessage = "Services IDs is Required ")]
+        public List<string> services { get; set; }
+
+        [Required(ErrorMessage = "Start Time is Required ")]
+        public string startTime { get; set; }
+
+        [Required(ErrorMessage = " Day Of Week is Required ")]
+        public string dayOfWeek { get; set; }
+
+        [Required(ErrorMessage = "District ID is Required ")]
+        public string districtId { get; set; }
+
+        [Required(ErrorMessage = "Customer ID is Required ")]
+        public string customerId { get; set; }
+          
+    }
+}

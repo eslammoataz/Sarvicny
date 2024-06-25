@@ -10,7 +10,7 @@ public abstract class Provider : User
 
     public bool IsVerified { get; set; } = false;
     public bool IsBlocked { get; set; } = false;
-
+   
 
     public List<ProviderService> ProviderServices { get; set; }
     public List<ProviderAvailability> Availabilities { get; set; } // Make sure this property is present

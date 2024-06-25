@@ -174,6 +174,66 @@ namespace Sarvicny.Infrastructure.Persistence
         }
 
 
+
+        public async Task<List<Provider>> GetAllMatchedProviders(List<string> services, TimeSpan startTime, string dayOfWeek, string districtId, string customerId)
+        {
+            var initialProviders = await _context.Provider
+                .Where(p => p.IsVerified && !p.IsBlocked)
+                .Where(p => p.Availabilities.Any(a =>
+                    a.DayOfWeek == dayOfWeek && a.Slots.Any(s =>
+                    s.StartTime == startTime && s.isActive)))
+                .Where(p => p.ProviderDistricts.Any(d => d.DistrictID == districtId))
+                .Include(p => p.ProviderServices)
+                .ToListAsync();
+
+            var matchedProviders = initialProviders
+                .Where(p => services.All(id =>
+                    p.ProviderServices.Any(ps => ps.ServiceID == id)))
+                .ToList();
+
+            var totalPricePerProvider = matchedProviders
+                .Select(p => new
+                {
+                    Provider = p,
+                    TotalPrice = p.ProviderServices
+                        .Where(ps => services.Contains(ps.ServiceID))
+                        .Sum(ps => ps.Price)
+                })
+                .ToList();
+
+            var customer = await _context.Customers
+                .Include(c => c.Favourites)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
+
+            if (customer != null && customer.Favourites.Count() !=0 )
+            {
+                var favoriteProviderIds = customer.Favourites.Select(f => f.providerId).ToHashSet();
+
+                matchedProviders = totalPricePerProvider
+                    .OrderByDescending(pp => favoriteProviderIds.Contains(pp.Provider.Id))
+                    .ThenBy(pp => pp.TotalPrice)
+                    .Select(pp => pp.Provider)
+                    .ToList();
+            }
+            else
+            {
+                matchedProviders = totalPricePerProvider
+                    .OrderBy(pp => pp.TotalPrice)
+                    .Select(pp => pp.Provider)
+                    .ToList();
+            }
+
+            return matchedProviders;
+        }
+
+
+
+
+
+
+
+
+
     }
 
 }

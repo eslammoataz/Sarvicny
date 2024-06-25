@@ -303,6 +303,27 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.ToTable("Districts");
                 });
 
+            modelBuilder.Entity("Sarvicny.Domain.Entities.Favourite", b =>
+                {
+                    b.Property<string>("FavId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("customerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("providerId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("FavId");
+
+                    b.HasIndex("customerId");
+
+                    b.ToTable("Favourite");
+                });
+
             modelBuilder.Entity("Sarvicny.Domain.Entities.Order", b =>
                 {
                     b.Property<string>("OrderID")
@@ -312,6 +333,9 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<string>("CustomerID")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("ExpiryDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("IsPaid")
                         .HasColumnType("tinyint(1)");
@@ -326,6 +350,9 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<string>("OrderStatusString")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("PaymentExpiryTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int?>("PaymentMethod")
                         .HasColumnType("int");
@@ -343,8 +370,7 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.HasIndex("OrderDetailsId")
-                        .IsUnique();
+                    b.HasIndex("OrderDetailsId");
 
                     b.HasIndex("customerRatingId")
                         .IsUnique();
@@ -810,6 +836,15 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Navigation("providerDistrict");
                 });
 
+            modelBuilder.Entity("Sarvicny.Domain.Entities.Favourite", b =>
+                {
+                    b.HasOne("Sarvicny.Domain.Entities.Users.Customer", null)
+                        .WithMany("Favourites")
+                        .HasForeignKey("customerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Sarvicny.Domain.Entities.Order", b =>
                 {
                     b.HasOne("Sarvicny.Domain.Entities.Users.Customer", "Customer")
@@ -819,8 +854,8 @@ namespace Sarvicny.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Sarvicny.Domain.Entities.OrderDetails", "OrderDetails")
-                        .WithOne("Order")
-                        .HasForeignKey("Sarvicny.Domain.Entities.Order", "OrderDetailsId")
+                        .WithMany()
+                        .HasForeignKey("OrderDetailsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1037,12 +1072,6 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Navigation("ProviderDistricts");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.OrderDetails", b =>
-                {
-                    b.Navigation("Order")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Sarvicny.Domain.Entities.ProviderAvailability", b =>
                 {
                     b.Navigation("Slots");
@@ -1062,6 +1091,8 @@ namespace Sarvicny.Infrastructure.Migrations
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.Users.Customer", b =>
                 {
+                    b.Navigation("Favourites");
+
                     b.Navigation("Orders");
                 });
 

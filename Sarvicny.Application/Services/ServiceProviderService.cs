@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using System.Linq;
 using MailKit.Search;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Sarvicny.Application.Common.Interfaces.Persistence;
@@ -30,6 +31,8 @@ namespace Sarvicny.Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IDistrictRepository _districtRepository;
         private readonly IEmailService _emailService;
+        
+
 
         private IOrderService _orderService;
 
@@ -74,7 +77,16 @@ namespace Sarvicny.Application.Services
             //    response.Errors.Add("Worker Not Verified");
             //    return response;
             //}
+            if (worker.IsBlocked == true)
+            {
+                return new Response<object>()
 
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider may be blocked "
+                };
+            }
             if (service == null)
             {
                 response.isError = true;
@@ -139,14 +151,14 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found"
                 };
             }
-            if (provider.IsVerified == false)
+            if (provider.IsVerified == false || provider.IsBlocked==true)
             {
                 return new Response<object>()
 
                 {
                     isError = true,
                     Payload = null,
-                    Message = "Provider Not Verified"
+                    Message = "Provider may be Not Verified, or blocked "
                 };
             }
 
@@ -190,6 +202,16 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found"
                 };
             }
+            if (provider.IsVerified == false || provider.IsBlocked == true)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider may be Not Verified, or blocked "
+                };
+            }
             var availabilities= provider.Availabilities;
             var availabilty= availabilities.FirstOrDefault(a=>a.ProviderAvailabilityID == availabilityId);
             if (availabilty ==null) 
@@ -214,21 +236,7 @@ namespace Sarvicny.Application.Services
                 Payload = availabilty,
                 Message = "provider availability is removed successfully"
             };
-            //var slots= availabilty.Slots;
-
-            //if (slots.Any(s=>s.enable==false))
-            //{
-            //    foreach (var slot in slots.Where(s => s.enable == false))
-            //    {
-
-
-            //    }
-
-            //}
-
-
-
-
+  
         }
 
         public async Task<Response<List<object>>> getAvailability(string workerId)
@@ -245,14 +253,19 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found"
                 };
             }
+            if (provider.IsVerified == false || provider.IsBlocked == true)
+            {
+                return new Response<List<object>>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider may be Not Verified, or blocked "
+                };
+            }
             var availability = await _serviceProviderRepository.getAvailability(spec);
 
-            //var spec2 = new AvailaibiltyWithSlotsSpecification(workerId);
-            //var slots = await _serviceProviderRepository.getAvailabilitySlots(spec2);
-            //foreach (var val in availability)
-            //{
-            //    val.Slots = slots;
-            //}
+           
 
             var avail = availability.Select(a => new
             {
@@ -291,20 +304,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        string GenerateOrderDetailsMessage(Order order)
-        {
-            // Construct the order details message here
-            // Ensure each line ends with Environment.NewLine or \n for new lines
-            return $"Order ID: {order.OrderID}{Environment.NewLine}" +
-                   $"Provider: {order.OrderDetails.Provider.FirstName}{Environment.NewLine}" +
-                   $"Service: {string.Join(", ", order.OrderDetails.RequestedServices.Services.Select(s => s.ServiceName))}{Environment.NewLine}" +
-                   $"Requested Day: {order.OrderDetails.RequestedSlot.RequestedDay}{Environment.NewLine}" +
-                   $"Day Of Week: {order.OrderDetails.RequestedSlot.DayOfWeek}{Environment.NewLine}" +
-                   $"Requested Slot: {order.OrderDetails.RequestedSlot.StartTime}{Environment.NewLine}" +
-                   $"Order Status: {order.OrderStatus}{Environment.NewLine}" +
-                   $"Price: {order.OrderDetails.Price:C}";
-        }
-
+       
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
 
@@ -344,8 +344,18 @@ namespace Sarvicny.Application.Services
             {
                 originalSlot.isActive = false;
             }
- 
 
+           
+
+            DateTime tomorrow = DateTime.Today.AddDays(1);
+            var paymentExpiryDate = tomorrow;
+            if (order.OrderDetails.RequestedSlot.RequestedDay == tomorrow)
+            {
+                paymentExpiryDate = DateTime.UtcNow.AddHours(6);
+            }
+
+            order.PaymentExpiryTime = paymentExpiryDate;
+            order.ExpiryDate = null;
             _unitOfWork.Commit();
 
             
@@ -354,9 +364,17 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
 
-            var orderDetailsForCustomer = GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Approved", $"Thank you for using our system! Your Request is approved. \n\nOrder Details:\n{orderDetailsForCustomer}");
+            if (order.PaymentMethod == PaymentMethod.Paymob  || order.PaymentMethod == PaymentMethod.Paypal)
+            {
+                message.Body += $"\n\nPlease note: Proceed to pay on  the website or the application using {order.PaymentMethod} ,Notice that the ExpiryDate for payment is {paymentExpiryDate} ,otherwise your order will be canceled";
+            }
+           
+
             _emailService.SendEmail(message);
+            
+            
 
             return new Response<object>()
 
@@ -418,7 +436,7 @@ namespace Sarvicny.Application.Services
             {
                 originalSlot.isActive = true;
             }
-
+            order.PaymentExpiryTime = null;
 
             _unitOfWork.Commit();
 
@@ -428,7 +446,7 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
 
-            var orderDetailsForCustomer = GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Canceled", $"Unfortunately! Your Request is Canceled. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
 
@@ -490,7 +508,7 @@ namespace Sarvicny.Application.Services
 
             await _orderRepository.RejectOrder(order);
 
-
+            order.ExpiryDate = null;
             _unitOfWork.Commit();
 
 
@@ -499,9 +517,11 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
 
-            var orderDetailsForCustomer = GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Rejected", $"Unfortunately! Your Request is Rejected. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
+            
+         
 
             return new Response<object>()
 
@@ -791,6 +811,16 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
+            if (serviceProvider.IsVerified == false || serviceProvider.IsBlocked == true)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider may be Not Verified, or blocked "
+                };
+            }
             var district = await _districtRepository.GetDistrictById(districtID);
             if (district == null)
             {
@@ -853,66 +883,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> RemoveDistrictFromProvider(string providerId, string districtID)
-        {
-            var spec = new ProviderWithDistrictsSpecification(providerId);
-            var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
-            if (serviceProvider == null)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Provider Not Found",
-                    Payload = null,
-                    isError = true
-                };
-            }
-            var district = await _districtRepository.GetDistrictById(districtID);
-            if (district == null)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "District Not Found",
-                    Payload = null,
-                    isError = true
-                };
-            }
-            var providerDistrict = serviceProvider.ProviderDistricts.FirstOrDefault(d => d.DistrictID == districtID);
-
-            if (providerDistrict == null)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "District is not assigned to the provider",
-                    Payload = null,
-                    isError = true
-                };
-            }
-
-            await _districtRepository.RemoveDistrictfromProvider(providerDistrict);
-            serviceProvider.ProviderDistricts.Remove(providerDistrict);
-            _unitOfWork.Commit();
-
-            var RemovedDistrictAsObject = new
-            {
-
-                providerDistrict.ProviderDistrictID,
-                providerDistrict.enable,
-                district.DistrictName,
-
-
-            };
-            return new Response<object>()
-            {
-                Status = "success",
-                Message = "District removed succesfully from provider",
-                Payload = RemovedDistrictAsObject,
-                isError = false
-            };
-
-        }
+      
 
 
         public async Task<Response<object>> DisableDistrictFromProvider(string providerId, string districtID)
@@ -928,6 +899,16 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found",
                     Payload = null,
                     isError = true
+                };
+            }
+            if (serviceProvider.IsVerified == false || serviceProvider.IsBlocked == true)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider may be Not Verified, or blocked "
                 };
             }
             var district = await _districtRepository.GetDistrictById(districtID);
@@ -997,6 +978,16 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found",
                     Payload = null,
                     isError = true
+                };
+            }
+            if (serviceProvider.IsVerified == false || serviceProvider.IsBlocked == true)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider may be Not Verified, or blocked "
                 };
             }
             var district = await _districtRepository.GetDistrictById(districtID);
@@ -1073,6 +1064,16 @@ namespace Sarvicny.Application.Services
                 };
 
             }
+            if (serviceProvider.IsVerified == false || serviceProvider.IsBlocked == true)
+            {
+                return new Response<List<object>>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Provider may be Not Verified, or blocked "
+                };
+            }
 
             var districts = serviceProvider.ProviderDistricts.Select(d => new
             {
@@ -1101,46 +1102,98 @@ namespace Sarvicny.Application.Services
             };
         }
 
+        public async Task<Response<object>> SetOrderStatus(string orderId, OrderStatusEnum status)
+        {
+            var spec = new OrderWithDetailsSpecification(orderId);
+            var order = await _orderRepository.GetOrder(spec);
+
+            if (order == null)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Order Not Found",
+                    Errors = new List<string>() { "Error with order" },
+
+                };
+
+            }
+            var paymentMethod = order.PaymentMethod;
+            if( paymentMethod == PaymentMethod.Cash)
+            {
+                if(order.OrderStatus != OrderStatusEnum.Approved)
+                {
+                    return new Response<object>()
+
+                    {
+                        isError = true,
+                        Payload = null,
+                        Message = "Order is't Approved",
+                        Errors = new List<string>() { "Error with order" },
+
+                    };
+                }
+                
+               
+
+
+            }
+            else
+            {
+                if(!order.IsPaid)
+                {
+                    return new Response<object>()
+
+                    {
+                        isError = true,
+                        Payload = null,
+                        Message = "Order is't paid",
+                        Errors = new List<string>() { "Error with order" },
+
+                    };
+                }
+            }
+            if(status == order.OrderStatus)
+            {
+
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "OrderStatus is already set",
+                    Errors = new List<string>() { "Error with order" },
+
+                };
+            }
+            if (status != OrderStatusEnum.Start && status != OrderStatusEnum.Preparing && status != OrderStatusEnum.OnTheWay && status != OrderStatusEnum.InProgress && status != OrderStatusEnum.Done)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "OrderStatus not valid",
+                    Errors = new List<string>() { "Error with order" },
+
+                };
+            }
+            order.OrderStatus = status;
+            _unitOfWork.Commit();
+
+         
+            return new Response<object>()
+            {
+                isError = false,
+                Payload = order.OrderStatus,
+                Message = "Action Done Successfully",
+                Errors = null,
+            };
 
 
 
-
-
-
-
-
-
-
-
-        //public async Task<Response<object>> RequestNewDistrictToBeAdded(string districtName)
-        //{
-        //    var districtExist = await _districtRepository.GetDistrictByName(districtName);
-        //    if (districtExist != null)
-        //    {
-        //        return new Response<object>()
-        //        {
-        //            Status = "failed",
-        //            Message = " District is already Found",
-        //            Payload = null,
-        //            isError = true
-        //        };
-        //    }
-        //    var district = new District()
-        //    {
-        //        DistrictName = districtName,
-        //        Availability = false,
-
-        //    };
-        //    var added= await _districtRepository.AddDistrict(district);
-
-        //    return new Response<object>()
-        //    {
-        //        Status = "success",
-
-        //        Payload = added,
-        //        isError = false
-        //    };
-
-        //}
+        }
     }
 }

@@ -137,6 +137,39 @@ public class AdminController : ControllerBase
 
     }
 
+    [HttpGet("getAllRejectedOrders")]
+    public async Task<IActionResult> getAllRejectedOrders()
+    {
+        var response = await _adminService.getAllRejectedOrders();
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+
+
+        return Ok(response);
+
+    }
+
+    [HttpGet("getAllExpiredOrders")]
+    public async Task<IActionResult> getAllExpiredOrders()
+    {
+        var response = await _adminService.getAllExpiredOrders();
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+
+
+        return Ok(response);
+
+    }
+
+
+   
+
     [HttpPost("BlockServiceProvider")]
     public async Task<IActionResult> BlockServiceProvider(string workerId)
     {

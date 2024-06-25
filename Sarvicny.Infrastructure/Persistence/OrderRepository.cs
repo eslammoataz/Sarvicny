@@ -168,5 +168,13 @@ namespace Sarvicny.Infrastructure.Persistence
             return requestedSlot;
 
         }
+
+        public async Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec)
+        {
+            var orders = await ApplySpecification(spec)
+                   .Where(or =>or.ExpiryDate!=null && or.ExpiryDate< DateTime.UtcNow )
+                   .ToListAsync();
+            return orders;
+        }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Emails;
 using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Application.Services
@@ -13,12 +15,18 @@ namespace Sarvicny.Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomerRepository _customerRepository;
+        private readonly IOrderService _orderService;
+        private readonly IEmailService _emailService;
 
-        public HandlePayment(IOrderRepository orderRepository, IUnitOfWork unitOfWork, ICustomerRepository customerRepository)
+        public HandlePayment(IOrderRepository orderRepository, IUnitOfWork unitOfWork, ICustomerRepository customerRepository,IOrderService orderService,IEmailService emailService)
         {
             _orderRepository = orderRepository;
             _unitOfWork = unitOfWork;
             _customerRepository = customerRepository;
+            _orderService = orderService;
+            _emailService = emailService;
+
+
         }
 
         public async Task<Response<object>> validateOrder(string orderId, bool transactionStatus,
@@ -61,12 +69,15 @@ namespace Sarvicny.Application.Services
             {
                 
 
-                order.OrderStatus = OrderStatusEnum.Paid; //value (status name)=cancelled
+                order.OrderStatus = OrderStatusEnum.Paid;
+                
+
+                order.PaymentExpiryTime = null;
 
                 // change order paid status
                 await _orderRepository.ChangeOrderPaidStatus(order, transactionID, paymentMethod, transactionStatus);
 
-                //customer.Cart.ServiceRequests = null; // empty cart of the customer
+              
                 try
                 {
                     _unitOfWork.Commit();
@@ -95,16 +106,23 @@ namespace Sarvicny.Application.Services
             }
             else
             {
-                order.OrderStatus = OrderStatusEnum.Canceled;
+                order.OrderStatus = OrderStatusEnum.Removed;
 
                 // change order Cancelled and saving transaction id and payment method
                 await _orderRepository.ChangeOrderPaidStatus(order, transactionID, paymentMethod, transactionStatus);
 
+
+                var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
+                var message = new EmailDto(customer.Email!, "Sarvicny: order is removed ", $"Sorry your order is removed due to failed transaction  with payment Method. \n\nOrder Details:\n{orderDetailsForCustomer}");
+               
+            
+
+                _emailService.SendEmail(message);
                 _unitOfWork.Commit();
                 return new Response<object>()
                 {
                     Status = "failed",
-                    Message = "Order is cancelled",
+                    Message = "Order is Removed",
                     Payload = null,
                     isError = true
 

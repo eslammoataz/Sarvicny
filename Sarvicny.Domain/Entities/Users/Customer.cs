@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Sarvicny.Domain.Entities.Users.ServicProviders;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sarvicny.Domain.Entities.Users
 {
@@ -12,7 +13,8 @@ namespace Sarvicny.Domain.Entities.Users
 
         public List<Order> Orders { get; set; } = new List<Order>();
 
-        //list<worker> favourite
+
+        public List<FavProvider>? Favourites { get; set; } = new List<FavProvider>();
 
 
 

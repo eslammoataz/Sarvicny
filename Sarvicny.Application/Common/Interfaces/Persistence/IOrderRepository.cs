@@ -29,13 +29,13 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<List<Order>> GetAllCanceledOrders(ISpecifications<Order> spec);
         Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec);
 
+        Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec);
+
         Task ChangeOrderPaidStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
 
         Task<OrderRating> AddRating(OrderRating rate);
 
-
-        //Task<List<ProviderRating>> GetAllProviderRating();
-        //Task<List<OrderRating>> GetAllCustomerRating();
+        
 
 
 

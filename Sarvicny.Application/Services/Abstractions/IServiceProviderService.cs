@@ -1,5 +1,6 @@
 ﻿using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 
@@ -10,7 +11,8 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> RegisterServiceAsync(string workerId, string serviceId, decimal Price); //done
         
 
-        Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string providerId); //done
+        Task<Response<object>> AddAvailability(AvailabilityDto availabilityDto, string providerId);
+        
 
         Task<Response<object>> RemoveAvailability(string availabilityId, string providerId); 
 
@@ -18,7 +20,7 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<List<object>>> getAvailability(string workerId); //done
 
-       
+        Task<AvailabilityTimeSlot> getOriginalSlot(RequestedSlot RequestedSlot, string providerId);
 
         Task<Response<object>> ApproveOrder(string orderRequestId); 
         Task<Response<object>> RejectOrder(string orderRequestId); 
@@ -37,11 +39,12 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> DisableDistrictFromProvider(string providerId, string District);
         Task<Response<object>> EnableDistrictToProvider(string providerId, string District);
 
-        Task<Response<object>> RemoveDistrictFromProvider(string providerId, string District);
+       
 
 
         Task<Response<List<object>>> GetProviderDistricts(string providerId);
-       // Task<Response<object>> RequestNewDistrictToBeAdded(string districtName);
+      
+       Task<Response<object>> SetOrderStatus(string orderId, OrderStatusEnum status);
        
 
 
