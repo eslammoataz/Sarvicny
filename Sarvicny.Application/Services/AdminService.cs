@@ -413,7 +413,7 @@ public class AdminService : IAdminService
             isError = false
         };
     }
-    public async Task<Response<List<object>>> RemoveAllPaymentExpiredOrdersrders()
+    public async Task<Response<List<object>>> RemoveAllPaymentExpiredOrders()
     {
         var spec = new OrderWithDetailsSpecification();
         var removed = await _orderRepository.RemoveAllPaymentExpiredOrders(spec);

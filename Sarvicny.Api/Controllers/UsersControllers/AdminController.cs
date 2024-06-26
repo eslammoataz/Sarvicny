@@ -167,8 +167,23 @@ public class AdminController : ControllerBase
 
     }
 
+    [HttpGet("RemoveAllPaymentExpiredOrders")]
+    public async Task<IActionResult> RemoveAllPaymentExpiredOrders()
+    {
+        var response = await _adminService.RemoveAllPaymentExpiredOrders();
 
-   
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+
+
+        return Ok(response);
+
+    }
+
+
+
 
     [HttpPost("BlockServiceProvider")]
     public async Task<IActionResult> BlockServiceProvider(string workerId)

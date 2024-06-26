@@ -20,7 +20,7 @@ public interface IAdminService
     Task<Response<List<object>>> getAllCanceledOrders();
     Task<Response<List<object>>> getAllRejectedOrders();
     Task<Response<List<object>>> getAllExpiredOrders();
-    Task<Response<List<object>>> RemoveAllPaymentExpiredOrdersrders();
+    Task<Response<List<object>>> RemoveAllPaymentExpiredOrders();
 
 
     Task<Response<bool>> BlockServiceProvider(string workerId);
