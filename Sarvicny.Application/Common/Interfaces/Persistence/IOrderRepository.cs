@@ -31,6 +31,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec);
 
+        Task<List<Order>> RemoveAllPaymentExpiredOrders(ISpecifications<Order> spec);
+
         Task ChangeOrderPaidStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
 
         Task<OrderRating> AddRating(OrderRating rate);

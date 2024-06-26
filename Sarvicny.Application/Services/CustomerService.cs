@@ -101,7 +101,7 @@ namespace Sarvicny.Application.Services
                     return new Response<object>
                     {
                         isError = true,
-                        Errors = new List<string> { "Service Not Found" },
+                        Errors = new List<string> { "This Service is a parent Service (not valid)" },
                         Status = "Error",
                         Message = "Failed",
                     };

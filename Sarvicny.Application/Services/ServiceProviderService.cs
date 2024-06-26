@@ -684,7 +684,7 @@ namespace Sarvicny.Application.Services
 
             var provider =
                 await _serviceProviderRepository.FindByIdAsync(
-                    new ServiceProviderWithServiceSpecificationcs(providerId));
+                    new ServiceProviderWithService_DistrictSpecificationcs(providerId));
             if (provider == null)
             {
                 response.isError = true;

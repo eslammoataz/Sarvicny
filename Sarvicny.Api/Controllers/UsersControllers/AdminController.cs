@@ -190,27 +190,7 @@ public class AdminController : ControllerBase
             return NotFound(response);
         }
         return Ok(response);
-        //}
 
-        //[HttpPost]
-        //[Route("AddDistrict")]
-        //public async Task<IActionResult> AddDistrict(string districtName)
-        //{
-        //    var district = new District()
-        //    {
-        //        DistrictName = districtName,
-        //        Availability = true
-
-        //    };
-        //    var response = await _adminService.AddDistrict(district);
-        //    if (response.Payload == null)
-        //    {
-        //        return NotFound(response.Message);
-        //    }
-        //    else return Ok(response);
-
-
-        //}
 
 
     }

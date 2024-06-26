@@ -68,7 +68,7 @@ public class AdminService : IAdminService
 
     public async Task<Response<ICollection<object>>> GetAllServiceProviders()
     {
-        var spec = new ServiceProviderWithServiceSpecificationcs();
+        var spec = new ServiceProviderWithService_DistrictSpecificationcs();
         var serviceProviders = await _providerRepository.GetAllServiceProviders(spec);
 
         var serviceProvidersAsObjects = serviceProviders.Select(c => new
@@ -198,7 +198,7 @@ public class AdminService : IAdminService
 
     public async Task<Response<List<object>>> GetServiceProvidersRegistrationRequests()
     {
-        var spec = new ServiceProviderWithServiceSpecificationcs();
+        var spec = new ServiceProviderWithService_DistrictSpecificationcs();
         var unHandledProviders = await _providerRepository.GetProvidersRegistrationRequest(spec);
 
         var unHandeledProvidersAsObjects = unHandledProviders.Select(p => new
@@ -382,9 +382,6 @@ public class AdminService : IAdminService
         };
     }
 
-
-
-
     public async Task<Response<List<object>>> getAllExpiredOrders()
     {
         var spec = new OrderWithDetailsSpecification();
@@ -408,6 +405,35 @@ public class AdminService : IAdminService
             };
         }
 
+        return new Response<List<object>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = result,
+            isError = false
+        };
+    }
+    public async Task<Response<List<object>>> RemoveAllPaymentExpiredOrdersrders()
+    {
+        var spec = new OrderWithDetailsSpecification();
+        var removed = await _orderRepository.RemoveAllPaymentExpiredOrders(spec);
+
+        List<object> result = new List<object>();
+        foreach (var order in removed)
+        {
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            result.Add(orderDetails);
+        }
+        if (result.Count == 0)
+        {
+            return new Response<List<object>>()
+            {
+                Status = "failed",
+                Message = "No Expired Orders Found",
+                Payload = null,
+                isError = true
+            };
+        }
         return new Response<List<object>>()
         {
             Status = "Success",
@@ -574,5 +600,5 @@ public class AdminService : IAdminService
 
     }
 
-   
+
 }
