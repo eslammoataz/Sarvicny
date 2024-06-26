@@ -13,14 +13,16 @@ namespace Sarvicny.Application.Services
         private readonly ILogger<PaymentService> _logger;
         private readonly IPaymobPaymentService _paymobPaymentService;
         private readonly IPaypalPaymentService _paypalPaymentService;
+        private readonly IServiceProviderService _providerService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public PaymentService(ILogger<PaymentService> logger, IPaymobPaymentService paymobPaymentService, IPaypalPaymentService paypalPaymentService, IUnitOfWork unitOfWork)
+        public PaymentService(ILogger<PaymentService> logger, IPaymobPaymentService paymobPaymentService, IPaypalPaymentService paypalPaymentService, IUnitOfWork unitOfWork, IServiceProviderService providerService)
         {
             _logger = logger;
             _paymobPaymentService = paymobPaymentService;
             _paypalPaymentService = paypalPaymentService;
             _unitOfWork = unitOfWork;
+            _providerService = providerService;
         }
         public async Task<Response<object>> PayOrder(Order order, PaymentMethod paymentMethod)
         {
@@ -28,8 +30,13 @@ namespace Sarvicny.Application.Services
             if (order.PaymentExpiryTime <= DateTime.UtcNow&& order.PaymentExpiryTime !=null)
             {
                 order.OrderStatus = OrderStatusEnum.Removed;
-               
-                    _unitOfWork.Commit();
+                var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+                if (originalSlot != null)
+                {
+                    originalSlot.isActive = true;
+                }
+
+                _unitOfWork.Commit();
                 
 
                 return new Response<object>()

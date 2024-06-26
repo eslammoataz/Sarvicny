@@ -150,7 +150,7 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-            var customerRate = new OrderRating
+            var providerRate = new OrderRating
             {
                 Order = order,
                 OrderID = orderID,
@@ -160,7 +160,7 @@ namespace Sarvicny.Application.Services
             };
 
 
-            var rating = await _orderRepository.AddRating(customerRate);
+            var rating = await _orderRepository.AddRating(providerRate);
 
             order.providerRatingId = rating.RatingId;
             order.PRate = rating;

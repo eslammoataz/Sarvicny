@@ -515,8 +515,6 @@ namespace Sarvicny.Application.Services
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Rejected", $"Unfortunately! Your Request is Rejected. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
             
-         
-
             return new Response<object>()
 
             {

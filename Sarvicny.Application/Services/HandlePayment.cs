@@ -16,15 +16,17 @@ namespace Sarvicny.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomerRepository _customerRepository;
         private readonly IOrderService _orderService;
+        private readonly IServiceProviderService _providerService;
         private readonly IEmailService _emailService;
 
-        public HandlePayment(IOrderRepository orderRepository, IUnitOfWork unitOfWork, ICustomerRepository customerRepository,IOrderService orderService,IEmailService emailService)
+        public HandlePayment(IOrderRepository orderRepository, IUnitOfWork unitOfWork, ICustomerRepository customerRepository,IOrderService orderService,IEmailService emailService, IServiceProviderService providerService)
         {
             _orderRepository = orderRepository;
             _unitOfWork = unitOfWork;
             _customerRepository = customerRepository;
             _orderService = orderService;
             _emailService = emailService;
+            _providerService = providerService;
 
 
         }
@@ -108,6 +110,12 @@ namespace Sarvicny.Application.Services
             {
                 order.OrderStatus = OrderStatusEnum.Removed;
 
+                var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+                if (originalSlot != null)
+                {
+                    originalSlot.isActive = true;
+                }
+
                 // change order Cancelled and saving transaction id and payment method
                 await _orderRepository.ChangeOrderPaidStatus(order, transactionID, paymentMethod, transactionStatus);
 
@@ -115,8 +123,7 @@ namespace Sarvicny.Application.Services
                 var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
                 var message = new EmailDto(customer.Email!, "Sarvicny: order is removed ", $"Sorry your order is removed due to failed transaction  with payment Method. \n\nOrder Details:\n{orderDetailsForCustomer}");
                
-            
-
+     
                 _emailService.SendEmail(message);
                 _unitOfWork.Commit();
                 return new Response<object>()

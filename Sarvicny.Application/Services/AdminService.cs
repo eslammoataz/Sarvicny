@@ -26,11 +26,13 @@ public class AdminService : IAdminService
     private readonly IOrderRepository _orderRepository;
     private readonly IDistrictRepository _districtRepository;
 
+
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly IOrderService _orderService;
+    private readonly IServiceProviderService _providerService;
 
-    public AdminService(UserManager<User> userManager, IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService, IOrderService orderService, IDistrictRepository districtRepository)
+    public AdminService(UserManager<User> userManager, IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService, IOrderService orderService, IDistrictRepository districtRepository, IServiceProviderService providerService)
     {
         _userManager = userManager;
         _serviceRepository = serviceRepository;
@@ -42,6 +44,7 @@ public class AdminService : IAdminService
         _emailService = emailService;
         _orderService = orderService;
         _districtRepository = districtRepository;
+        _providerService = providerService; 
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -425,6 +428,11 @@ public class AdminService : IAdminService
         foreach (var order in expired)
         {
             order.OrderStatus = OrderStatusEnum.Removed;
+            var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+            if (originalSlot != null)
+            {
+                originalSlot.isActive = true;
+            }
             var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
             result.Add(orderDetails);
         }

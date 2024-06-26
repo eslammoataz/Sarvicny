@@ -472,6 +472,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> OrderCart(string customerId,PaymentMethod paymentMethod)
         {
+            
             #region validation_for_Data
             var spec = new CustomerWithCartSpecification(customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
@@ -532,6 +533,7 @@ namespace Sarvicny.Application.Services
                     Message = "Request seams to be reserved by another user",
                 };
             }
+ 
             #endregion
 
 
@@ -542,6 +544,16 @@ namespace Sarvicny.Application.Services
             {
                 foreach (var request in cartServiceRequests)
                 {
+                    if (request.RequestedDate <= DateTime.Today)
+                    {
+                        return new Response<object>
+                        {
+                            isError = true,
+                            Payload = null,
+                            Status = "Error",
+                            Message = "Cannot order in the same day of the request",
+                        };
+                    }
                     var requestedSlot = new RequestedSlot
                     {
                         RequestedDay = request.RequestedDate,
@@ -552,9 +564,12 @@ namespace Sarvicny.Application.Services
 
                     var newRequestedSlot =await _orderRepository.AddRequestedSlot(requestedSlot);
 
-                   
+                  
                     DateTime tomorrow = DateTime.Today.AddDays(1);
+
                     var expiryDate = tomorrow;
+
+
                     if (request.RequestedDate== tomorrow)
                     {
                         expiryDate = DateTime.UtcNow.AddHours(6);
@@ -588,7 +603,6 @@ namespace Sarvicny.Application.Services
                     };
 
                    
-                    
                     newOrder.PaymentMethod = paymentMethod;
                     var order = await _orderRepository.AddOrder(newOrder);
                     newOrderDetails.OrderId = order.OrderID;
