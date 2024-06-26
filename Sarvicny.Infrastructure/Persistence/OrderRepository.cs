@@ -179,14 +179,15 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<List<Order>> RemoveAllPaymentExpiredOrders(ISpecifications<Order> spec) //case ano al paymeny expiry date 3da we m7awlsh yedf3 fa al order mt3mlosh remove fa al admin yeshelo
         {
+
+
+            var removed = OrderStatusEnum.Removed.ToString();
             var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatus!= OrderStatusEnum.Removed && or.PaymentExpiryTime != null && or.PaymentExpiryTime < DateTime.UtcNow)
-                .ToListAsync();
-            foreach(var order in orders)
-            {
-                order.OrderStatus = OrderStatusEnum.Removed;
-            }
-            return orders;
+                    .Where(or => or.OrderStatusString != removed && or.PaymentExpiryTime != null && or.PaymentExpiryTime < DateTime.UtcNow)
+                    .ToListAsync();
+                return orders;
+           
+            
         }
     }
 }

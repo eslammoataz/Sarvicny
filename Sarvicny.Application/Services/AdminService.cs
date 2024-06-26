@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MailKit.Search;
+using Microsoft.AspNetCore.Identity;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -416,14 +417,22 @@ public class AdminService : IAdminService
     public async Task<Response<List<object>>> RemoveAllPaymentExpiredOrders()
     {
         var spec = new OrderWithDetailsSpecification();
-        var removed = await _orderRepository.RemoveAllPaymentExpiredOrders(spec);
+        var expired = await _orderRepository.RemoveAllPaymentExpiredOrders(spec);
+
 
         List<object> result = new List<object>();
-        foreach (var order in removed)
+
+        foreach (var order in expired)
         {
+            order.OrderStatus = OrderStatusEnum.Removed;
             var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
             result.Add(orderDetails);
         }
+        _unitOfWork.Commit();
+
+
+       
+        
         if (result.Count == 0)
         {
             return new Response<List<object>>()
@@ -600,5 +609,96 @@ public class AdminService : IAdminService
 
     }
 
+    public async Task<Response<object>> ReAssignOrder(string orderId)
+    {
+        var spec = new OrderWithDetailsSpecification(orderId);
+        var order = await _orderRepository.GetOrder(spec);
+        if (order == null)
+        {
+            return new Response<object>()
+            {
+                Status = "failed",
+                Message = "Order Not Found",
+                Payload = null,
+                isError = true
+
+            };
+
+        }
+        var requestedSlot = order.OrderDetails.RequestedSlot;
+        var services = order.OrderDetails.RequestedServices.Services;
+        List<string> servicesIds = new List<string>();
+        foreach (var service in services)
+        {
+            servicesIds.Add(service.ServiceID);
+        }
+
+        var startTime = requestedSlot.StartTime;
+        var dayOfweek = requestedSlot.DayOfWeek;
+        var district = order.OrderDetails.providerDistrict.DistrictID;
+        var customer = order.Customer;
+
+        var provider = order.OrderDetails.ProviderID;
+
+        var matchedProviders = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
+
+        var filteredProviders = matchedProviders.Where(p => p.Id != provider).ToList();
+        order.OrderStatus = OrderStatusEnum.Removed;
+
+        _unitOfWork.Commit();
+
+
+        var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(orderId);
+
+
+        if (filteredProviders.Count() == 0)
+        {
+
+            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
+            var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
+            _emailService.SendEmail(message);
+
+            return new Response<object>()
+            {
+                Status = "Success",
+                Message = " No Matched providers is Found (orderStatus = removed & send email successfully)",
+                Payload = null,
+                isError = false
+
+            };
+
+
+
+        }
+        List<object> providers = new List<object>();  
+        foreach(var matched in filteredProviders)
+        {
+
+            var newfiltered = new 
+            { 
+                providerId = matched.Id,
+                firstName = matched.FirstName,
+                lastName= matched.LastName,
+                
+            };
+            providers.Add(newfiltered);
+
+        }
+        var result = new
+        {
+           orderDetails = orderDetails,
+            matchedProviders = provider,
+
+        };
+        var message2 = new EmailDto(customer.Email!, "Sarvicny:Matched Providers are Found", " New Recmmondations are found !! \n Please Select new provider from our recommendations.");
+        _emailService.SendEmail(message2);
+        return new Response<object>()
+        {
+            Status = "Success",
+            Message = "Matched providers are Found",
+            Payload = result,
+            isError = false
+        };
+    }
 
 }

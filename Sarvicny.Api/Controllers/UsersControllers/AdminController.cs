@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Domain.Entities;
 
@@ -210,4 +211,19 @@ public class AdminController : ControllerBase
 
     }
 
+    [HttpPost]
+    [Route("ReAssignOrder/{orderId}")]
+    public async Task<IActionResult> ReAssignOrder(string orderId)
+    {
+        var response = await _adminService.ReAssignOrder(orderId);
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+
+
+        return Ok(response);
+
+    }
 }

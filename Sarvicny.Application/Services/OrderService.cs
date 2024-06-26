@@ -347,7 +347,7 @@ namespace Sarvicny.Application.Services
         }  //feha tfasel provider
 
        
-        public async Task<Response<object>> ShowAllOrderDetailsForCustomer(string orderId)
+        public async Task<object> ShowAllOrderDetailsForCustomer(string orderId)
         {
             var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
@@ -402,12 +402,7 @@ namespace Sarvicny.Application.Services
                 Problem = order.OrderDetails.ProblemDescription
             };
 
-            return new Response<object>()
-            {
-                Status = "Success",
-                Message = "Action Done Successfully",
-                Payload = orderAsObject
-            };
+            return orderAsObject;
         } //mfhash customer
 
 
@@ -504,82 +499,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> ReAssignOrder(string orderId)
-        {
-            var spec = new OrderWithDetailsSpecification(orderId);
-            var order = await _orderRepository.GetOrder(spec);
-            if (order == null)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Order Not Found",
-                    Payload = null,
-                    isError = true
-
-                };
-
-            }
-            var requestedSlot = order.OrderDetails.RequestedSlot;
-            var services = order.OrderDetails.RequestedServices.Services;
-            List<string> servicesIds = new List<string>();
-            foreach (var service in services)
-            {
-                servicesIds.Add(service.ServiceID);
-            }
-
-            var startTime = requestedSlot.StartTime;
-            var dayOfweek = requestedSlot.DayOfWeek;
-            var district = order.OrderDetails.providerDistrict.DistrictID;
-            var customer = order.Customer;
-
-
-
-            var matchedProviders = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district,customer.Id);
-
-            order.OrderStatus = OrderStatusEnum.Removed;
-
-            _unitOfWork.Commit();
-
-       
-            var orderDetails = await ShowAllOrderDetailsForCustomer(orderId);
-
-            
-            if (matchedProviders == null)
-            {
-
-                var orderDetailsForCustomer = GenerateOrderDetailsMessage(order);
-                var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
-                _emailService.SendEmail(message);
-
-                return new Response<object>()
-                {
-                    Status = "Success",
-                    Message = " No Matched providers is Found (orderStatus = removed & send email successfully)",
-                    Payload = null,
-                    isError = false
-
-                };
-
-
-
-            }
-            var result = new
-            {
-                orderDetails = orderDetails,
-                matchedProviders = matchedProviders,
-
-            };
-            var message2 = new EmailDto(customer.Email!, "Sarvicny:Matched Providers are Found", " New Recmmondations are found !! \n Please Select new provider from our recommendations.");
-            _emailService.SendEmail(message2);
-            return new Response<object>()
-            { 
-                Status = "Success",
-                Message = "Matched providers are Found",
-                Payload = result,
-                isError = false
-            };
-        }
+      
 
         public  async Task<Response<List<object>>> GetAllMatchedProviderSortedbyFav(MatchingProviderDto matchingProviderDto)
         {

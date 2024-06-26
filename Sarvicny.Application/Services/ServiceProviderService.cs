@@ -10,6 +10,7 @@ using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
+using Sarvicny.Contracts.Dtos;
 using Sarvicny.Contracts.Payment;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
@@ -69,14 +70,7 @@ namespace Sarvicny.Application.Services
                 response.Errors.Add("Worker Not Found");
                 return response;
             }
-            //if (worker.isVerified == false)   // b2ena n approve abl ma y verify
-            //{
-            //    response.isError = true;
-            //    response.Status = "failed";
-            //    response.Message = "Worker Not Verified";
-            //    response.Errors.Add("Worker Not Verified");
-            //    return response;
-            //}
+
             if (worker.IsBlocked == true)
             {
                 return new Response<object>()
@@ -1194,6 +1188,52 @@ namespace Sarvicny.Application.Services
 
 
 
+        }
+
+        public async Task<Response<object>> getProviderServicePrice(string providerId, string serviceId)
+        {
+            var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(providerId);
+        
+            var provider = await _serviceProviderRepository.FindByIdAsync(spec);
+
+            if (provider == null)
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Provider Not Found" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == serviceId);
+            var service = await _serviceRepository.GetServiceById(serviceSpec);
+
+            if (service == null)
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Service Not Found" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+           
+
+            var providerService =
+            provider.ProviderServices.SingleOrDefault(ps => ps.ServiceID == service.ServiceID);
+            if (providerService == null) 
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "This Worker is not Registered for the Service" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            return new Response<object>
+            {
+                isError = false,
+                Errors = null,
+               Payload = providerService.Price,
+                Message = "success",
+            };
         }
     }
 }

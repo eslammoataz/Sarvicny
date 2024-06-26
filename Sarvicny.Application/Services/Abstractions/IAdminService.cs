@@ -30,5 +30,7 @@ public interface IAdminService
 
     Task<Response<District>> AddDistrict(District district);
 
-    
+    Task<Response<object>> ReAssignOrder(string orderId);
+
+
 }

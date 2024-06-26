@@ -246,5 +246,18 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             }
             return Ok(response);
         }
+
+        [HttpGet]
+        [Route("getProviderServicePrice")]
+        public async Task<IActionResult> getProviderServicePrice(string providerId,string serviceId)
+        {
+
+            var response = await _serviceProviderService.getProviderServicePrice( providerId,  serviceId);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
     }
 }

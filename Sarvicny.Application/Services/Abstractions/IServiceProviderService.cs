@@ -45,9 +45,9 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<List<object>>> GetProviderDistricts(string providerId);
       
        Task<Response<object>> SetOrderStatus(string orderId, OrderStatusEnum status);
-       
 
 
+       Task<Response<object>> getProviderServicePrice(string providerId, string customerId);
 
 
 
