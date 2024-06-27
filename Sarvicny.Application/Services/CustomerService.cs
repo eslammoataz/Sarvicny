@@ -1084,5 +1084,41 @@ namespace Sarvicny.Application.Services
 
         }
 
+        public async Task<Response<object>> Refund(string orderId)
+        {
+            var order = await _orderRepository.GetOrder(new OrderWithDetailsSpecification(orderId));
+
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            var orderPrice = order.OrderDetails.Price;
+
+
+            if (order.OrderStatus != OrderStatusEnum.Paid)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Status is not Paid",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+
+            var response = await _paymentService.RefundOrder(order, orderPrice);
+
+            _unitOfWork.Commit();
+
+            return response;
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts;
@@ -420,12 +419,14 @@ namespace Sarvicny.Application.Services.Paypal
                 throw new Exception("Refund failed: " + response.Content);
             }
 
+            _logger.LogInformation($"Refund successful: {response.Content}");
+
             return new Response<object>()
             {
                 Status = "success",
                 Message = "Refund successful",
                 isError = false,
-                Payload = JObject.Parse(response.Content)
+                Payload = null
             };
 
 

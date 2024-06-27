@@ -17,8 +17,7 @@ namespace Sarvicny.Application.Services
         private readonly IEmailService _emailService;
         private readonly IServiceRepository _serviceRepository;
         private IUnitOfWork _unitOfWork;
-        private readonly IPaymentService _paymentService;
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IEmailService emailService, IServiceRepository serviceRepository, IPaymentService paymentService)
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IEmailService emailService, IServiceRepository serviceRepository)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
@@ -26,7 +25,7 @@ namespace Sarvicny.Application.Services
             _providerRepository = serviceProviderRepository;
             _emailService = emailService;
             _serviceRepository = serviceRepository;
-            _paymentService = paymentService;
+
         }
 
         public async Task<Response<object>> AddCustomerRating(RatingDto ratingDto, string orderID)
@@ -552,41 +551,9 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> Refund(string orderId)
+        public Task<Response<object>> Refund(string orderId)
         {
-            var order = await _orderRepository.GetOrder(new OrderWithDetailsSpecification(orderId));
-
-            if (order == null)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Order Not Found",
-                    Payload = null,
-                    isError = true
-
-                };
-            }
-            var orderPrice = order.OrderDetails.Price;
-
-
-            if (order.OrderStatus != OrderStatusEnum.Paid)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Order Status is not Paid",
-                    Payload = null,
-                    isError = true
-
-                };
-            }
-
-            order.OrderStatus = OrderStatusEnum.Refunded;
-
-            var response = await _paymentService.RefundOrder(order, orderPrice);
-
-            return response;
+            throw new NotImplementedException();
         }
     }
 }

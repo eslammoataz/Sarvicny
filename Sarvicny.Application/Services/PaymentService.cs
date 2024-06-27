@@ -81,23 +81,29 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> RefundOrder(Order order, decimal amount)
         {
+            var response = new Response<object>();
             if (order.PaymentMethod == PaymentMethod.Paymob)
             {
-                return await _paymobPaymentService.Refund(order, amount);
+                response = await _paymobPaymentService.Refund(order, amount);
             }
             else if (order.PaymentMethod == PaymentMethod.Paypal)
             {
-                return await _paypalPaymentService.Refund(order, amount);
+                response = await _paypalPaymentService.Refund(order, amount);
             }
             else
             {
-                return new Response<object>()
+                response = new Response<object>()
                 {
                     isError = true,
                     Message = "Invalid Payment Method",
                     Payload = null
                 };
             }
+            if (!response.isError)
+            {
+                order.OrderStatus = OrderStatusEnum.Refunded;
+            }
+            return response;
         }
     }
 }

@@ -28,5 +28,6 @@ namespace Sarvicny.Application.Services.Abstractions
 
         public Task<Response<object>> RemoveFavProvider(string customerId, string providerId);
 
+        Task<Response<object>> Refund(string orderId);
     }
 }
