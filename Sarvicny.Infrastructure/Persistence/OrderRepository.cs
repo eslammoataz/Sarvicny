@@ -5,7 +5,6 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
-using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
@@ -25,7 +24,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task ApproveOrder(Order order)
         {
 
-            order.OrderStatus= OrderStatusEnum.Approved;
+            order.OrderStatus = OrderStatusEnum.Approved;
 
         }
 
@@ -57,7 +56,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<Order> AddOrder(Order order)
         {
 
-           _context.Orders.Add(order);
+            _context.Orders.Add(order);
             return order;
         }
 
@@ -68,10 +67,10 @@ namespace Sarvicny.Infrastructure.Persistence
             return orders;
 
         }
-        public async Task<List<Order>> GetAllOrdersForProvider(ISpecifications<Order> spec,string providerId)
+        public async Task<List<Order>> GetAllOrdersForProvider(ISpecifications<Order> spec, string providerId)
         {
 
-            var orders = await ApplySpecification(spec).Where(or=>or.OrderDetails.ProviderID==providerId).ToListAsync();
+            var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId).ToListAsync();
             return orders;
 
         }
@@ -81,7 +80,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
             var approvedStatus = OrderStatusEnum.Approved.ToString();
             var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatusString == approvedStatus && or.OrderDetails.ProviderID==providerId)
+                .Where(or => or.OrderStatusString == approvedStatus && or.OrderDetails.ProviderID == providerId)
                 .ToListAsync();
             return orders;
 
@@ -137,11 +136,12 @@ namespace Sarvicny.Infrastructure.Persistence
         }
 
 
-        public async Task ChangeOrderPaidStatus(Order order, string transactionId, PaymentMethod PaymentMethod, bool TransactionStatus)
+        public async Task ChangeOrderPaidStatus(Order order, string transactionId, string saleId, PaymentMethod PaymentMethod, bool TransactionStatus)
         {
             order.IsPaid = TransactionStatus;
             order.TransactionID = transactionId;
             order.PaymentMethod = PaymentMethod;
+            order.SaleID = saleId;
             return;
         }
 
@@ -156,15 +156,15 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task<OrderDetails> AddOrderDetails(OrderDetails orderDetails)
         {
-           
-             await _context.OrderDetails.AddAsync(orderDetails);
+
+            await _context.OrderDetails.AddAsync(orderDetails);
             return orderDetails;
-            
+
         }
 
         public async Task<RequestedSlot> AddRequestedSlot(RequestedSlot requestedSlot)
         {
-           await _context.RequestedSlots.AddAsync(requestedSlot);
+            await _context.RequestedSlots.AddAsync(requestedSlot);
             return requestedSlot;
 
         }
@@ -172,7 +172,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec)
         {
             var orders = await ApplySpecification(spec)
-                   .Where(or =>or.ExpiryDate!=null && or.ExpiryDate< DateTime.UtcNow )
+                   .Where(or => or.ExpiryDate != null && or.ExpiryDate < DateTime.UtcNow)
                    .ToListAsync();
             return orders;
         }
@@ -185,9 +185,9 @@ namespace Sarvicny.Infrastructure.Persistence
             var orders = await ApplySpecification(spec)
                     .Where(or => or.OrderStatusString != removed && or.PaymentExpiryTime != null && or.PaymentExpiryTime < DateTime.UtcNow)
                     .ToListAsync();
-                return orders;
-           
-            
+            return orders;
+
+
         }
     }
 }

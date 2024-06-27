@@ -1,17 +1,10 @@
-﻿using MailKit.Search;
-using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
-using Sarvicny.Application.Services.Specifications.ServiceRequestSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
-using Sarvicny.Contracts.Payment;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Domain.Entities.Avaliabilities;
-using Sarvicny.Domain.Entities.Emails;
-using Sarvicny.Domain.Entities.Users;
-using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
@@ -24,14 +17,16 @@ namespace Sarvicny.Application.Services
         private readonly IEmailService _emailService;
         private readonly IServiceRepository _serviceRepository;
         private IUnitOfWork _unitOfWork;
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IEmailService emailService,IServiceRepository serviceRepository) { 
+        private readonly IPaymentService _paymentService;
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IEmailService emailService, IServiceRepository serviceRepository, IPaymentService paymentService)
+        {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _providerRepository = serviceProviderRepository;
             _emailService = emailService;
             _serviceRepository = serviceRepository;
-            
+            _paymentService = paymentService;
         }
 
         public async Task<Response<object>> AddCustomerRating(RatingDto ratingDto, string orderID)
@@ -62,7 +57,7 @@ namespace Sarvicny.Application.Services
                 };
             }
             var rate = order.CRate;
-            if(rate != null)
+            if (rate != null)
             {
                 return new Response<object>()
                 {
@@ -83,7 +78,7 @@ namespace Sarvicny.Application.Services
 
             };
 
-           
+
             var rating = await _orderRepository.AddRating(customerRate);
 
             order.customerRatingId = rating.RatingId;
@@ -186,22 +181,6 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        public string GenerateOrderDetailsMessage(Order order)
-        {
-           
-                // Construct the order details message here
-                // Ensure each line ends with Environment.NewLine or \n for new lines
-                return $"Order ID: {order.OrderID}{Environment.NewLine}" +
-                       $"Provider: {order.OrderDetails.Provider.FirstName}{Environment.NewLine}" +
-                       $"Service: {string.Join(", ", order.OrderDetails.RequestedServices.Services.Select(s => s.ServiceName))}{Environment.NewLine}" +
-                       $"Requested Day: {order.OrderDetails.RequestedSlot.RequestedDay}{Environment.NewLine}" +
-                       $"Day Of Week: {order.OrderDetails.RequestedSlot.DayOfWeek}{Environment.NewLine}" +
-                       $"Requested Slot: {order.OrderDetails.RequestedSlot.StartTime}{Environment.NewLine}" +
-                       $"Order Status: {order.OrderStatus}{Environment.NewLine}" +
-                       $"Price: {order.OrderDetails.Price:C}";
-            
-        }
-
         public async Task<Response<object>> GetCustomerRatingForOrder(string orderID)
         {
             var spec = new OrderWithDetailsSpecification(orderID);
@@ -218,7 +197,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            var CRate= order.CRate;
+            var CRate = order.CRate;
 
             var rateAsobject = new
             {
@@ -299,7 +278,7 @@ namespace Sarvicny.Application.Services
             {
                 orderId = order.OrderID,
                 orderDate = order.OrderDate,
-                ExpiryDate =order.ExpiryDate, 
+                ExpiryDate = order.ExpiryDate,
                 OrderStatus = order.OrderStatus,
                 PaymentExpirytime = order.PaymentExpiryTime,
 
@@ -308,34 +287,34 @@ namespace Sarvicny.Application.Services
                 customerFN = customer.FirstName,
                 customerLastName = customer.LastName,
 
-                providerId= provider.Id,
-                providerFN=  provider.FirstName,
-                providerLN= provider.LastName,
-           
+                providerId = provider.Id,
+                providerFN = provider.FirstName,
+                providerLN = provider.LastName,
+
                 orderPrice = order.OrderDetails.Price,
-                
+
                 orderService = services.Select(s => new
                 {
-                    
+
                     s.ServiceID,
                     s.ServiceName,
                     s.ParentServiceID,
                     parentServiceName = s.ParentService?.ServiceName,
                     s.CriteriaID,
                     s.Criteria?.CriteriaName,
-                   
+
                 }).ToList<object>(),
 
-                RequestedSlotID=order.OrderDetails.RequestedSlotID,
-                RequestedDay=order.OrderDetails.RequestedSlot.RequestedDay,
-                DayOfWeek=order.OrderDetails.RequestedSlot.DayOfWeek,
+                RequestedSlotID = order.OrderDetails.RequestedSlotID,
+                RequestedDay = order.OrderDetails.RequestedSlot.RequestedDay,
+                DayOfWeek = order.OrderDetails.RequestedSlot.DayOfWeek,
                 StartTime = order.OrderDetails.RequestedSlot.StartTime,
 
-                DistrictID=order.OrderDetails.providerDistrict.DistrictID,
-                DistrictName=order.OrderDetails.providerDistrict.District.DistrictName,
-                Address=order.OrderDetails.Address,
-                Price=order.OrderDetails.Price,
-                Problem=order.OrderDetails.ProblemDescription
+                DistrictID = order.OrderDetails.providerDistrict.DistrictID,
+                DistrictName = order.OrderDetails.providerDistrict.District.DistrictName,
+                Address = order.OrderDetails.Address,
+                Price = order.OrderDetails.Price,
+                Problem = order.OrderDetails.ProblemDescription
             };
 
             return new Response<object>()
@@ -346,7 +325,7 @@ namespace Sarvicny.Application.Services
             };
         }  //feha tfasel provider
 
-       
+
         public async Task<object> ShowAllOrderDetailsForCustomer(string orderId)
         {
             var spec = new OrderWithDetailsSpecification(orderId);
@@ -363,7 +342,7 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-            
+
             var provider = order.OrderDetails.Provider;
             var services = order.OrderDetails.RequestedServices.Services;
             var orderAsObject = new
@@ -424,7 +403,7 @@ namespace Sarvicny.Application.Services
             }
 
             var customer = order.Customer;
-           
+
             var services = order.OrderDetails.RequestedServices.Services;
             var orderAsObject = new
             {
@@ -436,7 +415,7 @@ namespace Sarvicny.Application.Services
                 customerFN = customer.FirstName,
                 customerLastName = customer.LastName,
 
-      
+
 
                 orderPrice = order.OrderDetails.Price,
 
@@ -474,9 +453,9 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> ShowOrderStatus(string orderId)
         {
-            var spec = new BaseSpecifications<Order>(or=>or.OrderID==orderId);
+            var spec = new BaseSpecifications<Order>(or => or.OrderID == orderId);
 
-            var order= await _orderRepository.GetOrder(spec);
+            var order = await _orderRepository.GetOrder(spec);
             if (order == null)
             {
                 return new Response<object>()
@@ -499,11 +478,11 @@ namespace Sarvicny.Application.Services
 
         }
 
-      
 
-        public  async Task<Response<List<object>>> GetAllMatchedProviderSortedbyFav(MatchingProviderDto matchingProviderDto)
+
+        public async Task<Response<List<object>>> GetAllMatchedProviderSortedbyFav(MatchingProviderDto matchingProviderDto)
         {
-             
+
 
             foreach (var Id in matchingProviderDto.services)
             {
@@ -527,15 +506,15 @@ namespace Sarvicny.Application.Services
                         Message = "Failed",
                     };
 
-               
 
-               
-               
+
+
+
 
 
             }
             TimeSpan startTime = TimeSpan.Parse(matchingProviderDto.startTime);
-            var MatchedProviderSortedbyFav = await _providerRepository.GetAllMatchedProviders(matchingProviderDto.services, startTime,matchingProviderDto.dayOfWeek,matchingProviderDto.districtId,matchingProviderDto.customerId);
+            var MatchedProviderSortedbyFav = await _providerRepository.GetAllMatchedProviders(matchingProviderDto.services, startTime, matchingProviderDto.dayOfWeek, matchingProviderDto.districtId, matchingProviderDto.customerId);
             if (MatchedProviderSortedbyFav == null)
             {
                 return new Response<List<object>>
@@ -547,17 +526,17 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            
-            List<object> result = new List<object>() ;
-            foreach(var provider in MatchedProviderSortedbyFav)
+
+            List<object> result = new List<object>();
+            foreach (var provider in MatchedProviderSortedbyFav)
             {
                 var providerAsObj = new
                 {
                     providerId = provider.Id,
                     firstname = provider.FirstName,
                     lastname = provider.LastName,
-                    email= provider.Email,
-                    
+                    email = provider.Email,
+
                 };
                 result.Add(providerAsObj);
             }
@@ -573,8 +552,42 @@ namespace Sarvicny.Application.Services
 
         }
 
-     
-        
+        public async Task<Response<object>> Refund(string orderId)
+        {
+            var order = await _orderRepository.GetOrder(new OrderWithDetailsSpecification(orderId));
+
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+            var orderPrice = order.OrderDetails.Price;
+
+
+            if (order.OrderStatus != OrderStatusEnum.Paid)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Status is not Paid",
+                    Payload = null,
+                    isError = true
+
+                };
+            }
+
+            order.OrderStatus = OrderStatusEnum.Refunded;
+
+            var response = await _paymentService.RefundOrder(order, orderPrice);
+
+            return response;
+        }
     }
 }
 

@@ -1,7 +1,4 @@
-﻿using MailKit.Search;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Org.BouncyCastle.Asn1.X509;
-using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.CartSpecifications;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
@@ -15,7 +12,6 @@ using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
-using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Application.Services
 {
@@ -32,13 +28,15 @@ namespace Sarvicny.Application.Services
         private readonly IOrderService _orderService;
         private readonly IServiceProviderService _serviceProvider;
         private readonly IDistrictRepository _districtRepository;
+        private readonly IAdminService _adminService;
+
 
 
         public CustomerService(IServiceProviderRepository providerRepository
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
             IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository,
             IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService,
-            IDistrictRepository districtRepository)
+            IDistrictRepository districtRepository, IAdminService adminService)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -51,12 +49,13 @@ namespace Sarvicny.Application.Services
             _serviceProvider = serviceProvider;
             _districtRepository = districtRepository;
             _paymentService = paymentService;
+            _adminService = adminService;
         }
 
 
         public async Task<Response<object>> addToCart(RequestServiceDto requestServiceDto, string customerId)
         {
-            if(requestServiceDto.RequestDay == DateTime.Today)
+            if (requestServiceDto.RequestDay == DateTime.Today)
             {
                 return new Response<object>
                 {
@@ -78,17 +77,17 @@ namespace Sarvicny.Application.Services
                     Message = "Failed",
                 };
 
-            
+
 
             List<Service> services = new List<Service>();
             decimal price = 0;
-      
-           
+
+
             foreach (var Id in requestServiceDto.ServiceIDs)
             {
                 var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == Id);
                 var service = await _serviceRepository.GetServiceById(serviceSpec);
-                 
+
                 if (service == null)
                     return new Response<object>
                     {
@@ -97,7 +96,7 @@ namespace Sarvicny.Application.Services
                         Status = "Error",
                         Message = "Failed",
                     };
-                if(service.ParentServiceID == null)
+                if (service.ParentServiceID == null)
                     return new Response<object>
                     {
                         isError = true,
@@ -123,7 +122,7 @@ namespace Sarvicny.Application.Services
 
             }
 
-            if ( services.Count()!= requestServiceDto.ServiceIDs.Count())
+            if (services.Count() != requestServiceDto.ServiceIDs.Count())
             {
                 return new Response<object>
                 {
@@ -139,7 +138,7 @@ namespace Sarvicny.Application.Services
 
             await _serviceRepository.AddRequestedService(requestedServices);
 
-            
+
             var district = await _districtRepository.GetDistrictById(requestServiceDto.DistrictID);
             if (district == null)
                 return new Response<object>
@@ -225,7 +224,7 @@ namespace Sarvicny.Application.Services
             foreach (var request in cartRequest)  //check not already in cart
             {
 
-                if ( requestServiceDto.ProviderId == request.ProviderID && slotExist.TimeSlotID == request.SlotID && requestServiceDto.RequestDay == request.RequestedDate )
+                if (requestServiceDto.ProviderId == request.ProviderID && slotExist.TimeSlotID == request.SlotID && requestServiceDto.RequestDay == request.RequestedDate)
                 {
                     return new Response<object>
                     {
@@ -249,20 +248,20 @@ namespace Sarvicny.Application.Services
             {
                 RequestedDate = requestServiceDto.RequestDay,
                 Provider = provider,
-                ProviderID= provider.Id,
+                ProviderID = provider.Id,
                 RequestedServices = requestedServices,
                 providerDistrict = providerDistrict,
                 Slot = slotExist,
                 SlotID = slotExist.TimeSlotID,
                 CartID = customer.Cart.CartID,
-                Cart=customer.Cart,
-    
+                Cart = customer.Cart,
+
                 Price = price,
                 ProblemDescription = requestServiceDto.ProblemDescription,
                 Address = Address,
             };
 
-    
+
 
             await _customerRepository.AddRequest(newRequest);
             _unitOfWork.Commit();
@@ -271,18 +270,18 @@ namespace Sarvicny.Application.Services
             {
                 RequestId = newRequest.CartServiceRequestID,
                 RequestDay = requestServiceDto.RequestDay,
-                DayOfWeek= slotExist.ProviderAvailability.DayOfWeek,
+                DayOfWeek = slotExist.ProviderAvailability.DayOfWeek,
                 RequestTime = slotExist.StartTime,
                 District = providerDistrict.District.DistrictName,
                 Address = Address,
                 ProviderName = provider.FirstName + " " + provider.LastName,
-                Services = requestedServices.Services.Select(s=> new
+                Services = requestedServices.Services.Select(s => new
                 {
                     s.ServiceID,
                     s.ServiceName
 
                 }).ToList<object>(),
-                               
+
                 Price = price,
                 ProblemDescription = requestServiceDto.ProblemDescription
             };
@@ -290,6 +289,17 @@ namespace Sarvicny.Application.Services
             return new Response<object>
             { isError = false, Message = "Service Request is added successfully to the cart", Payload = output };
         }
+
+        public async Task<Response<object>> AddToCartSampleData()
+        {
+            return new Response<object>
+            {
+                isError = false,
+                Message = "Success",
+                Payload = null
+            };
+        }
+
 
         public async Task<Response<object>> RemoveFromCart(string customerId, string requestId)
         {
@@ -437,7 +447,7 @@ namespace Sarvicny.Application.Services
 
                 }).ToList<object>(),
 
-                
+
                 s.SlotID,
                 s.RequestedDate,
                 s.Slot.ProviderAvailability.DayOfWeek,
@@ -470,9 +480,9 @@ namespace Sarvicny.Application.Services
             };
         }
 
-        public async Task<Response<object>> OrderCart(string customerId,PaymentMethod paymentMethod)
+        public async Task<Response<object>> OrderCart(string customerId, PaymentMethod paymentMethod)
         {
-            
+
             #region validation_for_Data
             var spec = new CustomerWithCartSpecification(customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
@@ -511,7 +521,7 @@ namespace Sarvicny.Application.Services
                 };
             }
             var deleted = cartServiceRequests.Any(r => r.Slot == null);
-            if(deleted)
+            if (deleted)
             {
                 return new Response<object>
                 {
@@ -533,13 +543,13 @@ namespace Sarvicny.Application.Services
                     Message = "Request seams to be reserved by another user",
                 };
             }
- 
+
             #endregion
 
 
             var totalPrice = cartServiceRequests.Sum(s => s.Price);
 
-            List<object > result= new List<object>();
+            List<object> result = new List<object>();
             try
             {
                 foreach (var request in cartServiceRequests)
@@ -562,21 +572,21 @@ namespace Sarvicny.Application.Services
 
                     };
 
-                    var newRequestedSlot =await _orderRepository.AddRequestedSlot(requestedSlot);
+                    var newRequestedSlot = await _orderRepository.AddRequestedSlot(requestedSlot);
 
-                  
+
                     DateTime tomorrow = DateTime.Today.AddDays(1);
 
                     var expiryDate = tomorrow;
 
 
-                    if (request.RequestedDate== tomorrow)
+                    if (request.RequestedDate == tomorrow)
                     {
                         expiryDate = DateTime.UtcNow.AddHours(6);
                     }
-                    
 
-                   
+
+
                     var newOrderDetails = new OrderDetails
                     {
                         ProviderID = request.ProviderID,
@@ -602,7 +612,7 @@ namespace Sarvicny.Application.Services
                         OrderDetailsId = newOrderDetails.OrderDetailsID,
                     };
 
-                   
+
                     newOrder.PaymentMethod = paymentMethod;
                     var order = await _orderRepository.AddOrder(newOrder);
                     newOrderDetails.OrderId = order.OrderID;
@@ -667,7 +677,7 @@ namespace Sarvicny.Application.Services
             }
         }
 
-        public async Task<Response<object>> PayOrder(string orderId,PaymentMethod PayemntMethod)
+        public async Task<Response<object>> PayOrder(string orderId, PaymentMethod PayemntMethod)
         {
             var spec = new OrderWithDetailsSpecification(orderId);
             var order = await _orderRepository.GetOrder(spec);
@@ -818,7 +828,7 @@ namespace Sarvicny.Application.Services
             }
             if (email != null)
             {
-                var user = await _userRepository.GetUserByEmailAsync(email); 
+                var user = await _userRepository.GetUserByEmailAsync(email);
                 if (user != null && user != customer) //another user rather than the updated
                 {
                     return new Response<object>()
@@ -851,7 +861,7 @@ namespace Sarvicny.Application.Services
             {
                 userName = customer.UserName,
                 email = customer.Email,
-  
+
                 phone = customer.PhoneNumber,
                 address = customer.Address,
 
@@ -888,7 +898,7 @@ namespace Sarvicny.Application.Services
 
 
             }
-            if(order.OrderStatus != OrderStatusEnum.Done)
+            if (order.OrderStatus != OrderStatusEnum.Done)
             {
                 return new Response<object>()
 
@@ -941,7 +951,7 @@ namespace Sarvicny.Application.Services
                     Errors = new List<string> { "Error with provider" },
                 };
             }
-            if (!provider.IsVerified || provider.IsBlocked )
+            if (!provider.IsVerified || provider.IsBlocked)
             {
                 return new Response<object>()
                 {
@@ -963,10 +973,10 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-              
-            
-            var newFav = new FavProvider 
-            { 
+
+
+            var newFav = new FavProvider
+            {
                 customerId = customerId,
                 providerId = providerId,
             };
@@ -976,15 +986,15 @@ namespace Sarvicny.Application.Services
 
             return new Response<object>()
             {
-               
+
                 Message = "Action Done Successfully",
                 isError = false,
-                Errors =null,
-                
+                Errors = null,
+
             };
         }
 
-        public  async Task<Response<object>> RemoveFavProvider(string customerId,string providerId)
+        public async Task<Response<object>> RemoveFavProvider(string customerId, string providerId)
         {
             var spec = new CustomerWithFavouritesSpecification(customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
@@ -1021,9 +1031,9 @@ namespace Sarvicny.Application.Services
                     Errors = new List<string> { "Error with provider" },
                 };
             }
-      
 
-            var fav =  customer.Favourites.FirstOrDefault(f => f.providerId == providerId);      
+
+            var fav = customer.Favourites.FirstOrDefault(f => f.providerId == providerId);
             customer.Favourites.Remove(fav);
             await _customerRepository.RemoveFavProvider(fav);
             _unitOfWork.Commit();
@@ -1036,8 +1046,8 @@ namespace Sarvicny.Application.Services
                 Errors = null,
 
             };
-        
-    }
+
+        }
         public async Task<Response<List<object>>> getCustomerFavourites(string customerId)
         {
             var spec = new CustomerWithFavouritesSpecification(customerId);
@@ -1053,8 +1063,8 @@ namespace Sarvicny.Application.Services
                 };
             }
             var fav = customer.Favourites;
-            List<object> result = new List<object>();   
-            foreach( var provider in fav)
+            List<object> result = new List<object>();
+            foreach (var provider in fav)
             {
                 var favAsObj = new
                 {
@@ -1062,7 +1072,7 @@ namespace Sarvicny.Application.Services
                 };
                 result.Add(favAsObj);
             }
-           
+
 
             return new Response<List<object>>()
             {
@@ -1074,6 +1084,5 @@ namespace Sarvicny.Application.Services
 
         }
 
-       
     }
 }

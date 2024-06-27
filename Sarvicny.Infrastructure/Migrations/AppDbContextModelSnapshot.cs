@@ -303,9 +303,9 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.ToTable("Districts");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.Favourite", b =>
+            modelBuilder.Entity("Sarvicny.Domain.Entities.FavProvider", b =>
                 {
-                    b.Property<string>("FavId")
+                    b.Property<string>("favId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(255)");
 
@@ -317,11 +317,11 @@ namespace Sarvicny.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("FavId");
+                    b.HasKey("favId");
 
                     b.HasIndex("customerId");
 
-                    b.ToTable("Favourite");
+                    b.ToTable("FavProviders");
                 });
 
             modelBuilder.Entity("Sarvicny.Domain.Entities.Order", b =>
@@ -836,7 +836,7 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Navigation("providerDistrict");
                 });
 
-            modelBuilder.Entity("Sarvicny.Domain.Entities.Favourite", b =>
+            modelBuilder.Entity("Sarvicny.Domain.Entities.FavProvider", b =>
                 {
                     b.HasOne("Sarvicny.Domain.Entities.Users.Customer", null)
                         .WithMany("Favourites")

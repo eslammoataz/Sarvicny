@@ -64,7 +64,8 @@ D:\Graduation Project\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Doma
 D:\Graduation Project\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.CopyComplete
 E:\Github Repos\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.dll
 E:\Github Repos\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.pdb
-E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.CopyComplete
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.dll
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Contracts\bin\Debug\net7.0\Sarvicny.Domain.pdb
 C:\Users\Karen\source\repos\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.csproj.CopyComplete
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.Contracts.sourcelink.json
+E:\Github Repos\Sarvicny\Sarvicny.Contracts\obj\Debug\net7.0\Sarvicny.816F38B4.Up2Date

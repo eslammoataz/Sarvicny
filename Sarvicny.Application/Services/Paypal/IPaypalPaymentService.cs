@@ -14,5 +14,6 @@ namespace Sarvicny.Application.Services.Paypal
 
         public Task<object> GetPayment(string paymentId);
 
+        public Task<Response<object>> Refund(Order order, decimal amount);
     }
 }

@@ -59,3 +59,4 @@ E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.dll
 E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\refint\Sarvicny.Domain.dll
 E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.pdb
 E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\ref\Sarvicny.Domain.dll
+E:\Github Repos\Sarvicny\Sarvicny.Domain\obj\Debug\net7.0\Sarvicny.Domain.sourcelink.json

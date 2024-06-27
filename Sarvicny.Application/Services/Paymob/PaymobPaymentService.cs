@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -11,6 +8,9 @@ using Sarvicny.Contracts.Payment;
 using Sarvicny.Contracts.Payment.Request;
 using Sarvicny.Contracts.Payment.Response;
 using Sarvicny.Domain.Entities;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Sarvicny.Application.Services.Paymob;
 
@@ -187,8 +187,9 @@ public class PaymobPaymentService : IPaymobPaymentService
         }
 
         var orderId = transaction.Obj.order.merchant_order_id;
+        var emptySaleId = string.Empty; // needs handling
 
-        await _handlePayment.validateOrder(orderId, transaction.Obj.success, transaction.Obj.TransactionId, PaymentMethod.Paymob);
+        await _handlePayment.validateOrder(orderId, transaction.Obj.success, transaction.Obj.TransactionId, emptySaleId, PaymentMethod.Paymob);
 
         return new Response<object>
         {
@@ -318,4 +319,8 @@ public class PaymobPaymentService : IPaymobPaymentService
         return dictionary;
     }
 
+    public Task<Response<object>> Refund(Order order, decimal amount)
+    {
+        throw new NotImplementedException();
+    }
 }

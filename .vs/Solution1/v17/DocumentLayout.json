@@ -1,0 +1,389 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\Github Repos\\Sarvicny\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\abstractions\\ihandlepayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\abstractions\\ihandlepayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\handlepayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\handlepayment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\paymob\\paymobpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\paymob\\paymobpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\paymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\paymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\adminservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\adminservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\paypal\\paypalpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\paypal\\paypalpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\serviceproviderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\serviceproviderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\common\\helper\\helpermethods.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\common\\helper\\helpermethods.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\abstractions\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\abstractions\\iorderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\customerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\customerservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\abstractions\\ipaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\abstractions\\ipaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0D98FD3C-106F-4285-91F7-34A2409A3B2F}|Sarvicny.Api\\Sarvicny.Api.csproj|e:\\github repos\\sarvicny\\sarvicny.api\\controllers\\userscontrollers\\customercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0D98FD3C-106F-4285-91F7-34A2409A3B2F}|Sarvicny.Api\\Sarvicny.Api.csproj|solutionrelative:sarvicny.api\\controllers\\userscontrollers\\customercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}|Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj|e:\\github repos\\sarvicny\\sarvicny.infrastructure\\persistence\\customerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}|Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj|solutionrelative:sarvicny.infrastructure\\persistence\\customerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\paymob\\ipaymobpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\paymob\\ipaymobpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\services\\paypal\\ipaypalpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\services\\paypal\\ipaypalpaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4A678814-616B-44FC-B0CD-30D2EBFA0C6A}|Sarvicny.Domain\\Sarvicny.Domain.csproj|e:\\github repos\\sarvicny\\sarvicny.domain\\entities\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4A678814-616B-44FC-B0CD-30D2EBFA0C6A}|Sarvicny.Domain\\Sarvicny.Domain.csproj|solutionrelative:sarvicny.domain\\entities\\order.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0D98FD3C-106F-4285-91F7-34A2409A3B2F}|Sarvicny.Api\\Sarvicny.Api.csproj|e:\\github repos\\sarvicny\\sarvicny.api\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0D98FD3C-106F-4285-91F7-34A2409A3B2F}|Sarvicny.Api\\Sarvicny.Api.csproj|solutionrelative:sarvicny.api\\controllers\\paymentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}|Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj|e:\\github repos\\sarvicny\\sarvicny.infrastructure\\persistence\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{822B7723-A2F6-4E4D-BF21-5B5F54E9DCFA}|Sarvicny.Infrastructure\\Sarvicny.Infrastructure.csproj|solutionrelative:sarvicny.infrastructure\\persistence\\orderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|e:\\github repos\\sarvicny\\sarvicny.application\\common\\interfaces\\persistence\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DB84666A-A581-44AA-942C-39142A633BD3}|Sarvicny.Application\\Sarvicny.Application.csproj|solutionrelative:sarvicny.application\\common\\interfaces\\persistence\\iorderrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0D98FD3C-106F-4285-91F7-34A2409A3B2F}|Sarvicny.Api\\Sarvicny.Api.csproj|e:\\github repos\\sarvicny\\sarvicny.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{0D98FD3C-106F-4285-91F7-34A2409A3B2F}|Sarvicny.Api\\Sarvicny.Api.csproj|solutionrelative:sarvicny.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 11,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e1b7d1f8-9b3c-49b1-8f4f-bfc63a88835d}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "CustomerService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\CustomerService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\CustomerService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\CustomerService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\CustomerService.cs",
+              "ViewState": "AQIAAKYCAAAAAAAAAAAcwD4EAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T02:56:12.862Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "HandlePayment.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\HandlePayment.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\HandlePayment.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\HandlePayment.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\HandlePayment.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:26:46.715Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AdminService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\AdminService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\AdminService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\AdminService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\AdminService.cs",
+              "ViewState": "AQIAAB4BAAAAAAAAAADwv8cCAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T05:58:44.565Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ServiceProviderService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\ServiceProviderService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\ServiceProviderService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\ServiceProviderService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\ServiceProviderService.cs",
+              "ViewState": "AQIAAO0BAAAAAAAAAAAWwPkBAAAqAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T05:01:43.125Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PaymentService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\PaymentService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\PaymentService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\PaymentService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\PaymentService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAGcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T07:15:55.206Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PaypalPaymentService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paypal\\PaypalPaymentService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\Paypal\\PaypalPaymentService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paypal\\PaypalPaymentService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\Paypal\\PaypalPaymentService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAA3AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T05:55:11.032Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PaymobPaymentService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paymob\\PaymobPaymentService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\Paymob\\PaymobPaymentService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paymob\\PaymobPaymentService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\Paymob\\PaymobPaymentService.cs",
+              "ViewState": "AQIAADMAAAAAAAAAAAAiwEUBAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:48:34.927Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "OrderService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\OrderService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\OrderService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\OrderService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\OrderService.cs",
+              "ViewState": "AQIAANwAAAAAAAAAAAAAAFICAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T07:00:25.612Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "IHandlePayment.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Abstractions\\IHandlePayment.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\Abstractions\\IHandlePayment.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Abstractions\\IHandlePayment.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\Abstractions\\IHandlePayment.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAUAAAAjAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:26:42.988Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Order.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Entities\\Order.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Domain\\Entities\\Order.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Domain\\Entities\\Order.cs",
+              "RelativeToolTip": "Sarvicny.Domain\\Entities\\Order.cs",
+              "ViewState": "AQIAABAAAAAAAAAAAAAgwBYAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:44:16.627Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IOrderService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Abstractions\\IOrderService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\Abstractions\\IOrderService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Abstractions\\IOrderService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\Abstractions\\IOrderService.cs",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAgwBMAAABJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:59:32.046Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "IPaypalPaymentService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paypal\\IPaypalPaymentService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\Paypal\\IPaypalPaymentService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paypal\\IPaypalPaymentService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\Paypal\\IPaypalPaymentService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwBAAAABIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T07:05:01.761Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "HelperMethods.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Common\\Helper\\HelperMethods.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Common\\Helper\\HelperMethods.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Common\\Helper\\HelperMethods.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Common\\Helper\\HelperMethods.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAYAAAA4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T07:30:44.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "IPaymobPaymentService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paymob\\IPaymobPaymentService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\Paymob\\IPaymobPaymentService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Paymob\\IPaymobPaymentService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\Paymob\\IPaymobPaymentService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAcAAAAmAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T07:06:40.08Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "CustomerRepository.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Persistence\\CustomerRepository.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Infrastructure\\Persistence\\CustomerRepository.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Persistence\\CustomerRepository.cs",
+              "RelativeToolTip": "Sarvicny.Infrastructure\\Persistence\\CustomerRepository.cs",
+              "ViewState": "AQIAABkAAAAAAAAAAAAWwCcAAABlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T07:17:12.369Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IPaymentService.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Abstractions\\IPaymentService.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Services\\Abstractions\\IPaymentService.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Services\\Abstractions\\IPaymentService.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Services\\Abstractions\\IPaymentService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAqwAgAAABIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T07:21:22.893Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "CustomerController.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Controllers\\UsersControllers\\CustomerController.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Api\\Controllers\\UsersControllers\\CustomerController.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Controllers\\UsersControllers\\CustomerController.cs",
+              "RelativeToolTip": "Sarvicny.Api\\Controllers\\UsersControllers\\CustomerController.cs",
+              "ViewState": "AQIAAIMAAAAAAAAAAAA2wK4AAAA/AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:37:48.072Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "IOrderRepository.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Common\\Interfaces\\Persistence\\IOrderRepository.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Application\\Common\\Interfaces\\Persistence\\IOrderRepository.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Application\\Common\\Interfaces\\Persistence\\IOrderRepository.cs",
+              "RelativeToolTip": "Sarvicny.Application\\Common\\Interfaces\\Persistence\\IOrderRepository.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACMAAABUAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:47:48.352Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "OrderRepository.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Persistence\\OrderRepository.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Infrastructure\\Persistence\\OrderRepository.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Infrastructure\\Persistence\\OrderRepository.cs",
+              "RelativeToolTip": "Sarvicny.Infrastructure\\Persistence\\OrderRepository.cs",
+              "ViewState": "AQIAAD0AAAAAAAAAAAAuwI8AAAAiAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T06:48:04.068Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "PaymentController.cs",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Controllers\\PaymentController.cs",
+              "RelativeDocumentMoniker": "Sarvicny.Api\\Controllers\\PaymentController.cs",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\Controllers\\PaymentController.cs",
+              "RelativeToolTip": "Sarvicny.Api\\Controllers\\PaymentController.cs",
+              "ViewState": "AQIAAIABAAAAAAAAAAAAwJABAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-27T05:58:44.551Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\appsettings.json",
+              "RelativeDocumentMoniker": "Sarvicny.Api\\appsettings.json",
+              "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\appsettings.json",
+              "RelativeToolTip": "Sarvicny.Api\\appsettings.json",
+              "ViewState": "AQIAABIAAAAAAAAAAAAAADAAAAADAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-06-27T05:23:40.929Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

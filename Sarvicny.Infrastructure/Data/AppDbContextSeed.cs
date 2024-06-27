@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
@@ -8,6 +6,7 @@ using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
+using System.Security.Claims;
 
 
 namespace Sarvicny.Infrastructure.Data
@@ -96,7 +95,7 @@ namespace Sarvicny.Infrastructure.Data
                 await userManager.AddClaimAsync(customerData, new Claim("UserType", "Customer"));
 
             }
-          
+
             // Seed Criteria data
             var criteriaData = new Criteria
             {
@@ -116,9 +115,9 @@ namespace Sarvicny.Infrastructure.Data
             {
                 ServiceName = "Roof Painting",
                 Description = "This is a test service.",
-                
-                
             };
+
+            Service childService = null;
 
             if (!context.Services.Any())
             {
@@ -126,6 +125,16 @@ namespace Sarvicny.Infrastructure.Data
                     serviceData.CriteriaID = context.Criterias.FirstOrDefault()?.CriteriaID;
 
                 await context.Services.AddAsync(serviceData);
+
+                childService = new Service
+                {
+                    ServiceName = "child service",
+                    Description = "This is a test child service.",
+                    ParentServiceID = serviceData.ServiceID,
+                };
+
+                await context.Services.AddAsync(childService);
+
             }
 
 
@@ -137,7 +146,7 @@ namespace Sarvicny.Infrastructure.Data
                     ServiceID = serviceData.ServiceID,
                     Price = 99.99M,
                     Provider = workerData,
-                    Service = serviceData
+                    Service = childService
                 };
                 await context.ProviderServices.AddAsync(providerService);
 
@@ -145,6 +154,7 @@ namespace Sarvicny.Infrastructure.Data
                 workerData.ProviderServices.Add(providerService);
             }
 
+            //seed provider availability 
             var avail = new AvailabilityDto
             {
                 DayOfWeek = "Saturday",
@@ -165,8 +175,64 @@ namespace Sarvicny.Infrastructure.Data
                 workerData.Availabilities.Add(providerAvailability);
             }
 
+            //seed District data
+            var districtData = new District
+            {
+                DistrictName = "Giza",
+            };
 
+            if (!context.Districts.Any())
+            {
+                await context.Districts.AddAsync(districtData);
+                await context.SaveChangesAsync();
+            }
+
+            //seed ProviderDistrict data
+            var providerDistrictData = new ProviderDistrict
+            {
+                ProviderID = workerData.Id,
+                DistrictID = districtData.DistrictID
+            };
+
+            await context.ProviderDistricts.AddAsync(providerDistrictData);
             await context.SaveChangesAsync();
+
+
+            //Seed customer cart
+
+            var requestedServices = new RequestedService
+            {
+                Services = new List<Service> { childService }
+            };
+
+            await context.RequestedServices.AddAsync(requestedServices);
+            await context.SaveChangesAsync();
+
+            var slots = context.Slots.ToList();
+
+            var newRequest = new CartServiceRequest
+            {
+                RequestedDate = DateTime.Now.AddDays(1),
+                Provider = workerData,
+                ProviderID = workerData.Id,
+                RequestedServices = requestedServices,
+                providerDistrict = providerDistrictData,
+                Slot = slots.FirstOrDefault(),
+                SlotID = slots.FirstOrDefault().TimeSlotID,
+                CartID = customerData.Cart.CartID,
+                Cart = customerData.Cart,
+
+                Price = 100,
+                ProblemDescription = "this is problem discriotfdasfasf",
+                Address = "sample address",
+            };
+
+
+            context.CartServiceRequests.Add(newRequest);
+
+            customerData.Cart.CartServiceRequests.Add(newRequest);
+            await context.SaveChangesAsync();
+
         }
 
         private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)

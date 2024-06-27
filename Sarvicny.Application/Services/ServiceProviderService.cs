@@ -1,24 +1,18 @@
-﻿using System.Dynamic;
-using System.Linq;
-using MailKit.Search;
-using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
-using Sarvicny.Application.Services.Specifications.NewFolder;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
-using Sarvicny.Contracts.Dtos;
-using Sarvicny.Contracts.Payment;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
-using static Sarvicny.Domain.Entities.OrderDetails;
+using System.Dynamic;
 
 namespace Sarvicny.Application.Services
 {
@@ -32,7 +26,7 @@ namespace Sarvicny.Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IDistrictRepository _districtRepository;
         private readonly IEmailService _emailService;
-        
+
 
 
         private IOrderService _orderService;
@@ -145,7 +139,7 @@ namespace Sarvicny.Application.Services
                     Message = "Provider Not Found"
                 };
             }
-            if (provider.IsVerified == false || provider.IsBlocked==true)
+            if (provider.IsVerified == false || provider.IsBlocked == true)
             {
                 return new Response<object>()
 
@@ -206,9 +200,9 @@ namespace Sarvicny.Application.Services
                     Message = "Provider may be Not Verified, or blocked "
                 };
             }
-            var availabilities= provider.Availabilities;
-            var availabilty= availabilities.FirstOrDefault(a=>a.ProviderAvailabilityID == availabilityId);
-            if (availabilty ==null) 
+            var availabilities = provider.Availabilities;
+            var availabilty = availabilities.FirstOrDefault(a => a.ProviderAvailabilityID == availabilityId);
+            if (availabilty == null)
             {
                 return new Response<object>()
 
@@ -230,7 +224,7 @@ namespace Sarvicny.Application.Services
                 Payload = availabilty,
                 Message = "provider availability is removed successfully"
             };
-  
+
         }
 
         public async Task<Response<List<object>>> getAvailability(string workerId)
@@ -259,7 +253,7 @@ namespace Sarvicny.Application.Services
             }
             var availability = await _serviceProviderRepository.getAvailability(spec);
 
-           
+
 
             var avail = availability.Select(a => new
             {
@@ -298,7 +292,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-       
+
         public async Task<Response<object>> ApproveOrder(string orderId)
         {
 
@@ -339,7 +333,7 @@ namespace Sarvicny.Application.Services
                 originalSlot.isActive = false;
             }
 
-           
+
 
             DateTime tomorrow = DateTime.Today.AddDays(1);
             var paymentExpiryDate = tomorrow;
@@ -352,23 +346,23 @@ namespace Sarvicny.Application.Services
             order.ExpiryDate = null;
             _unitOfWork.Commit();
 
-            
+
             var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
 
 
             var customer = order.Customer;
 
-            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Approved", $"Thank you for using our system! Your Request is approved. \n\nOrder Details:\n{orderDetailsForCustomer}");
-            if (order.PaymentMethod == PaymentMethod.Paymob  || order.PaymentMethod == PaymentMethod.Paypal)
+            if (order.PaymentMethod == PaymentMethod.Paymob || order.PaymentMethod == PaymentMethod.Paypal)
             {
                 message.Body += $"\n\nPlease note: Proceed to pay on  the website or the application using {order.PaymentMethod} ,Notice that the ExpiryDate for payment is {paymentExpiryDate} ,otherwise your order will be canceled";
             }
-           
+
 
             _emailService.SendEmail(message);
-            
-            
+
+
 
             return new Response<object>()
 
@@ -440,7 +434,7 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
 
-            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Canceled", $"Unfortunately! Your Request is Canceled. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
 
@@ -511,10 +505,10 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
 
-            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Rejected", $"Unfortunately! Your Request is Rejected. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
-            
+
             return new Response<object>()
 
             {
@@ -543,9 +537,10 @@ namespace Sarvicny.Application.Services
             };
 
             var spec = new OrderWithDetailsSpecification();
-            var orders = await _orderRepository.GetAllOrdersForProvider(spec,workerId);
+            var orders = await _orderRepository.GetAllOrdersForProvider(spec, workerId);
 
-            if(orders.Count()== 0) {
+            if (orders.Count() == 0)
+            {
 
                 return new Response<List<object>>()
                 {
@@ -555,7 +550,7 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            
+
 
             List<object> result = new List<object>();
             foreach (var order in orders)
@@ -620,7 +615,7 @@ namespace Sarvicny.Application.Services
             };
 
 
-           
+
 
         }
 
@@ -875,7 +870,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-      
+
 
 
         public async Task<Response<object>> DisableDistrictFromProvider(string providerId, string districtID)
@@ -926,7 +921,7 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            if(providerDistrict.enable!=true)
+            if (providerDistrict.enable != true)
             {
                 return new Response<object>()
                 {
@@ -1044,7 +1039,7 @@ namespace Sarvicny.Application.Services
             //var spec = new BaseSpecifications<Provider>(p => p.Id == providerId);
 
             var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
-           
+
             if (serviceProvider == null)
             {
                 return new Response<List<object>>()
@@ -1113,9 +1108,9 @@ namespace Sarvicny.Application.Services
 
             }
             var paymentMethod = order.PaymentMethod;
-            if( paymentMethod == PaymentMethod.Cash)
+            if (paymentMethod == PaymentMethod.Cash)
             {
-                if(order.OrderStatus != OrderStatusEnum.Approved)
+                if (order.OrderStatus != OrderStatusEnum.Approved)
                 {
                     return new Response<object>()
 
@@ -1127,14 +1122,14 @@ namespace Sarvicny.Application.Services
 
                     };
                 }
-                
-               
+
+
 
 
             }
             else
             {
-                if(!order.IsPaid)
+                if (!order.IsPaid)
                 {
                     return new Response<object>()
 
@@ -1147,7 +1142,7 @@ namespace Sarvicny.Application.Services
                     };
                 }
             }
-            if(status == order.OrderStatus)
+            if (status == order.OrderStatus)
             {
 
                 return new Response<object>()
@@ -1175,7 +1170,7 @@ namespace Sarvicny.Application.Services
             order.OrderStatus = status;
             _unitOfWork.Commit();
 
-         
+
             return new Response<object>()
             {
                 isError = false,
@@ -1191,7 +1186,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> getProviderServicePrice(string providerId, string serviceId)
         {
             var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(providerId);
-        
+
             var provider = await _serviceProviderRepository.FindByIdAsync(spec);
 
             if (provider == null)
@@ -1213,11 +1208,11 @@ namespace Sarvicny.Application.Services
                     Status = "Error",
                     Message = "Failed",
                 };
-           
+
 
             var providerService =
             provider.ProviderServices.SingleOrDefault(ps => ps.ServiceID == service.ServiceID);
-            if (providerService == null) 
+            if (providerService == null)
                 return new Response<object>
                 {
                     isError = true,
@@ -1229,7 +1224,7 @@ namespace Sarvicny.Application.Services
             {
                 isError = false,
                 Errors = null,
-               Payload = providerService.Price,
+                Payload = providerService.Price,
                 Message = "success",
             };
         }

@@ -5,7 +5,7 @@ namespace Sarvicny.Application.Services.Abstractions
 {
     public interface IHandlePayment
     {
-        public Task<Response<object>> validateOrder(string orderId, bool transactionStatus, string transactionID,
+        public Task<Response<object>> validateOrder(string orderId, bool transactionStatus, string transactionID, string saleID,
             PaymentMethod paymentMethod);
     }
 }

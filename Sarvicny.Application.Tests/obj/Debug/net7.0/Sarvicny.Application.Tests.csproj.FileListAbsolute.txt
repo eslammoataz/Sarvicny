@@ -122,7 +122,6 @@ E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Ap
 E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.AssemblyInfoInputs.cache
 E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.AssemblyInfo.cs
 E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.csproj.CoreCompileInputs.cache
-E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.csproj.CopyComplete
 E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.dll
 E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\refint\Sarvicny.Application.Tests.dll
 E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.pdb
@@ -410,3 +409,15 @@ D:\Graduation Project\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\refin
 D:\Graduation Project\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.pdb
 D:\Graduation Project\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.genruntimeconfig.cache
 D:\Graduation Project\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\ref\Sarvicny.Application.Tests.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.AspNetCore.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.Extensions.Hosting.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.Extensions.Logging.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.Formatting.Compact.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.Settings.Configuration.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.Sinks.Console.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.Sinks.Debug.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\bin\Debug\net7.0\Serilog.Sinks.File.dll
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.Application.Tests.sourcelink.json
+E:\Github Repos\Sarvicny\Sarvicny.Application.Tests\obj\Debug\net7.0\Sarvicny.8311ABFF.Up2Date

@@ -13,7 +13,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task RejectOrder(Order orderId);
         Task CancelOrder(Order orderId);
 
-        
+
         Task<Order> AddOrder(Order order);
         Task<OrderDetails> AddOrderDetails(OrderDetails orderDetails);
         Task<RequestedSlot> AddRequestedSlot(RequestedSlot requestedSlot);
@@ -33,11 +33,11 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<List<Order>> RemoveAllPaymentExpiredOrders(ISpecifications<Order> spec);
 
-        Task ChangeOrderPaidStatus(Order order, string transactionId, PaymentMethod paymentMethod, bool transactionStatus);
+        Task ChangeOrderPaidStatus(Order order, string transactionId, string saleId, PaymentMethod paymentMethod, bool transactionStatus);
 
         Task<OrderRating> AddRating(OrderRating rate);
 
-        
+
 
 
 

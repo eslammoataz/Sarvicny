@@ -1,5 +1,5 @@
-﻿using MailKit.Search;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -44,7 +44,7 @@ public class AdminService : IAdminService
         _emailService = emailService;
         _orderService = orderService;
         _districtRepository = districtRepository;
-        _providerService = providerService; 
+        _providerService = providerService;
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -321,37 +321,37 @@ public class AdminService : IAdminService
 
     public async Task<Response<List<object>>> getAllApprovedOrders()
     {
-        
-            var spec = new OrderWithDetailsSpecification();
-            var approvedOrders = await _orderRepository.GetAllApprovedOrders(spec);
 
-            List<object> result = new List<object>();
-            foreach (var order in approvedOrders)
-            {
-                var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-                result.Add(orderDetails);
-            }
+        var spec = new OrderWithDetailsSpecification();
+        var approvedOrders = await _orderRepository.GetAllApprovedOrders(spec);
 
-            if (result.Count == 0)
-            {
-                return new Response<List<object>>()
-                {
-                    Status = "failed",
-                    Message = "No Approved Orders Found",
-                    Payload = null,
-                    isError = true
-                };
-            }
+        List<object> result = new List<object>();
+        foreach (var order in approvedOrders)
+        {
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            result.Add(orderDetails);
+        }
 
+        if (result.Count == 0)
+        {
             return new Response<List<object>>()
             {
-                Status = "Success",
-                Message = "Action Done Successfully",
-                Payload = result,
-                isError = false
+                Status = "failed",
+                Message = "No Approved Orders Found",
+                Payload = null,
+                isError = true
             };
-        
-       
+        }
+
+        return new Response<List<object>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = result,
+            isError = false
+        };
+
+
     }
 
     public async Task<Response<List<object>>> getAllRejectedOrders()
@@ -439,8 +439,8 @@ public class AdminService : IAdminService
         _unitOfWork.Commit();
 
 
-       
-        
+
+
         if (result.Count == 0)
         {
             return new Response<List<object>>()
@@ -662,7 +662,7 @@ public class AdminService : IAdminService
         if (filteredProviders.Count() == 0)
         {
 
-            var orderDetailsForCustomer = _orderService.GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
             _emailService.SendEmail(message);
 
@@ -678,23 +678,23 @@ public class AdminService : IAdminService
 
 
         }
-        List<object> providers = new List<object>();  
-        foreach(var matched in filteredProviders)
+        List<object> providers = new List<object>();
+        foreach (var matched in filteredProviders)
         {
 
-            var newfiltered = new 
-            { 
+            var newfiltered = new
+            {
                 providerId = matched.Id,
                 firstName = matched.FirstName,
-                lastName= matched.LastName,
-                
+                lastName = matched.LastName,
+
             };
             providers.Add(newfiltered);
 
         }
         var result = new
         {
-           orderDetails = orderDetails,
+            orderDetails = orderDetails,
             matchedProviders = provider,
 
         };

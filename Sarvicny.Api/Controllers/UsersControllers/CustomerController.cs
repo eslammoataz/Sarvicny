@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Application.Services;
+﻿using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Authentication.Registers;
 using Sarvicny.Contracts.Dtos;
@@ -65,6 +63,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
 
         }
+
         [HttpPost]
         [Route("removeFromCart")]
         public async Task<IActionResult> RemoveFromCart(string customerId, string requestId)
@@ -90,7 +89,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("orderCart")]
         public async Task<IActionResult> OrderCart(string customerId, PaymentMethod paymentMethod)
         {
-            var Response = await _customerService.OrderCart(customerId,paymentMethod);
+            var Response = await _customerService.OrderCart(customerId, paymentMethod);
 
             if (Response.isError)
             {
@@ -104,7 +103,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("AddProviderToFav")]
         public async Task<IActionResult> AddProviderToFav(string providerId, string customerId)
         {
-            var Response = await _customerService.AddProviderToFav( providerId, customerId);
+            var Response = await _customerService.AddProviderToFav(providerId, customerId);
 
             if (Response.isError)
             {
@@ -171,8 +170,17 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
-       
+        public async Task<IActionResult> Refund(string orderId)
+        {
+            var response = await _orderService.Refund(orderId);
 
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
+        }
 
         [HttpGet]
         [Route("getOrderStatus")]
@@ -202,9 +210,9 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
         [HttpPost]
         [Route("updateCustomerProfile/{customerId}")]
-        public async Task<IActionResult> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto ,string customerId)
+        public async Task<IActionResult> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto, string customerId)
         {
-            var response = await _customerService.UpdateCustomerProfile(updateCustomerDto,customerId);
+            var response = await _customerService.UpdateCustomerProfile(updateCustomerDto, customerId);
 
             if (response.isError)
             {
@@ -266,7 +274,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             }
             return Ok(response);
         }
-     
+
     }
 
 }

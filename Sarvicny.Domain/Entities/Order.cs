@@ -1,11 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Sarvicny.Domain.Entities.Users;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
-using Sarvicny.Domain.Entities.Avaliabilities;
-using Sarvicny.Domain.Entities.Users;
-using Sarvicny.Domain.Entities.Users.ServicProviders;
-using static Sarvicny.Domain.Entities.OrderDetails;
 
 namespace Sarvicny.Domain.Entities
 {
@@ -15,7 +12,7 @@ namespace Sarvicny.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string OrderID { get; set; }
         public string CustomerID { get; set; }
-        
+
         [ForeignKey("CustomerID")]
         public Customer Customer { get; set; }
 
@@ -38,11 +35,13 @@ namespace Sarvicny.Domain.Entities
 
         public DateTime? ExpiryDate { get; set; }
 
-        public DateTime? PaymentExpiryTime { get; set; }    
+        public DateTime? PaymentExpiryTime { get; set; }
 
         public bool IsPaid { get; set; }
 
         public string? TransactionID { get; set; }
+
+        public string? SaleID { get; set; }
 
         public PaymentMethod? PaymentMethod { get; set; }
 
@@ -108,7 +107,10 @@ namespace Sarvicny.Domain.Entities
         Completed = 11,
 
         [Description("Removed")]
-        Removed = 12
+        Removed = 12,
+
+        [Description("Refunded")]
+        Refunded = 13
 
     }
 

@@ -19,4 +19,6 @@ public interface IPaymobPaymentService
     public Dictionary<string, string> ExtractHmacData(string payloadString);
 
     public bool VerifyHmac(Dictionary<string, string> data, string receivedHmac);
+
+    public Task<Response<object>> Refund(Order order, decimal amount);
 }

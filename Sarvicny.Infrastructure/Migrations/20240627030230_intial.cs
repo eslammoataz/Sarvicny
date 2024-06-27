@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Sarvicny.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class fav : Migration
+    public partial class intial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -403,10 +403,10 @@ namespace Sarvicny.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Favourite",
+                name: "FavProviders",
                 columns: table => new
                 {
-                    FavId = table.Column<string>(type: "varchar(255)", nullable: false)
+                    favId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     customerId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -415,9 +415,9 @@ namespace Sarvicny.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Favourite", x => x.FavId);
+                    table.PrimaryKey("PK_FavProviders", x => x.favId);
                     table.ForeignKey(
-                        name: "FK_Favourite_Customers_customerId",
+                        name: "FK_FavProviders_Customers_customerId",
                         column: x => x.customerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
@@ -836,8 +836,8 @@ namespace Sarvicny.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Favourite_customerId",
-                table: "Favourite",
+                name: "IX_FavProviders_customerId",
+                table: "FavProviders",
                 column: "customerId");
 
             migrationBuilder.CreateIndex(
@@ -1019,7 +1019,7 @@ namespace Sarvicny.Infrastructure.Migrations
                 name: "Consultants");
 
             migrationBuilder.DropTable(
-                name: "Favourite");
+                name: "FavProviders");
 
             migrationBuilder.DropTable(
                 name: "OrderStatuses");

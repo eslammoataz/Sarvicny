@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts;
@@ -304,12 +305,14 @@ namespace Sarvicny.Application.Services.Paypal
 
                 // Extract invoice number
                 string invoiceNumber = executePaymentResponse?.transactions?[0]?.invoice_number?.Value.ToString();
+                string saleId = executePaymentResponse?.transactions?[0]?.related_resources?[0]?.sale?.id?.Value.ToString();
+                _logger.LogInformation($"Sale ID: {saleId}");
 
                 // Extract custom attribute
                 string orderId = executePaymentResponse?.transactions?[0]?.custom?.Value.ToString();
 
 
-                var handlePaymentResponse = await _handlePayment.validateOrder(orderId, true, invoiceNumber, PaymentMethod.Paypal);
+                var handlePaymentResponse = await _handlePayment.validateOrder(orderId, true, invoiceNumber, saleId, PaymentMethod.Paypal);
 
                 return handlePaymentResponse;
             }
@@ -385,6 +388,47 @@ namespace Sarvicny.Application.Services.Paypal
             {
                 throw new Exception("Error generating invoice number from PayPal API: " + response.ErrorMessage);
             }
+        }
+
+        public async Task<Response<object>> Refund(Order order, decimal amount)
+        {
+            string refundUrlFormat = "https://api.sandbox.paypal.com/v1/payments/sale/{0}/refund";
+
+            var accessToken = await GetAuthToken();
+
+            var refundUrl = string.Format(refundUrlFormat, order.SaleID);
+            var client = new RestClient(refundUrl);
+            var request = new RestRequest(refundUrl, Method.Post);
+
+            request.AddHeader("Authorization", "Bearer " + accessToken);
+            request.AddHeader("Content-Type", "application/json");
+
+            var refundRequest = new
+            {
+                amount = new
+                {
+                    total = amount.ToString("F2"),
+                    currency = "USD"
+                }
+            };
+
+            request.AddJsonBody(refundRequest);
+
+            var response = await client.ExecuteAsync(request);
+            if (!response.IsSuccessful)
+            {
+                throw new Exception("Refund failed: " + response.Content);
+            }
+
+            return new Response<object>()
+            {
+                Status = "success",
+                Message = "Refund successful",
+                isError = false,
+                Payload = JObject.Parse(response.Content)
+            };
+
+
         }
     }
 }

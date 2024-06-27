@@ -27,7 +27,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> PayOrder(Order order, PaymentMethod paymentMethod)
         {
             _logger.LogInformation("PaymentService.PayOrder");
-            if (order.PaymentExpiryTime <= DateTime.UtcNow&& order.PaymentExpiryTime !=null)
+            if (order.PaymentExpiryTime <= DateTime.UtcNow && order.PaymentExpiryTime != null)
             {
                 order.OrderStatus = OrderStatusEnum.Removed;
                 var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
@@ -37,7 +37,7 @@ namespace Sarvicny.Application.Services
                 }
 
                 _unitOfWork.Commit();
-                
+
 
                 return new Response<object>()
                 {
@@ -46,7 +46,7 @@ namespace Sarvicny.Application.Services
                     Payload = null
                 };
             }
-            
+
             // Check if paymentMethod is a valid enum value
             if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethod))
             {
@@ -66,8 +66,8 @@ namespace Sarvicny.Application.Services
             {
                 return await _paypalPaymentService.Pay(order);
             }
-           
-            
+
+
 
             return new Response<object>()
             {
@@ -77,6 +77,27 @@ namespace Sarvicny.Application.Services
                 Payload = null
             };
 
+        }
+
+        public async Task<Response<object>> RefundOrder(Order order, decimal amount)
+        {
+            if (order.PaymentMethod == PaymentMethod.Paymob)
+            {
+                return await _paymobPaymentService.Refund(order, amount);
+            }
+            else if (order.PaymentMethod == PaymentMethod.Paypal)
+            {
+                return await _paypalPaymentService.Refund(order, amount);
+            }
+            else
+            {
+                return new Response<object>()
+                {
+                    isError = true,
+                    Message = "Invalid Payment Method",
+                    Payload = null
+                };
+            }
         }
     }
 }
