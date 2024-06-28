@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
-using Sarvicny.Domain.Entities;
 
 namespace Sarvicny.Api.Controllers.UsersControllers;
 
@@ -168,6 +166,18 @@ public class AdminController : ControllerBase
 
     }
 
+    [HttpGet("customerOrders/{customerId}/status/rejected-canceled-expired")]
+    public async Task<IActionResult> GetCustomerOrdersByStatus(string customerId)
+    {
+        var response = await _adminService.GetCustomerOrdersByStatus(customerId);
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+        return Ok(response);
+    }
+
     [HttpGet("RemoveAllPaymentExpiredOrders")]
     public async Task<IActionResult> RemoveAllPaymentExpiredOrders()
     {
@@ -182,8 +192,6 @@ public class AdminController : ControllerBase
         return Ok(response);
 
     }
-
-
 
 
     [HttpPost("BlockServiceProvider")]
@@ -211,19 +219,5 @@ public class AdminController : ControllerBase
 
     }
 
-    [HttpPost]
-    [Route("ReAssignOrder/{orderId}")]
-    public async Task<IActionResult> ReAssignOrder(string orderId)
-    {
-        var response = await _adminService.ReAssignOrder(orderId);
 
-        if (response.isError)
-        {
-            return NotFound(response);
-        }
-
-
-        return Ok(response);
-
-    }
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
+using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Application.Services.Specifications.DistrictSpecification;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
@@ -25,6 +25,7 @@ public class AdminService : IAdminService
     private readonly IEmailService _emailService;
     private readonly IOrderRepository _orderRepository;
     private readonly IDistrictRepository _districtRepository;
+    private readonly ICustomerRepository _customerRepository;
 
 
     private readonly IUnitOfWork _unitOfWork;
@@ -32,7 +33,7 @@ public class AdminService : IAdminService
     private readonly IOrderService _orderService;
     private readonly IServiceProviderService _providerService;
 
-    public AdminService(UserManager<User> userManager, IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService, IOrderService orderService, IDistrictRepository districtRepository, IServiceProviderService providerService)
+    public AdminService(UserManager<User> userManager, IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService, IOrderService orderService, IDistrictRepository districtRepository, IServiceProviderService providerService, ICustomerRepository customerRepository)
     {
         _userManager = userManager;
         _serviceRepository = serviceRepository;
@@ -45,6 +46,7 @@ public class AdminService : IAdminService
         _orderService = orderService;
         _districtRepository = districtRepository;
         _providerService = providerService;
+        _customerRepository = customerRepository;
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -617,96 +619,51 @@ public class AdminService : IAdminService
 
     }
 
-    public async Task<Response<object>> ReAssignOrder(string orderId)
+
+    public async Task<Response<object>> GetCustomerOrdersByStatus(string customerId)
     {
-        var spec = new OrderWithDetailsSpecification(orderId);
-        var order = await _orderRepository.GetOrder(spec);
-        if (order == null)
+        var customer = await _customerRepository.GetCustomerById(new CustomerWithOrdersSpecification(customerId));
+        if (customer == null)
         {
             return new Response<object>()
             {
                 Status = "failed",
-                Message = "Order Not Found",
+                Message = "Customer Not Found",
                 Payload = null,
                 isError = true
-
             };
-
         }
-        var requestedSlot = order.OrderDetails.RequestedSlot;
-        var services = order.OrderDetails.RequestedServices.Services;
-        List<string> servicesIds = new List<string>();
-        foreach (var service in services)
+        var orders = customer.Orders.Where(o => o.OrderStatus == OrderStatusEnum.Rejected ||
+                                              o.OrderStatus == OrderStatusEnum.Canceled);
+        // o.ExpiryDate != null && o.ExpiryDate < DateTime.UtcNow 
+
+        List<object> result = new List<object>();
+        foreach (var order in orders)
         {
-            servicesIds.Add(service.ServiceID);
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            result.Add(orderDetails);
         }
 
-        var startTime = requestedSlot.StartTime;
-        var dayOfweek = requestedSlot.DayOfWeek;
-        var district = order.OrderDetails.providerDistrict.DistrictID;
-        var customer = order.Customer;
 
-        var provider = order.OrderDetails.ProviderID;
-
-        var matchedProviders = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
-
-        var filteredProviders = matchedProviders.Where(p => p.Id != provider).ToList();
-        order.OrderStatus = OrderStatusEnum.Removed;
-
-        _unitOfWork.Commit();
-
-
-        var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(orderId);
-
-
-        if (filteredProviders.Count() == 0)
+        if (result.Count == 0)
         {
-
-            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
-            var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
-            _emailService.SendEmail(message);
-
             return new Response<object>()
             {
-                Status = "Success",
-                Message = " No Matched providers is Found (orderStatus = removed & send email successfully)",
+                Status = "failed",
+                Message = "No Orders Found",
                 Payload = null,
-                isError = false
-
+                isError = true
             };
-
-
-
         }
-        List<object> providers = new List<object>();
-        foreach (var matched in filteredProviders)
-        {
 
-            var newfiltered = new
-            {
-                providerId = matched.Id,
-                firstName = matched.FirstName,
-                lastName = matched.LastName,
-
-            };
-            providers.Add(newfiltered);
-
-        }
-        var result = new
-        {
-            orderDetails = orderDetails,
-            matchedProviders = provider,
-
-        };
-        var message2 = new EmailDto(customer.Email!, "Sarvicny:Matched Providers are Found", " New Recmmondations are found !! \n Please Select new provider from our recommendations.");
-        _emailService.SendEmail(message2);
         return new Response<object>()
         {
             Status = "Success",
-            Message = "Matched providers are Found",
+            Message = "Action Done Successfully",
             Payload = result,
             isError = false
         };
-    }
 
+
+    }
 }

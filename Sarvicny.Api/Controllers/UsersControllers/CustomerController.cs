@@ -277,6 +277,21 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
+        [HttpPost]
+        [Route("ReAssignOrder/{orderId}")]
+        public async Task<IActionResult> ReAssignOrder(string orderId)
+        {
+            var response = await _customerService.ReAssignOrder(orderId);
+
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+
+
+            return Ok(response);
+
+        }
     }
 
 }

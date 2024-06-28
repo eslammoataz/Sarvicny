@@ -25,12 +25,9 @@ public interface IAdminService
 
     Task<Response<bool>> BlockServiceProvider(string workerId);
     Task<Response<bool>> UnBlockServiceProvider(string workerId);
-    Task<Response<List<object>>>GetAllAvailableDistricts();
-   
+    Task<Response<List<object>>> GetAllAvailableDistricts();
+
 
     Task<Response<District>> AddDistrict(District district);
-
-    Task<Response<object>> ReAssignOrder(string orderId);
-
-
+    Task<Response<object>> GetCustomerOrdersByStatus(string customerId);
 }

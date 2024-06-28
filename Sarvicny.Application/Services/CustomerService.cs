@@ -1,5 +1,7 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Sarvicny.Application.Common.Helper;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.CartSpecifications;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
@@ -9,6 +11,7 @@ using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
+using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
@@ -29,6 +32,7 @@ namespace Sarvicny.Application.Services
         private readonly IServiceProviderService _serviceProvider;
         private readonly IDistrictRepository _districtRepository;
         private readonly IAdminService _adminService;
+        private readonly IEmailService _emailService;
 
 
 
@@ -36,7 +40,7 @@ namespace Sarvicny.Application.Services
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
             IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository,
             IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService,
-            IDistrictRepository districtRepository, IAdminService adminService)
+            IDistrictRepository districtRepository, IAdminService adminService, IEmailService emailService)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -50,6 +54,7 @@ namespace Sarvicny.Application.Services
             _districtRepository = districtRepository;
             _paymentService = paymentService;
             _adminService = adminService;
+            _emailService = emailService;
         }
 
 
@@ -1120,5 +1125,98 @@ namespace Sarvicny.Application.Services
 
             return response;
         }
+
+        public async Task<Response<object>> ReAssignOrder(string orderId)
+        {
+            var spec = new OrderWithDetailsSpecification(orderId);
+            var order = await _orderRepository.GetOrder(spec);
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+
+                };
+
+            }
+            var requestedSlot = order.OrderDetails.RequestedSlot;
+            var services = order.OrderDetails.RequestedServices.Services;
+            List<string> servicesIds = new List<string>();
+            foreach (var service in services)
+            {
+                servicesIds.Add(service.ServiceID);
+            }
+
+            var startTime = requestedSlot.StartTime;
+            var dayOfweek = requestedSlot.DayOfWeek;
+            var district = order.OrderDetails.providerDistrict.DistrictID;
+            var customer = order.Customer;
+
+            var provider = order.OrderDetails.ProviderID;
+
+            var matchedProviders = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
+
+            var filteredProviders = matchedProviders.Where(p => p.Id != provider).ToList();
+            order.OrderStatus = OrderStatusEnum.Removed;
+
+            _unitOfWork.Commit();
+
+
+            var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(orderId);
+
+
+            if (filteredProviders.Count() == 0)
+            {
+
+                var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
+                var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
+                _emailService.SendEmail(message);
+
+                return new Response<object>()
+                {
+                    Status = "Success",
+                    Message = " No Matched providers is Found (orderStatus = removed & send email successfully)",
+                    Payload = null,
+                    isError = false
+
+                };
+
+
+
+            }
+            List<object> providers = new List<object>();
+            foreach (var matched in filteredProviders)
+            {
+
+                var newfiltered = new
+                {
+                    providerId = matched.Id,
+                    firstName = matched.FirstName,
+                    lastName = matched.LastName,
+
+                };
+                providers.Add(newfiltered);
+
+            }
+            var result = new
+            {
+                orderDetails = orderDetails,
+                matchedProviders = provider,
+
+            };
+            var message2 = new EmailDto(customer.Email!, "Sarvicny:Matched Providers are Found", " New Recmmondations are found !! \n Please Select new provider from our recommendations.");
+            _emailService.SendEmail(message2);
+            return new Response<object>()
+            {
+                Status = "Success",
+                Message = "Matched providers are Found",
+                Payload = result,
+                isError = false
+            };
+        }
+
     }
 }
