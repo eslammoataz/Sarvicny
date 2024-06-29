@@ -33,16 +33,11 @@ namespace Sarvicny.Domain.Entities
 
         public DateTime OrderDate { get; set; }
 
-        public DateTime? PaymentExpiryTime { get; set; }
-
         public bool IsPaid { get; set; }
 
-        public string? TransactionID { get; set; }
+        public string TransactionPaymentId { get; set; }
 
-        public string? SaleID { get; set; }
-
-        public PaymentMethod? PaymentMethod { get; set; }
-
+        public TransactionPayment TransactionPayment { get; set; }
 
         [NotMapped]
         public OrderStatusEnum OrderStatus { get; set; } = OrderStatusEnum.Pending;
@@ -74,7 +69,7 @@ namespace Sarvicny.Domain.Entities
         [Description("Pending")] //intial state
         Pending = 1,
 
-        [Description("Paid")]  
+        [Description("Paid")]
         Paid = 2,
 
         [Description("Start")]
@@ -102,7 +97,7 @@ namespace Sarvicny.Domain.Entities
         [Description("CanceledByProvider")]
         CanceledByProvider = 10,
 
-        [Description("ReAssigned")] 
+        [Description("ReAssigned")]
         ReAssigned = 11,
 
         [Description("Canceled")] //by customer

@@ -395,7 +395,8 @@ namespace Sarvicny.Application.Services.Paypal
 
             var accessToken = await GetAuthToken();
 
-            var refundUrl = string.Format(refundUrlFormat, order.SaleID);
+            //var refundUrl = string.Format(refundUrlFormat, order.SaleID);
+            var refundUrl = string.Format(refundUrlFormat, "1");
             var client = new RestClient(refundUrl);
             var request = new RestRequest(refundUrl, Method.Post);
 

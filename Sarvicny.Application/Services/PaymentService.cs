@@ -27,7 +27,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> PayOrder(Order order, PaymentMethod paymentMethod)
         {
             _logger.LogInformation("PaymentService.PayOrder");
-            
+
             // Check if paymentMethod is a valid enum value
             if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethod))
             {
@@ -63,27 +63,29 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> RefundOrder(Order order, decimal amount)
         {
             var response = new Response<object>();
-            if (order.PaymentMethod == PaymentMethod.Paymob)
-            {
-                response = await _paymobPaymentService.Refund(order, amount);
-            }
-            else if (order.PaymentMethod == PaymentMethod.Paypal)
-            {
-                response = await _paypalPaymentService.Refund(order, amount);
-            }
-            else
-            {
-                response = new Response<object>()
-                {
-                    isError = true,
-                    Message = "Invalid Payment Method",
-                    Payload = null
-                };
-            }
-            if (!response.isError)
-            {
-                order.OrderStatus = OrderStatusEnum.Refunded;
-            }
+            //    if (order.PaymentMethod == PaymentMethod.Paymob)
+            //    {
+            //        response = await _paymobPaymentService.Refund(order, amount);
+            //    }
+            //    else if (order.PaymentMethod == PaymentMethod.Paypal)
+            //    {
+            //        response = await _paypalPaymentService.Refund(order, amount);
+            //    }
+            //    else
+            //    {
+            //        response = new Response<object>()
+            //        {
+            //            isError = true,
+            //            Message = "Invalid Payment Method",
+            //            Payload = null
+            //        };
+            //    }
+            //    if (!response.isError)
+            //    {
+            //        order.OrderStatus = OrderStatusEnum.Refunded;
+            //    }
+            //    return response;
+
             return response;
         }
     }

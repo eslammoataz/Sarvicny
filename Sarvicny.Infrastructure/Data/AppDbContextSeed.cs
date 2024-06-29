@@ -46,16 +46,32 @@ namespace Sarvicny.Infrastructure.Data
 
         {
             // Seed Worker data
-            var workerData = new Worker
+            var workerData_1 = new Worker
             {
                 UserName = "WORKER",
-                Email = "eslamelmoataz7@gmail.com",
+                Email = "eslamelmoataz@gmail.com",
                 FirstName = "WORKER",
                 LastName = "WORKER",
                 PhoneNumber = "WORKER",
                 NationalID = "WORKER",
                 CriminalRecord = "WORKER",
                 IsVerified = true,
+                Availabilities = new List<ProviderAvailability>()
+
+            };
+
+            var workerData_2 = new Worker
+            {
+                UserName = "WORKER2",
+                Email = "eslamelmoataz@gmail.com",
+                FirstName = "WORKER2",
+                LastName = "WORKER2",
+                PhoneNumber = "WORKER2",
+                NationalID = "WORKER2",
+                CriminalRecord = "WORKER2",
+                IsVerified = true,
+                Availabilities = new List<ProviderAvailability>()
+
             };
 
 
@@ -72,9 +88,13 @@ namespace Sarvicny.Infrastructure.Data
 
             if (!context.Workers.Any())
             {
-                await userManager.CreateAsync(workerData, "Worker123#");
-                await userManager.AddToRoleAsync(workerData, "ServiceProvider");
-                await userManager.AddClaimAsync(workerData, new Claim("UserType", "Worker"));
+                await userManager.CreateAsync(workerData_1, "Worker123#");
+                await userManager.AddToRoleAsync(workerData_1, "ServiceProvider");
+                await userManager.AddClaimAsync(workerData_1, new Claim("UserType", "Worker"));
+
+                await userManager.CreateAsync(workerData_2, "Worker123#");
+                await userManager.AddToRoleAsync(workerData_2, "ServiceProvider");
+                await userManager.AddClaimAsync(workerData_2, new Claim("UserType", "Worker"));
 
             }
 
@@ -117,41 +137,108 @@ namespace Sarvicny.Infrastructure.Data
                 Description = "This is a test service.",
             };
 
-            Service childService = null;
+            Service childService_1 = null;
+            Service childService_2 = null;
 
             if (!context.Services.Any())
             {
-                if (context.Criterias.Any())
-                    serviceData.CriteriaID = context.Criterias.FirstOrDefault()?.CriteriaID;
-
+                // Add parent service
                 await context.Services.AddAsync(serviceData);
-
-                childService = new Service
-                {
-                    ServiceName = "child service",
-                    Description = "This is a test child service.",
-                    ParentServiceID = serviceData.ServiceID,
-                };
-
-                await context.Services.AddAsync(childService);
-
             }
 
 
+            // Check if child services need to be added
+            if (!context.Services.Any(s => s.ParentServiceID == serviceData.ServiceID))
+            {
+                // Create child services
+                childService_1 = new Service
+                {
+                    ServiceName = "child service 1",
+                    Description = "This is a test child service 1.",
+                    ParentServiceID = serviceData.ServiceID, // Assign parent service ID
+                };
+
+                childService_2 = new Service
+                {
+                    ServiceName = "child service 2",
+                    Description = "This is a test child service 2.",
+                    ParentServiceID = serviceData.ServiceID, // Assign parent service ID
+                };
+
+                // Add child services
+                await context.Services.AddAsync(childService_1);
+                await context.Services.AddAsync(childService_2);
+            }
+
+            // Save changes to ensure parent service ID is generated
+            await context.SaveChangesAsync();
+
+            // Check if ProviderServices need to be added
             if (!context.ProviderServices.Any())
             {
-                var providerService = new ProviderService()
+                // Add provider services
+                var providerService_1_forWorker1 = new ProviderService()
                 {
-                    ProviderID = workerData.Id,
-                    ServiceID = serviceData.ServiceID,
+                    ProviderID = workerData_1.Id,
+                    ServiceID = childService_1.ServiceID, // Use child service ID
                     Price = 99.99M,
-                    Provider = workerData,
-                    Service = childService
+                    Provider = workerData_1,
+                    Service = childService_1,
                 };
-                await context.ProviderServices.AddAsync(providerService);
 
-                serviceData.ProviderServices.Add(providerService);
-                workerData.ProviderServices.Add(providerService);
+                var providerService_2_forWorker1 = new ProviderService()
+                {
+                    ProviderID = workerData_1.Id,
+                    ServiceID = childService_2.ServiceID, // Use child service ID
+                    Price = 199.99M,
+                    Provider = workerData_1,
+                    Service = childService_2,
+                };
+
+
+                var providerService_1_forWorker2 = new ProviderService()
+                {
+                    ProviderID = workerData_2.Id,
+                    ServiceID = childService_1.ServiceID, // Use child service ID
+                    Price = 99.99M,
+                    Provider = workerData_2,
+                    Service = childService_1,
+                };
+
+                var providerService_2_forWorker2 = new ProviderService()
+                {
+                    ProviderID = workerData_2.Id,
+                    ServiceID = childService_2.ServiceID, // Use child service ID
+                    Price = 199.99M,
+                    Provider = workerData_2,
+                    Service = childService_2,
+                };
+
+
+
+
+                // Add provider services to context
+                await context.ProviderServices.AddAsync(providerService_1_forWorker1);
+                await context.ProviderServices.AddAsync(providerService_2_forWorker1);
+
+                await context.ProviderServices.AddAsync(providerService_1_forWorker2);
+                await context.ProviderServices.AddAsync(providerService_2_forWorker2);
+
+                // Associate provider services with serviceData and workerData
+                childService_1.ProviderServices.Add(providerService_1_forWorker1);
+                workerData_1.ProviderServices.Add(providerService_1_forWorker1);
+
+                childService_1.ProviderServices.Add(providerService_1_forWorker2);
+                workerData_2.ProviderServices.Add(providerService_1_forWorker2);
+
+                childService_2.ProviderServices.Add(providerService_2_forWorker1);
+                workerData_1.ProviderServices.Add(providerService_2_forWorker1);
+
+                childService_2.ProviderServices.Add(providerService_2_forWorker2);
+                workerData_2.ProviderServices.Add(providerService_2_forWorker2);
+
+                // Save changes to persist associations
+                await context.SaveChangesAsync();
             }
 
             //seed provider availability 
@@ -169,10 +256,16 @@ namespace Sarvicny.Infrastructure.Data
                 }
             };
 
+            ProviderAvailability providerAvailability_Worker1 = null;
+            ProviderAvailability providerAvailability_Worker2 = null;
+
             if (!context.ProviderAvailabilities.Any())
             {
-                var providerAvailability = await serviceProviderRepository.AddAvailability(avail, new BaseSpecifications<Provider>());
-                workerData.Availabilities.Add(providerAvailability);
+                providerAvailability_Worker1 = await serviceProviderRepository.AddAvailability(avail, new BaseSpecifications<Provider>());
+                providerAvailability_Worker2 = await serviceProviderRepository.AddAvailability(avail, new BaseSpecifications<Provider>());
+
+                workerData_1.Availabilities.Add(providerAvailability_Worker1);
+                workerData_2.Availabilities.Add(providerAvailability_Worker2);
             }
 
             //seed District data
@@ -188,13 +281,21 @@ namespace Sarvicny.Infrastructure.Data
             }
 
             //seed ProviderDistrict data
-            var providerDistrictData = new ProviderDistrict
+            var providerDistrictData_worker1 = new ProviderDistrict
             {
-                ProviderID = workerData.Id,
+                ProviderID = workerData_1.Id,
                 DistrictID = districtData.DistrictID
             };
 
-            await context.ProviderDistricts.AddAsync(providerDistrictData);
+            var providerDistrictData_worker2 = new ProviderDistrict
+            {
+                ProviderID = workerData_2.Id,
+                DistrictID = districtData.DistrictID
+            };
+
+            await context.ProviderDistricts.AddAsync(providerDistrictData_worker1);
+            await context.ProviderDistricts.AddAsync(providerDistrictData_worker2);
+
             await context.SaveChangesAsync();
 
 
@@ -202,28 +303,30 @@ namespace Sarvicny.Infrastructure.Data
 
             var requestedServices = new RequestedService
             {
-                Services = new List<Service> { childService }
+                Services = new List<Service> { childService_1, childService_2 }
             };
 
             await context.RequestedServices.AddAsync(requestedServices);
             await context.SaveChangesAsync();
 
-            var slots = context.Slots.ToList();
+            var slots = context.Slots.Where(s => s.ProviderAvailabilityID == providerAvailability_Worker1.ProviderAvailabilityID).ToList();
+
+            var totalPrice = context.ProviderServices.Sum(ps => ps.Price);
 
             var newRequest = new CartServiceRequest
             {
                 RequestedDate = DateTime.Now.AddDays(1),
-                Provider = workerData,
-                ProviderID = workerData.Id,
+                Provider = workerData_1,
+                ProviderID = workerData_1.Id,
                 RequestedServices = requestedServices,
-                providerDistrict = providerDistrictData,
+                providerDistrict = providerDistrictData_worker1,
                 Slot = slots.FirstOrDefault(),
                 SlotID = slots.FirstOrDefault().TimeSlotID,
                 CartID = customerData.Cart.CartID,
                 Cart = customerData.Cart,
 
-                Price = 100,
-                ProblemDescription = "this is problem discriotfdasfasf",
+                Price = totalPrice,
+                ProblemDescription = "this is problem discriotfdasfasf worker 1",
                 Address = "sample address",
             };
 
@@ -232,6 +335,32 @@ namespace Sarvicny.Infrastructure.Data
 
             customerData.Cart.CartServiceRequests.Add(newRequest);
             await context.SaveChangesAsync();
+
+
+            var slots_2 = context.Slots.Where(s => s.ProviderAvailabilityID == providerAvailability_Worker2.ProviderAvailabilityID).ToList();
+            var newRequest_2 = new CartServiceRequest
+            {
+                RequestedDate = DateTime.Now.AddDays(1),
+                Provider = workerData_2,
+                ProviderID = workerData_2.Id,
+                RequestedServices = requestedServices,
+                providerDistrict = providerDistrictData_worker2,
+                Slot = slots_2.FirstOrDefault(),
+                SlotID = slots_2.FirstOrDefault().TimeSlotID,
+                CartID = customerData.Cart.CartID,
+                Cart = customerData.Cart,
+
+                Price = totalPrice,
+                ProblemDescription = "this is problem discriotfdasfasf worker 2",
+                Address = "sample address",
+            };
+
+
+            context.CartServiceRequests.Add(newRequest_2);
+
+            customerData.Cart.CartServiceRequests.Add(newRequest_2);
+            await context.SaveChangesAsync();
+
 
         }
 

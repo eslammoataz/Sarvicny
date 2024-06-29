@@ -1,10 +1,10 @@
-﻿using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Paymob;
 using Sarvicny.Application.Services.Paypal;
+using System.Text.Json.Serialization;
 
 namespace Sarvicny.Application;
 

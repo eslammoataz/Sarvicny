@@ -90,14 +90,14 @@ namespace Sarvicny.Infrastructure.Persistence
         {
 
             var pendingStatus = OrderStatusEnum.Pending.ToString();
-            var paidStatus= OrderStatusEnum.Paid.ToString();
+            var paidStatus = OrderStatusEnum.Paid.ToString();
             var orders = await ApplySpecification(spec)
                 .Where(or => or.OrderDetails.ProviderID == providerId)
                 .OrderByDescending(or => or.OrderDate)
 
                 .ToListAsync();
 
-           var result= orders.Where(or => or.OrderStatusString == pendingStatus || or.OrderStatusString == paidStatus);
+            var result = orders.Where(or => or.OrderStatusString == pendingStatus || or.OrderStatusString == paidStatus);
             return orders;
 
         }
@@ -120,7 +120,7 @@ namespace Sarvicny.Infrastructure.Persistence
             var paid = OrderStatusEnum.Paid.ToString();
 
             var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatusString == PendingStatus  || or.OrderStatusString== paid)
+                .Where(or => or.OrderStatusString == PendingStatus || or.OrderStatusString == paid)
                 .OrderByDescending(or => or.OrderDate)
                 .ToListAsync();
             return orders;
@@ -149,9 +149,9 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task ChangeOrderPaidStatus(Order order, string transactionId, string saleId, PaymentMethod PaymentMethod, bool TransactionStatus)
         {
             order.IsPaid = TransactionStatus;
-            order.TransactionID = transactionId;
-            order.PaymentMethod = PaymentMethod;
-            order.SaleID = saleId;
+            //order.TransactionID = transactionId;
+            //order.PaymentMethod = PaymentMethod;
+            //order.SaleID = saleId;
             return;
         }
 
@@ -187,13 +187,13 @@ namespace Sarvicny.Infrastructure.Persistence
         //    return orders;
         //}
 
-        public async Task<List<Order>> getAllExpiredOrders(ISpecifications<Order> spec) 
+        public async Task<List<Order>> getAllExpiredOrders(ISpecifications<Order> spec)
         {
 
-           
+
             var completed = OrderStatusEnum.Completed.ToString();
             var orders = await ApplySpecification(spec)
-                    .Where(or => or.OrderStatusString != completed  && or.OrderDetails.RequestedSlot.RequestedDay < DateTime.Today )
+                    .Where(or => or.OrderStatusString != completed && or.OrderDetails.RequestedSlot.RequestedDay < DateTime.Today)
                     .OrderByDescending(or => or.OrderDate)
                     .ToListAsync();
             return orders;
@@ -205,11 +205,12 @@ namespace Sarvicny.Infrastructure.Persistence
 
 
             var removed = OrderStatusEnum.Removed.ToString();
-            var orders = await ApplySpecification(spec)
-                    .Where(or => or.OrderStatusString != removed && or.PaymentExpiryTime != null && or.PaymentExpiryTime < DateTime.UtcNow)
-                    .OrderByDescending(or => or.OrderDate)
-                    .ToListAsync();
-            return orders;
+            //var orders = await ApplySpecification(spec)
+            //        .Where(or => or.OrderStatusString != removed && or.PaymentExpiryTime != null && or.PaymentExpiryTime < DateTime.UtcNow)
+            //        .OrderByDescending(or => or.OrderDate)
+            //        .ToListAsync();
+
+            return null;
 
 
         }

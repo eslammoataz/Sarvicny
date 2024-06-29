@@ -72,7 +72,7 @@ namespace Sarvicny.Application.Services
                 order.OrderStatus = OrderStatusEnum.Paid;
 
 
-                order.PaymentExpiryTime = null;
+                //order.PaymentExpiryTime = null;
 
                 // change order paid status
                 await _orderRepository.ChangeOrderPaidStatus(order, transactionID, saleId, paymentMethod, transactionStatus);

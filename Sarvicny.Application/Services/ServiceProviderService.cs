@@ -97,7 +97,7 @@ namespace Sarvicny.Application.Services
                 Service = service,
                 ServiceID = serviceId,
                 Price = price,
-                isVerified= false
+                isVerified = false
             };
 
 
@@ -147,17 +147,17 @@ namespace Sarvicny.Application.Services
                 };
             }
             var providerAvailability = provider.Availabilities.FirstOrDefault(a => a.DayOfWeek == availabilityDto.DayOfWeek);
-           
-          
+
+
             var newAvailiabilities = await _serviceProviderRepository.AddAvailability(availabilityDto, spec);
-            var newSlots=newAvailiabilities.Slots;
+            var newSlots = newAvailiabilities.Slots;
             if (providerAvailability != null)
             {
 
                 var providerSlots = providerAvailability.Slots.ToList();
                 foreach (var slot in providerSlots)
                 {
-                    if (newSlots.Any(s=>s.StartTime== slot.StartTime))
+                    if (newSlots.Any(s => s.StartTime == slot.StartTime))
                     {
                         await _serviceProviderRepository.RemoveAvailability(newAvailiabilities);
                         return new Response<object>()
@@ -417,7 +417,7 @@ namespace Sarvicny.Application.Services
 
             }
 
-            if (order.OrderStatus !=  OrderStatusEnum.Paid && order.OrderStatus != OrderStatusEnum.Pending)
+            if (order.OrderStatus != OrderStatusEnum.Paid && order.OrderStatus != OrderStatusEnum.Pending)
             {
                 return new Response<object>()
                 {
@@ -436,7 +436,7 @@ namespace Sarvicny.Application.Services
             {
                 originalSlot.isActive = true;
             }
-            
+
 
             _unitOfWork.Commit();
 
@@ -1130,21 +1130,21 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            var paymentMethod = order.PaymentMethod;
-            if (paymentMethod != PaymentMethod.Cash && !order.IsPaid)
-            {
-                return new Response<object>()
+            //var paymentMethod = order.PaymentMethod;
+            //if (paymentMethod != PaymentMethod.Cash && !order.IsPaid)
+            //{
+            //    return new Response<object>()
 
-                {
-                    isError = true,
-                    Payload = null,
-                    Message = "Order is't paid",
-                    Errors = new List<string>() { "Error with order" },
+            //    {
+            //        isError = true,
+            //        Payload = null,
+            //        Message = "Order is't paid",
+            //        Errors = new List<string>() { "Error with order" },
 
-                };
-            }
-           
-            
+            //    };
+            //}
+
+
             if (status == order.OrderStatus)
             {
 

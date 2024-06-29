@@ -4,7 +4,6 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
-using System.Reflection.Emit;
 
 
 namespace Sarvicny.Infrastructure.Data
@@ -50,7 +49,9 @@ namespace Sarvicny.Infrastructure.Data
         public DbSet<OrderStatus> OrderStatuses { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<OrderRating> OrderRatings { get; set; }
-    
+
+        public DbSet<TransactionPayment> TransactionPayment { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -166,11 +167,11 @@ namespace Sarvicny.Infrastructure.Data
 
 
 
-             builder.Entity<CartServiceRequest>()
-                .HasOne(c => c.Slot)
-                .WithMany()
-                .HasForeignKey(c => c.SlotID)
-                .OnDelete(DeleteBehavior.SetNull);
+            builder.Entity<CartServiceRequest>()
+               .HasOne(c => c.Slot)
+               .WithMany()
+               .HasForeignKey(c => c.SlotID)
+               .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<Order>()
             .HasOne(o => o.CRate)
@@ -184,11 +185,23 @@ namespace Sarvicny.Infrastructure.Data
                 .HasForeignKey<Order>(o => o.providerRatingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-           /* builder.Entity<Order>()
-              .HasOne(o => o.OrderDetails)
-              .WithOne(od => od.Order)
-              .HasForeignKey<Order>(o => o.OrderDetailsId)
-              .OnDelete(DeleteBehavior.Cascade);*/
+            builder.Entity<TransactionPayment>()
+                .HasMany(tp => tp.OrderList)
+                .WithOne(o => o.TransactionPayment)
+                .HasForeignKey(o => o.TransactionPaymentId)
+                .IsRequired();
+
+            builder.Entity<Order>()
+                .HasOne(o => o.TransactionPayment)
+                .WithMany(tp => tp.OrderList)
+                .HasForeignKey(o => o.TransactionPaymentId)
+                .IsRequired();
+
+            /* builder.Entity<Order>()
+               .HasOne(o => o.OrderDetails)
+               .WithOne(od => od.Order)
+               .HasForeignKey<Order>(o => o.OrderDetailsId)
+               .OnDelete(DeleteBehavior.Cascade);*/
 
 
 

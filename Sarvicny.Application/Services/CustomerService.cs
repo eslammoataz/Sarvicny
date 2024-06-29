@@ -33,6 +33,7 @@ namespace Sarvicny.Application.Services
         private readonly IDistrictRepository _districtRepository;
         private readonly IAdminService _adminService;
         private readonly IEmailService _emailService;
+        private readonly ITransactionPaymentRepository _transactionPaymentRepository;
 
 
 
@@ -41,7 +42,7 @@ namespace Sarvicny.Application.Services
             , IUnitOfWork unitOfWork, IServiceRepository serviceRepository, ICustomerRepository customerRepository,
             IUserRepository userRepository, IOrderRepository orderRepository, ICartRepository cartRepository,
             IOrderService orderService, IServiceProviderService serviceProvider, IPaymentService paymentService,
-            IDistrictRepository districtRepository, IAdminService adminService, IEmailService emailService)
+            IDistrictRepository districtRepository, IAdminService adminService, IEmailService emailService, ITransactionPaymentRepository transactionPaymentRepository)
         {
             _providerRepository = providerRepository;
             _unitOfWork = unitOfWork;
@@ -56,7 +57,7 @@ namespace Sarvicny.Application.Services
             _paymentService = paymentService;
             _adminService = adminService;
             _emailService = emailService;
-
+            _transactionPaymentRepository = transactionPaymentRepository;
         }
 
 
@@ -165,8 +166,8 @@ namespace Sarvicny.Application.Services
 
             }
 
-            decimal rate = 0.12m;
-            price = price+price * rate;
+            //decimal rate = 0.12m;
+            //price = price+price * rate;
             price = Math.Ceiling(price);
 
             if (services.Count() != requestServiceDto.ServiceIDs.Count())
@@ -219,7 +220,7 @@ namespace Sarvicny.Application.Services
 
 
 
-            
+
 
             var dayofweek = requestServiceDto.RequestDay.DayOfWeek.ToString();
 
@@ -577,6 +578,7 @@ namespace Sarvicny.Application.Services
 
             List<object> result = new List<object>();
             List<Order> orders = new List<Order>();
+
             try
             {
                 foreach (var request in cartServiceRequests)
@@ -610,7 +612,7 @@ namespace Sarvicny.Application.Services
                     }
 
 
-                   
+
                     var newOrderDetails = new OrderDetails
                     {
                         ProviderID = request.ProviderID,
@@ -635,8 +637,8 @@ namespace Sarvicny.Application.Services
                         OrderDetails = newOrderDetails,
                         OrderDetailsId = newOrderDetails.OrderDetailsID,
 
-                        PaymentMethod = paymentMethod,
-                        PaymentExpiryTime = DateTime.UtcNow.AddHours(2),
+                        //PaymentMethod = paymentMethod,
+                        //PaymentExpiryTime = DateTime.UtcNow.AddHours(2),
 
                     };
 
@@ -672,6 +674,25 @@ namespace Sarvicny.Application.Services
 
                 await _cartRepository.ClearCart(cart);
 
+                var rate = 0.12m;
+                TransactionPayment transactionPayment = new TransactionPayment
+                {
+                    Amount = totalPrice + (totalPrice * rate),
+                    OrderList = orders,
+                    PaymentMethod = paymentMethod
+
+                };
+
+                transactionPayment = await _transactionPaymentRepository.AddTransactionPaymentAsync(transactionPayment);
+
+                foreach (var order in orders)
+                {
+                    order.TransactionPaymentId = transactionPayment.TransactionPaymentID;
+                    order.TransactionPayment = transactionPayment;
+                }
+
+
+
                 ///var response = await _paymentService.PayOrder(order, PayemntMethod);
 
                 _unitOfWork.Commit();
@@ -687,8 +708,9 @@ namespace Sarvicny.Application.Services
 
                 var output = new
                 {
+                    TransactiopnID = transactionPayment.TransactionPaymentID,
                     orders = result,
-                    OrdersTotalPrice = totalPrice
+                    OrdersTotalPrice = transactionPayment.Amount,
                 };
 
                 return new Response<object>()
