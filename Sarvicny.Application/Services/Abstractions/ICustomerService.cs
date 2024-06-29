@@ -14,7 +14,7 @@ namespace Sarvicny.Application.Services.Abstractions
 
         public Task<Response<object>> OrderCart(string customerId, PaymentMethod paymentMethod);
 
-        public Task<Response<object>> PayOrder(string orderId, PaymentMethod PayemntMethod);
+        //public Task<Response<object>> PayOrder(string orderId, PaymentMethod PayemntMethod);
 
         public Task<Response<object>> ShowCustomerProfile(string customerId);
         public Task<Response<object>> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto, string customerId);
@@ -29,7 +29,9 @@ namespace Sarvicny.Application.Services.Abstractions
         public Task<Response<object>> RemoveFavProvider(string customerId, string providerId);
 
         Task<Response<object>> Refund(string orderId);
-        Task<Response<object>> ReAssignOrder(string orderId);
+        
+
+        Task<Response<object>> GetCustomerCanceledOrders(string customerId);
 
     }
 }

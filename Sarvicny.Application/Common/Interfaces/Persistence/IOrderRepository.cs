@@ -9,8 +9,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<Order?> GetOrder(ISpecifications<Order> specifications);
 
 
-        Task ApproveOrder(Order orderId);
-        Task RejectOrder(Order orderId);
+        //Task ApproveOrder(Order orderId);
+        //Task RejectOrder(Order orderId);
         Task CancelOrder(Order orderId);
 
 
@@ -22,16 +22,17 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
 
         Task<List<Order>> GetAllOrdersForProvider(ISpecifications<Order> spec, string providerId);
         Task<List<Order>> GetAllPendingOrdersForProvider(ISpecifications<Order> spec, string providerId);
-        Task<List<Order>> GetAllApprovedOrdersForProvider(ISpecifications<Order> spec, string providerId);
+        //Task<List<Order>> GetAllApprovedOrdersForProvider(ISpecifications<Order> spec, string providerId);
 
-        Task<List<Order>> GetAllRejectedOrders(ISpecifications<Order> spec);
-        Task<List<Order>> GetAllPendingOrders(ISpecifications<Order> spec);
-        Task<List<Order>> GetAllCanceledOrders(ISpecifications<Order> spec);
-        Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec);
+        //Task<List<Order>> GetAllRejectedOrders(ISpecifications<Order> spec);
+        Task<List<Order>> GetAllPendingOrPaidOrders(ISpecifications<Order> spec);
+        Task<List<Order>> GetAllCanceledByProviderOrders(ISpecifications<Order> spec);
+        //Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec);
 
-        Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec);
+        //Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec);
 
-        Task<List<Order>> RemoveAllPaymentExpiredOrders(ISpecifications<Order> spec);
+        Task<List<Order>> getAllPaymentExpiredOrders(ISpecifications<Order> spec);
+        Task<List<Order>> getAllExpiredOrders(ISpecifications<Order> spec);
 
         Task ChangeOrderPaidStatus(Order order, string transactionId, string saleId, PaymentMethod paymentMethod, bool transactionStatus);
 

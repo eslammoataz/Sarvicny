@@ -22,15 +22,15 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<AvailabilityTimeSlot> getOriginalSlot(RequestedSlot RequestedSlot, string providerId);
 
-        Task<Response<object>> ApproveOrder(string orderRequestId); 
-        Task<Response<object>> RejectOrder(string orderRequestId); 
+        //Task<Response<object>> ApproveOrder(string orderRequestId); 
+        //Task<Response<object>> RejectOrder(string orderRequestId); 
         Task<Response<object>> CancelOrder(string orderRequestId);
 
 
         Task<Response<List<object>>> getAllOrdersForProvider(string workerId);
 
-        Task<Response<List<object>>> getAllApprovedOrderForProvider(string workerId);
-        Task<Response<List<object>>> getAllPendingOrderForProvider(string workerId);
+        //Task<Response<List<object>>> getAllApprovedOrderForProvider(string workerId);
+        Task<Response<List<object>>> getAllPendingOrPaidOrderForProvider(string workerId);
         Task<Response<object>> getRegisteredServices(string providerId);
 
         Task<Response<object>> ShowProviderProfile(string workerId);

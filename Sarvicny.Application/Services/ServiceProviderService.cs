@@ -27,11 +27,7 @@ namespace Sarvicny.Application.Services
         private readonly IDistrictRepository _districtRepository;
         private readonly IEmailService _emailService;
 
-
-
         private IOrderService _orderService;
-
-
 
 
         public ServiceProviderService(IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IOrderRepository orderRepository, ICustomerRepository customerRepository, IOrderService orderService, IEmailService emailService, IDistrictRepository districtRepository)
@@ -48,7 +44,7 @@ namespace Sarvicny.Application.Services
         }
         public async Task<Response<object>> RegisterServiceAsync(string workerId, string serviceId, decimal price)
         {
-            var spec1 = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(workerId);
+            var spec1 = new ProviderWithDetailsSpecification(workerId);
 
             var worker = await _serviceProviderRepository.FindByIdAsync(spec1);
             var spec = new ServiceWithProvidersSpecification(serviceId);
@@ -100,7 +96,8 @@ namespace Sarvicny.Application.Services
                 Provider = worker,
                 Service = service,
                 ServiceID = serviceId,
-                Price = price
+                Price = price,
+                isVerified= false
             };
 
 
@@ -149,23 +146,49 @@ namespace Sarvicny.Application.Services
                     Message = "Provider may be Not Verified, or blocked "
                 };
             }
+            var providerAvailability = provider.Availabilities.FirstOrDefault(a => a.DayOfWeek == availabilityDto.DayOfWeek);
+           
+          
+            var newAvailiabilities = await _serviceProviderRepository.AddAvailability(availabilityDto, spec);
+            var newSlots=newAvailiabilities.Slots;
+            if (providerAvailability != null)
+            {
 
-            var availiabilities = await _serviceProviderRepository.AddAvailability(availabilityDto, spec);
-            provider.Availabilities.Add(availiabilities);
+                var providerSlots = providerAvailability.Slots.ToList();
+                foreach (var slot in providerSlots)
+                {
+                    if (newSlots.Any(s=>s.StartTime== slot.StartTime))
+                    {
+                        await _serviceProviderRepository.RemoveAvailability(newAvailiabilities);
+                        return new Response<object>()
+
+                        {
+                            isError = true,
+                            Payload = null,
+                            Message = "There is conflict between slots (already found)"
+                        };
+
+                    }
+                }
+
+
+            }
+            provider.Availabilities.Add(newAvailiabilities);
             _unitOfWork.Commit();
 
 
-            var slots = availiabilities.Slots.Select(s => new
+            var slots = newAvailiabilities.Slots.Select(s => new
             {
+                s.TimeSlotID,
                 s.StartTime,
                 s.EndTime
             }).ToList();
 
             object result = new
             {
-                availiabilities.DayOfWeek,
+                newAvailiabilities.DayOfWeek,
                 slots,
-                availiabilities.ServiceProviderID
+                newAvailiabilities.ServiceProviderID
             };
             return new Response<object>()
 
@@ -293,87 +316,87 @@ namespace Sarvicny.Application.Services
         }
 
 
-        public async Task<Response<object>> ApproveOrder(string orderId)
-        {
+        //public async Task<Response<object>> ApproveOrder(string orderId)
+        //{
 
-            var spec = new OrderWithDetailsSpecification(orderId);
-            var order = await _orderRepository.GetOrder(spec);
+        //    var spec = new OrderWithDetailsSpecification(orderId);
+        //    var order = await _orderRepository.GetOrder(spec);
 
-            if (order == null)
-            {
-                return new Response<object>()
+        //    if (order == null)
+        //    {
+        //        return new Response<object>()
 
-                {
-                    isError = true,
-                    Payload = null,
-                    Message = "Order Not Found",
-                    Errors = new List<string>() { "Error with order" },
+        //        {
+        //            isError = true,
+        //            Payload = null,
+        //            Message = "Order Not Found",
+        //            Errors = new List<string>() { "Error with order" },
 
-                };
+        //        };
 
-            }
-            if (order.OrderStatus == OrderStatusEnum.Approved)
-            {
-                return new Response<object>()
+        //    }
+        //    if (order.OrderStatus == OrderStatusEnum.Approved)
+        //    {
+        //        return new Response<object>()
 
-                {
-                    isError = true,
-                    Payload = null,
-                    Message = "Order is already Approved",
-                    Errors = new List<string>() { "Error with order" },
+        //        {
+        //            isError = true,
+        //            Payload = null,
+        //            Message = "Order is already Approved",
+        //            Errors = new List<string>() { "Error with order" },
 
-                };
-            }
+        //        };
+        //    }
 
-            await _orderRepository.ApproveOrder(order);
+        //    await _orderRepository.ApproveOrder(order);
 
-            var originalSlot = await getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
-            if (originalSlot != null)
-            {
-                originalSlot.isActive = false;
-            }
-
-
-
-            DateTime tomorrow = DateTime.Today.AddDays(1);
-            var paymentExpiryDate = tomorrow;
-            if (order.OrderDetails.RequestedSlot.RequestedDay == tomorrow)
-            {
-                paymentExpiryDate = DateTime.UtcNow.AddHours(6);
-            }
-
-            order.PaymentExpiryTime = paymentExpiryDate;
-            order.ExpiryDate = null;
-            _unitOfWork.Commit();
-
-
-            var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
-
-
-            var customer = order.Customer;
-
-            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
-            var message = new EmailDto(customer.Email!, "Sarvicny: Request Approved", $"Thank you for using our system! Your Request is approved. \n\nOrder Details:\n{orderDetailsForCustomer}");
-            if (order.PaymentMethod == PaymentMethod.Paymob || order.PaymentMethod == PaymentMethod.Paypal)
-            {
-                message.Body += $"\n\nPlease note: Proceed to pay on  the website or the application using {order.PaymentMethod} ,Notice that the ExpiryDate for payment is {paymentExpiryDate} ,otherwise your order will be canceled";
-            }
-
-
-            _emailService.SendEmail(message);
+        //    var originalSlot = await getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+        //    if (originalSlot != null)
+        //    {
+        //        originalSlot.isActive = false;
+        //    }
 
 
 
-            return new Response<object>()
+        //    DateTime tomorrow = DateTime.Today.AddDays(1);
+        //    var paymentExpiryDate = tomorrow;
+        //    if (order.OrderDetails.RequestedSlot.RequestedDay == tomorrow)
+        //    {
+        //        paymentExpiryDate = DateTime.UtcNow.AddHours(6);
+        //    }
 
-            {
-                isError = false,
-                Payload = details,
-                Message = "Order Approved Succesfully",
+        //    order.PaymentExpiryTime = paymentExpiryDate;
+        //    order.ExpiryDate = null;
+        //    _unitOfWork.Commit();
 
 
-            };
-        }
+        //    var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
+
+
+        //    var customer = order.Customer;
+
+        //    var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
+        //    var message = new EmailDto(customer.Email!, "Sarvicny: Request Approved", $"Thank you for using our system! Your Request is approved. \n\nOrder Details:\n{orderDetailsForCustomer}");
+        //    if (order.PaymentMethod == PaymentMethod.Paymob || order.PaymentMethod == PaymentMethod.Paypal)
+        //    {
+        //        message.Body += $"\n\nPlease note: Proceed to pay on  the website or the application using {order.PaymentMethod} ,Notice that the ExpiryDate for payment is {paymentExpiryDate} ,otherwise your order will be canceled";
+        //    }
+
+
+        //    _emailService.SendEmail(message);
+
+
+
+        //    return new Response<object>()
+
+        //    {
+        //        isError = false,
+        //        Payload = details,
+        //        Message = "Order Approved Succesfully",
+
+
+        //    };
+        //}
 
         public async Task<Response<object>> CancelOrder(string orderId)
         {
@@ -393,28 +416,17 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            if (order.OrderStatus != OrderStatusEnum.Approved)
-            {
-                if (order.OrderStatus == OrderStatusEnum.Canceled)
-                {
-                    return new Response<object>()
-                    {
-                        isError = true,
-                        Payload = null,
-                        Message = "Order is already canceled",
-                        Errors = new List<string>() { "Error with order" },
 
-                    };
-                }
+            if (order.OrderStatus !=  OrderStatusEnum.Paid && order.OrderStatus != OrderStatusEnum.Pending)
+            {
                 return new Response<object>()
                 {
                     isError = true,
                     Payload = null,
-                    Message = "Order is not approved to be canceled",
+                    Message = "Order is status is not valid to cancel",
                     Errors = new List<string>() { "Error with order" },
 
                 };
-
             }
 
             await _orderRepository.CancelOrder(order);
@@ -424,7 +436,7 @@ namespace Sarvicny.Application.Services
             {
                 originalSlot.isActive = true;
             }
-            order.PaymentExpiryTime = null;
+            
 
             _unitOfWork.Commit();
 
@@ -434,7 +446,7 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
 
-            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
+            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessageForCustomer(order);
             var message = new EmailDto(customer.Email!, "Sarvicny: Request Canceled", $"Unfortunately! Your Request is Canceled. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
             _emailService.SendEmail(message);
 
@@ -450,75 +462,75 @@ namespace Sarvicny.Application.Services
         }
 
 
-        public async Task<Response<object>> RejectOrder(string orderId)
-        {
-            var spec = new OrderWithDetailsSpecification(orderId);
-            var order = await _orderRepository.GetOrder(spec);
+        //public async Task<Response<object>> RejectOrder(string orderId)
+        //{
+        //    var spec = new OrderWithDetailsSpecification(orderId);
+        //    var order = await _orderRepository.GetOrder(spec);
 
-            if (order == null)
-            {
-                return new Response<object>()
+        //    if (order == null)
+        //    {
+        //        return new Response<object>()
 
-                {
-                    isError = true,
-                    Payload = null,
-                    Message = "Order Not Found",
-                    Errors = new List<string>() { "Error with order" },
+        //        {
+        //            isError = true,
+        //            Payload = null,
+        //            Message = "Order Not Found",
+        //            Errors = new List<string>() { "Error with order" },
 
-                };
+        //        };
 
-            }
-            if (order.OrderStatus == OrderStatusEnum.Approved)
-            {
-                return new Response<object>()
+        //    }
+        //    if (order.OrderStatus == OrderStatusEnum.Approved)
+        //    {
+        //        return new Response<object>()
 
-                {
-                    isError = true,
-                    Payload = null,
-                    Message = "Order is already approved",
-                    Errors = new List<string>() { "Error with order" },
+        //        {
+        //            isError = true,
+        //            Payload = null,
+        //            Message = "Order is already approved",
+        //            Errors = new List<string>() { "Error with order" },
 
-                };
+        //        };
 
-            }
-            if (order.OrderStatus == OrderStatusEnum.Rejected)
-            {
-                return new Response<object>()
+        //    }
+        //    if (order.OrderStatus == OrderStatusEnum.Rejected)
+        //    {
+        //        return new Response<object>()
 
-                {
-                    isError = true,
-                    Payload = null,
-                    Message = "Order is already Rejected",
-                    Errors = new List<string>() { "Error with order" },
+        //        {
+        //            isError = true,
+        //            Payload = null,
+        //            Message = "Order is already Rejected",
+        //            Errors = new List<string>() { "Error with order" },
 
-                };
-            }
+        //        };
+        //    }
 
-            await _orderRepository.RejectOrder(order);
+        //    await _orderRepository.RejectOrder(order);
 
-            order.ExpiryDate = null;
-            _unitOfWork.Commit();
-
-
-            var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
+        //    order.ExpiryDate = null;
+        //    _unitOfWork.Commit();
 
 
-            var customer = order.Customer;
-
-            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
-            var message = new EmailDto(customer.Email!, "Sarvicny: Request Rejected", $"Unfortunately! Your Request is Rejected. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
-            _emailService.SendEmail(message);
-
-            return new Response<object>()
-
-            {
-                isError = false,
-                Payload = details,
-                Message = "Order Rejected Succesfully",
+        //    var details = await _orderService.ShowAllOrderDetailsForProvider(orderId);
 
 
-            };
-        }
+        //    var customer = order.Customer;
+
+        //    var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
+        //    var message = new EmailDto(customer.Email!, "Sarvicny: Request Rejected", $"Unfortunately! Your Request is Rejected. \n\nOrder Details:\n{orderDetailsForCustomer} , We will try to recommend you other providers shortly.");
+        //    _emailService.SendEmail(message);
+
+        //    return new Response<object>()
+
+        //    {
+        //        isError = false,
+        //        Payload = details,
+        //        Message = "Order Rejected Succesfully",
+
+
+        //    };
+        //}
 
 
         public async Task<Response<List<object>>> getAllOrdersForProvider(string workerId)
@@ -570,56 +582,56 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<List<object>>> getAllApprovedOrderForProvider(string workerId)
-        {
-            var provider = await _userRepository.GetUserByIdAsync(workerId);
-            if (provider == null)
-            {
-                return new Response<List<object>>()
-                {
-                    Status = "failed",
-                    Message = "Provider Not Found",
-                    Payload = null,
-                    isError = true
-                };
-            };
-            var spec = new OrderWithDetailsSpecification();
-            var orders = await _orderRepository.GetAllApprovedOrdersForProvider(spec, workerId);
+        //public async Task<Response<List<object>>> getAllApprovedOrderForProvider(string workerId)
+        //{
+        //    var provider = await _userRepository.GetUserByIdAsync(workerId);
+        //    if (provider == null)
+        //    {
+        //        return new Response<List<object>>()
+        //        {
+        //            Status = "failed",
+        //            Message = "Provider Not Found",
+        //            Payload = null,
+        //            isError = true
+        //        };
+        //    };
+        //    var spec = new OrderWithDetailsSpecification();
+        //    var orders = await _orderRepository.GetAllApprovedOrdersForProvider(spec, workerId);
 
-            if (orders.Count() == 0)
-            {
+        //    if (orders.Count() == 0)
+        //    {
 
-                return new Response<List<object>>()
-                {
-                    Status = "failed",
-                    Message = "No Approved Orders Found",
-                    Payload = null,
-                    isError = true
-                };
-            }
+        //        return new Response<List<object>>()
+        //        {
+        //            Status = "failed",
+        //            Message = "No Approved Orders Found",
+        //            Payload = null,
+        //            isError = true
+        //        };
+        //    }
 
-            List<object> result = new List<object>();
-            foreach (var order in orders)
-            {
-                var orderDetails = await _orderService.ShowAllOrderDetailsForProvider(order.OrderID);
+        //    List<object> result = new List<object>();
+        //    foreach (var order in orders)
+        //    {
+        //        var orderDetails = await _orderService.ShowAllOrderDetailsForProvider(order.OrderID);
 
-                result.Add(orderDetails);
-            }
+        //        result.Add(orderDetails);
+        //    }
 
-            return new Response<List<object>>()
-            {
-                Status = "Success",
-                Message = "Action Done Successfully",
-                Payload = result,
+        //    return new Response<List<object>>()
+        //    {
+        //        Status = "Success",
+        //        Message = "Action Done Successfully",
+        //        Payload = result,
 
-            };
-
-
+        //    };
 
 
-        }
 
-        public async Task<Response<List<object>>> getAllPendingOrderForProvider(string workerId)
+
+        //}
+
+        public async Task<Response<List<object>>> getAllPendingOrPaidOrderForProvider(string workerId)
         {
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
@@ -699,7 +711,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> ShowProviderProfile(string providerId)
         {
-            var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(providerId);
+            var spec = new ProviderWithDetailsSpecification(providerId);
             var serviceProvider = await _serviceProviderRepository.FindByIdAsync(spec);
             if (serviceProvider == null)
             {
@@ -869,8 +881,6 @@ namespace Sarvicny.Application.Services
             };
 
         }
-
-
 
 
         public async Task<Response<object>> DisableDistrictFromProvider(string providerId, string districtID)
@@ -1107,41 +1117,34 @@ namespace Sarvicny.Application.Services
                 };
 
             }
+            if (order.OrderStatus == OrderStatusEnum.Canceled || order.OrderStatus == OrderStatusEnum.CanceledByProvider)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Order is already canceled",
+                    Errors = new List<string>() { "Error with order" },
+
+                };
+
+            }
             var paymentMethod = order.PaymentMethod;
-            if (paymentMethod == PaymentMethod.Cash)
+            if (paymentMethod != PaymentMethod.Cash && !order.IsPaid)
             {
-                if (order.OrderStatus != OrderStatusEnum.Approved)
+                return new Response<object>()
+
                 {
-                    return new Response<object>()
+                    isError = true,
+                    Payload = null,
+                    Message = "Order is't paid",
+                    Errors = new List<string>() { "Error with order" },
 
-                    {
-                        isError = true,
-                        Payload = null,
-                        Message = "Order is't Approved",
-                        Errors = new List<string>() { "Error with order" },
-
-                    };
-                }
-
-
-
-
+                };
             }
-            else
-            {
-                if (!order.IsPaid)
-                {
-                    return new Response<object>()
-
-                    {
-                        isError = true,
-                        Payload = null,
-                        Message = "Order is't paid",
-                        Errors = new List<string>() { "Error with order" },
-
-                    };
-                }
-            }
+           
+            
             if (status == order.OrderStatus)
             {
 
@@ -1185,7 +1188,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> getProviderServicePrice(string providerId, string serviceId)
         {
-            var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(providerId);
+            var spec = new ProviderWithDetailsSpecification(providerId);
 
             var provider = await _serviceProviderRepository.FindByIdAsync(spec);
 

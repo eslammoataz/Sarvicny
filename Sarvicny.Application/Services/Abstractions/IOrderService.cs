@@ -19,5 +19,7 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> GetProviderRatingForOrder(string orderID);
         Task<Response<object>> GetCustomerRatingForOrder(string orderID);
         public Task<Response<List<object>>> GetAllMatchedProviderSortedbyFav(MatchingProviderDto matchingProviderDto);
+        public Task<Response<List<object>>> SuggestNewProvidersIfNoMatchesFoundLevel1(MatchingProviderDto matchingProviderDto);
+        public Task<Response<List<object>>> SuggestNewProvidersIfNoMatchesFoundLevel2(MatchingProviderDto matchingProviderDto);
     }
 }

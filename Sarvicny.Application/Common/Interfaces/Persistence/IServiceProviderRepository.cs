@@ -20,9 +20,12 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
     
         Task<ICollection<Provider>> GetAllServiceProviders(ISpecifications<Provider> spec);
         Task<List<Provider>> GetAllMatchedProviders(List<string> services,TimeSpan startTime,string dayOfWeek, String districtId,string customerId);
+        Task<List<Provider>> SuggestionLevel1(List<string> services, string dayOfWeek, string districtId, string customerId);
+        Task<List<Provider>> SuggestionLevel2(List<string> services, string districtId, string customerId);
         Task<ICollection<Provider>> GetProvidersRegistrationRequest(ISpecifications<Provider> spec);
+        Task<ICollection<Provider>> GetProvidersServiceRegistrationRequest(ISpecifications<Provider> spec);
 
-        
-       
+
+
     }
 }

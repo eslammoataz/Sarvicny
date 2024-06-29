@@ -21,24 +21,24 @@ namespace Sarvicny.Infrastructure.Persistence
         }
 
 
-        public async Task ApproveOrder(Order order)
-        {
+        //public async Task ApproveOrder(Order order)
+        //{
 
-            order.OrderStatus = OrderStatusEnum.Approved;
+        //    order.OrderStatus = OrderStatusEnum.Approved;
 
-        }
+        //}
 
-        public async Task RejectOrder(Order order)
-        {
+        //public async Task RejectOrder(Order order)
+        //{
 
-            order.OrderStatus = OrderStatusEnum.Rejected;
+        //    order.OrderStatus = OrderStatusEnum.Rejected;
 
-        }
+        //}
 
         public async Task CancelOrder(Order order)
         {
 
-            order.OrderStatus = OrderStatusEnum.Canceled;
+            order.OrderStatus = OrderStatusEnum.CanceledByProvider;
         }
 
         private IQueryable<Order> ApplySpecification(ISpecifications<Order> spec)
@@ -63,77 +63,87 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<List<Order>> GetAllOrders(ISpecifications<Order> spec)
         {
 
-            var orders = await ApplySpecification(spec).ToListAsync();
+            var orders = await ApplySpecification(spec).OrderByDescending(or => or.OrderDate).ToListAsync();
             return orders;
 
         }
         public async Task<List<Order>> GetAllOrdersForProvider(ISpecifications<Order> spec, string providerId)
         {
 
-            var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId).ToListAsync();
+            var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId)
+                .OrderByDescending(or => or.OrderDate).ToListAsync();
             return orders;
 
         }
 
-        public async Task<List<Order>> GetAllApprovedOrdersForProvider(ISpecifications<Order> spec, string providerId)
-        {
+        //public async Task<List<Order>> GetAllApprovedOrdersForProvider(ISpecifications<Order> spec, string providerId)
+        //{
 
-            var approvedStatus = OrderStatusEnum.Approved.ToString();
-            var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatusString == approvedStatus && or.OrderDetails.ProviderID == providerId)
-                .ToListAsync();
-            return orders;
+        //    var approvedStatus = OrderStatusEnum.Approved.ToString();
+        //    var orders = await ApplySpecification(spec)
+        //        .Where(or => or.OrderStatusString == approvedStatus && or.OrderDetails.ProviderID == providerId)
+        //        .ToListAsync();
+        //    return orders;
 
-        }
+        //}
         public async Task<List<Order>> GetAllPendingOrdersForProvider(ISpecifications<Order> spec, string providerId)
         {
 
             var pendingStatus = OrderStatusEnum.Pending.ToString();
+            var paidStatus= OrderStatusEnum.Paid.ToString();
             var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatusString == pendingStatus && or.OrderDetails.ProviderID == providerId)
+                .Where(or => or.OrderDetails.ProviderID == providerId)
+                .OrderByDescending(or => or.OrderDate)
+
                 .ToListAsync();
+
+           var result= orders.Where(or => or.OrderStatusString == pendingStatus || or.OrderStatusString == paidStatus);
             return orders;
 
         }
 
-        public async Task<List<Order>> GetAllCanceledOrders(ISpecifications<Order> spec)
+        public async Task<List<Order>> GetAllCanceledByProviderOrders(ISpecifications<Order> spec)
         {
-            var canceledStatus = OrderStatusEnum.Canceled.ToString();
+            var canceledStatus = OrderStatusEnum.CanceledByProvider.ToString();
             var orders = await ApplySpecification(spec)
                 .Where(or => or.OrderStatusString == canceledStatus)
+                .OrderByDescending(or => or.OrderDate)
                 .ToListAsync();
             return orders;
 
 
         }
-        public async Task<List<Order>> GetAllPendingOrders(ISpecifications<Order> spec)
+        public async Task<List<Order>> GetAllPendingOrPaidOrders(ISpecifications<Order> spec)
         {
 
             var PendingStatus = OrderStatusEnum.Pending.ToString();
+            var paid = OrderStatusEnum.Paid.ToString();
+
             var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatusString == PendingStatus)
+                .Where(or => or.OrderStatusString == PendingStatus  || or.OrderStatusString== paid)
+                .OrderByDescending(or => or.OrderDate)
                 .ToListAsync();
             return orders;
 
         }
-        public async Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec)
-        {
-            var approvedStatus = OrderStatusEnum.Approved.ToString();
-            var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatusString == approvedStatus)
-                .ToListAsync();
-            return orders;
-        }
-        public async Task<List<Order>> GetAllRejectedOrders(ISpecifications<Order> spec)
-        {
+        //public async Task<List<Order>> GetAllApprovedOrders(ISpecifications<Order> spec)
+        //{
+        //    var approvedStatus = OrderStatusEnum.Approved.ToString();
+        //    var orders = await ApplySpecification(spec)
+        //        .Where(or => or.OrderStatusString == approvedStatus)
+        //        .ToListAsync();
+        //    return orders;
+        //}
+        //public async Task<List<Order>> GetAllRejectedOrders(ISpecifications<Order> spec)
+        //{
 
-            var RejectedStatus = OrderStatusEnum.Rejected.ToString();
-            var orders = await ApplySpecification(spec)
-                .Where(or => or.OrderStatusString == RejectedStatus)
-                .ToListAsync();
-            return orders;
+        //    var RejectedStatus = OrderStatusEnum.Rejected.ToString();
+        //    var orders = await ApplySpecification(spec)
+        //        .Where(or => or.OrderStatusString == RejectedStatus)
+        //        .ToListAsync();
+        //    return orders;
 
-        }
+        //}
 
 
         public async Task ChangeOrderPaidStatus(Order order, string transactionId, string saleId, PaymentMethod PaymentMethod, bool TransactionStatus)
@@ -169,21 +179,35 @@ namespace Sarvicny.Infrastructure.Persistence
 
         }
 
-        public async Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec)
-        {
-            var orders = await ApplySpecification(spec)
-                   .Where(or => or.ExpiryDate != null && or.ExpiryDate < DateTime.UtcNow)
-                   .ToListAsync();
-            return orders;
-        }
+        //public async Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec)
+        //{
+        //    var orders = await ApplySpecification(spec)
+        //           .Where(or => or.ExpiryDate != null && or.ExpiryDate < DateTime.UtcNow)
+        //           .ToListAsync();
+        //    return orders;
+        //}
 
-        public async Task<List<Order>> RemoveAllPaymentExpiredOrders(ISpecifications<Order> spec) //case ano al paymeny expiry date 3da we m7awlsh yedf3 fa al order mt3mlosh remove fa al admin yeshelo
+        public async Task<List<Order>> getAllExpiredOrders(ISpecifications<Order> spec) 
+        {
+
+           
+            var completed = OrderStatusEnum.Completed.ToString();
+            var orders = await ApplySpecification(spec)
+                    .Where(or => or.OrderStatusString != completed  && or.OrderDetails.RequestedSlot.RequestedDay < DateTime.Today )
+                    .OrderByDescending(or => or.OrderDate)
+                    .ToListAsync();
+            return orders;
+
+
+        }
+        public async Task<List<Order>> getAllPaymentExpiredOrders(ISpecifications<Order> spec) //case ano al paymeny expiry date 3da we m7awlsh yedf3 fa al order mt3mlosh remove fa al admin yeshelo
         {
 
 
             var removed = OrderStatusEnum.Removed.ToString();
             var orders = await ApplySpecification(spec)
                     .Where(or => or.OrderStatusString != removed && or.PaymentExpiryTime != null && or.PaymentExpiryTime < DateTime.UtcNow)
+                    .OrderByDescending(or => or.OrderDate)
                     .ToListAsync();
             return orders;
 

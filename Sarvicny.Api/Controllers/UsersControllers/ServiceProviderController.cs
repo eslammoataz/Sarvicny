@@ -64,33 +64,33 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
         }
 
-        [HttpPost]
-        [Route("approveOrder")]
-        public async Task<IActionResult> ApproveOrder(string orderId)
-        {
-            var Response = await _serviceProviderService.ApproveOrder(orderId);
+        //[HttpPost]
+        //[Route("approveOrder")]
+        //public async Task<IActionResult> ApproveOrder(string orderId)
+        //{
+        //    var Response = await _serviceProviderService.ApproveOrder(orderId);
 
-            if (Response.isError)
-            {
-                return BadRequest(Response);
-            }
+        //    if (Response.isError)
+        //    {
+        //        return BadRequest(Response);
+        //    }
 
-            return Ok(Response);
-        }
+        //    return Ok(Response);
+        //}
 
-        [HttpPost]
-        [Route("rejectOrder")]
-        public async Task<IActionResult> RejectOrder(string orderId)
-        {
-            var Response = await _serviceProviderService.RejectOrder(orderId);
+        //[HttpPost]
+        //[Route("rejectOrder")]
+        //public async Task<IActionResult> RejectOrder(string orderId)
+        //{
+        //    var Response = await _serviceProviderService.RejectOrder(orderId);
 
-            if (Response.isError)
-            {
-                return BadRequest(Response);
-            }
+        //    if (Response.isError)
+        //    {
+        //        return BadRequest(Response);
+        //    }
 
-            return Ok(Response);
-        }
+        //    return Ok(Response);
+        //}
 
         [HttpPost]
         [Route("cancelOrder")]
@@ -166,24 +166,24 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-        [HttpGet("getAllApprovedOrders")]
-        public async Task<IActionResult> getAllApprovedOrders(string providerID)
-        {
-            var response = await _serviceProviderService.getAllApprovedOrderForProvider(providerID);
+        //[HttpGet("getAllApprovedOrders")]
+        //public async Task<IActionResult> getAllApprovedOrders(string providerID)
+        //{
+        //    var response = await _serviceProviderService.getAllApprovedOrderForProvider(providerID);
 
-            if (response.isError)
-            {
-                return NotFound(response);
-            }
+        //    if (response.isError)
+        //    {
+        //        return NotFound(response);
+        //    }
 
 
-            return Ok(response);
-        }
+        //    return Ok(response);
+        //}
 
         [HttpGet("getAllRequestededOrders")]
         public async Task<IActionResult> getAllRequestededOrders(string providerID)
         {
-            var response = await _serviceProviderService.getAllPendingOrderForProvider(providerID);
+            var response = await _serviceProviderService.getAllPendingOrPaidOrderForProvider(providerID);
 
             if (response.isError)
             {
@@ -247,17 +247,17 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
         }
 
-        [HttpGet]
-        [Route("getProviderServicePrice")]
-        public async Task<IActionResult> getProviderServicePrice(string providerId,string serviceId)
-        {
+        //[HttpGet]
+        //[Route("getProviderServicePrice")]
+        //public async Task<IActionResult> getProviderServicePrice(string providerId,string serviceId)
+        //{
 
-            var response = await _serviceProviderService.getProviderServicePrice( providerId,  serviceId);
-            if (response.isError)
-            {
-                return BadRequest(response);
-            }
-            return Ok(response);
-        }
+        //    var response = await _serviceProviderService.getProviderServicePrice( providerId,  serviceId);
+        //    if (response.isError)
+        //    {
+        //        return BadRequest(response);
+        //    }
+        //    return Ok(response);
+        //}
     }
 }

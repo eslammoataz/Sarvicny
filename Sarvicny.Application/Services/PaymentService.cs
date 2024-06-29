@@ -27,26 +27,7 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> PayOrder(Order order, PaymentMethod paymentMethod)
         {
             _logger.LogInformation("PaymentService.PayOrder");
-            if (order.PaymentExpiryTime <= DateTime.UtcNow && order.PaymentExpiryTime != null)
-            {
-                order.OrderStatus = OrderStatusEnum.Removed;
-                var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
-                if (originalSlot != null)
-                {
-                    originalSlot.isActive = true;
-                }
-
-                _unitOfWork.Commit();
-
-
-                return new Response<object>()
-                {
-                    isError = true,
-                    Message = "Payment Expiry date exceeded, order is canceled",
-                    Payload = null
-                };
-            }
-
+            
             // Check if paymentMethod is a valid enum value
             if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethod))
             {

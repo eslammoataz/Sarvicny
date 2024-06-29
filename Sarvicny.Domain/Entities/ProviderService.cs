@@ -14,6 +14,8 @@ namespace Sarvicny.Domain.Entities
 
         public decimal Price { get; set; }
 
+        public bool isVerified { get; set; }
+
         [ForeignKey("ProviderID")]
         public Provider Provider { get; set; }
 

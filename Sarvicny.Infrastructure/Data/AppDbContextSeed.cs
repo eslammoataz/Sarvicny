@@ -270,59 +270,69 @@ namespace Sarvicny.Infrastructure.Data
                     new OrderStatus
                     {
                         OrderStatusID = "2",
-                        StatusName = "Approved"
-                    },
-                    new OrderStatus
-                    {
-                        OrderStatusID = "3",
                         StatusName = "Paid"
                     },
                     new OrderStatus
                     {
-                        OrderStatusID = "4",
-                        StatusName = "Rejected"
-                    },
-                    new OrderStatus
-                    {
-                        OrderStatusID = "5",
-                        StatusName = "Canceled"
-                    },
-                    new OrderStatus
-                    {
-                        OrderStatusID = "7",
+                        OrderStatusID = "3",
                         StatusName = "Start"
                     },
                     new OrderStatus
                     {
-                        OrderStatusID = "8",
+                        OrderStatusID = "4",
+                        StatusName = "Preparing"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "5",
                         StatusName = "On The Way"
                     },
                     new OrderStatus
                     {
-                        OrderStatusID = "9",
+                        OrderStatusID = "6",
                         StatusName = "In Progress"
                     },
                     new OrderStatus
                     {
-                        OrderStatusID = "10",
+                        OrderStatusID = "7",
                         StatusName = "Done"
                     },
                     new OrderStatus
                     {
-                        OrderStatusID = "11",
+                        OrderStatusID = "8",
                         StatusName = "Completed"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "9",
+                        StatusName = "Removed"
                     },
                      new OrderStatus
                     {
+                        OrderStatusID = "10",
+                        StatusName = "CanceledByProvider"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "11",
+                        StatusName = "ReAssigned"
+                    },
+                    new OrderStatus
+                    {
                         OrderStatusID = "12",
-                        StatusName = "Removed"
+                        StatusName = "Canceled"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "13",
+                        StatusName = "Refunded"
                     }
-
                 };
 
-                await context.OrderStatuses.AddRangeAsync(orderStatuses);
-                await context.SaveChangesAsync();
+                context.OrderStatuses.AddRange(orderStatuses);
+                context.SaveChanges();
             }
+
         }
     }
 }

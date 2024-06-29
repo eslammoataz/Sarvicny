@@ -33,8 +33,6 @@ namespace Sarvicny.Domain.Entities
 
         public DateTime OrderDate { get; set; }
 
-        public DateTime? ExpiryDate { get; set; }
-
         public DateTime? PaymentExpiryTime { get; set; }
 
         public bool IsPaid { get; set; }
@@ -73,41 +71,42 @@ namespace Sarvicny.Domain.Entities
     // Define the enum for order statuses
     public enum OrderStatusEnum
     {
-        [Description("Pending")]
+        [Description("Pending")] //intial state
         Pending = 1,
 
-        [Description("Approved")]
-        Approved = 2,
-
-        [Description("Paid")]
-        Paid = 3,
-
-        [Description("Rejected")]
-        Rejected = 4,
-
-        [Description("Canceled")]
-        Canceled = 5,
+        [Description("Paid")]  
+        Paid = 2,
 
         [Description("Start")]
-        Start = 6,
+        Start = 3,
 
         [Description("Preparing")]
-        Preparing = 7,
+        Preparing = 4,
 
         [Description("On The Way")]
-        OnTheWay = 8,
+        OnTheWay = 5,
 
         [Description("In Progress")]
-        InProgress = 9,
+        InProgress = 6,
 
         [Description("Done")]
-        Done = 10,
+        Done = 7,
 
         [Description("Completed")]
-        Completed = 11,
+        Completed = 8,
 
-        [Description("Removed")]
-        Removed = 12,
+
+        [Description("Removed")]  //8lta customer
+        Removed = 9,
+
+        [Description("CanceledByProvider")]
+        CanceledByProvider = 10,
+
+        [Description("ReAssigned")] 
+        ReAssigned = 11,
+
+        [Description("Canceled")] //by customer
+        Canceled = 12,
 
         [Description("Refunded")]
         Refunded = 13

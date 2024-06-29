@@ -29,10 +29,11 @@ namespace Sarvicny.Application.Services
         private readonly ICartRepository _cartRepository;
         private readonly IPaymentService _paymentService;
         private readonly IOrderService _orderService;
-        private readonly IServiceProviderService _serviceProvider;
+        private readonly IServiceProviderService _providerService;
         private readonly IDistrictRepository _districtRepository;
         private readonly IAdminService _adminService;
         private readonly IEmailService _emailService;
+
 
 
 
@@ -50,27 +51,28 @@ namespace Sarvicny.Application.Services
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
             _orderService = orderService;
-            _serviceProvider = serviceProvider;
+            _providerService = serviceProvider;
             _districtRepository = districtRepository;
             _paymentService = paymentService;
             _adminService = adminService;
             _emailService = emailService;
+
         }
 
 
         public async Task<Response<object>> addToCart(RequestServiceDto requestServiceDto, string customerId)
         {
-            if (requestServiceDto.RequestDay == DateTime.Today)
+            if (requestServiceDto.RequestDay < DateTime.Today)
             {
                 return new Response<object>
                 {
                     isError = true,
-                    Errors = new List<string> { "you can't schedule in the same day" },
+                    Errors = new List<string> { "Date in the past" },
                     Status = "Error",
                     Message = "Failed",
                 };
             }
-            var spec = new ProviderWithServices_Districts_AndAvailabilitiesSpecification(requestServiceDto.ProviderId);
+            var spec = new ProviderWithDetailsSpecification(requestServiceDto.ProviderId);
             var provider = await _providerRepository.FindByIdAsync(spec);
 
             if (provider == null)
@@ -82,7 +84,43 @@ namespace Sarvicny.Application.Services
                     Message = "Failed",
                 };
 
+            var slots = provider.Availabilities.SelectMany(p => p.Slots);
 
+            var slotExist = slots.SingleOrDefault(s => s.TimeSlotID == requestServiceDto.SlotID);
+
+            if (slotExist == null)
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Error with Date or Slot" },
+                    Status = "Error",
+                    Message = "An Error Occured",
+                };
+            if (slotExist.isActive == false)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Error with Date or Slot" },
+                    Status = "Error",
+                    Message = "Slot is not available ,may be reserved",
+                };
+            }
+
+
+            var startTime = slotExist.StartTime;
+
+            var allowedRange = DateTime.UtcNow.AddHours(2).TimeOfDay;
+            if (requestServiceDto.RequestDay == DateTime.Today && startTime <= allowedRange)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "you can't schedule in the same day with slot within less than 2 hours from now" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            }
 
             List<Service> services = new List<Service>();
             decimal price = 0;
@@ -126,6 +164,10 @@ namespace Sarvicny.Application.Services
 
 
             }
+
+            decimal rate = 0.12m;
+            price = price+price * rate;
+            price = Math.Ceiling(price);
 
             if (services.Count() != requestServiceDto.ServiceIDs.Count())
             {
@@ -177,28 +219,7 @@ namespace Sarvicny.Application.Services
 
 
 
-            var slots = provider.Availabilities.SelectMany(p => p.Slots);
-
-            var slotExist = slots.SingleOrDefault(s => s.TimeSlotID == requestServiceDto.SlotID);
-
-            if (slotExist == null)
-                return new Response<object>
-                {
-                    isError = true,
-                    Errors = new List<string> { "Error with Date or Slot" },
-                    Status = "Error",
-                    Message = "An Error Occured",
-                };
-            if (slotExist.isActive == false)
-            {
-                return new Response<object>
-                {
-                    isError = true,
-                    Errors = new List<string> { "Error with Date or Slot" },
-                    Status = "Error",
-                    Message = "Slot is not available ,may be reserved",
-                };
-            }
+            
 
             var dayofweek = requestServiceDto.RequestDay.DayOfWeek.ToString();
 
@@ -455,8 +476,8 @@ namespace Sarvicny.Application.Services
 
                 s.SlotID,
                 s.RequestedDate,
-                s.Slot.ProviderAvailability.DayOfWeek,
-                s.Slot.StartTime,
+                s.Slot?.ProviderAvailability.DayOfWeek,
+                s.Slot?.StartTime,
                 s.providerDistrict.DistrictID,
                 s.providerDistrict.District.DistrictName,
                 s.Address,
@@ -555,18 +576,21 @@ namespace Sarvicny.Application.Services
             var totalPrice = cartServiceRequests.Sum(s => s.Price);
 
             List<object> result = new List<object>();
+            List<Order> orders = new List<Order>();
             try
             {
                 foreach (var request in cartServiceRequests)
                 {
-                    if (request.RequestedDate <= DateTime.Today)
+                    var startTime = request.Slot.StartTime;
+                    var allowedRange = DateTime.UtcNow.AddHours(2).TimeOfDay;
+                    if (request.RequestedDate == DateTime.Today && startTime <= allowedRange)
                     {
                         return new Response<object>
                         {
                             isError = true,
-                            Payload = null,
+                            Errors = new List<string> { "you can't order in the same day with slot within less than 2 hours from now" },
                             Status = "Error",
-                            Message = "Cannot order in the same day of the request",
+                            Message = "Failed",
                         };
                     }
                     var requestedSlot = new RequestedSlot
@@ -579,19 +603,14 @@ namespace Sarvicny.Application.Services
 
                     var newRequestedSlot = await _orderRepository.AddRequestedSlot(requestedSlot);
 
-
-                    DateTime tomorrow = DateTime.Today.AddDays(1);
-
-                    var expiryDate = tomorrow;
-
-
-                    if (request.RequestedDate == tomorrow)
+                    var originalSlot = await _providerService.getOriginalSlot(requestedSlot, request.ProviderID);
+                    if (originalSlot != null)
                     {
-                        expiryDate = DateTime.UtcNow.AddHours(6);
+                        originalSlot.isActive = false;
                     }
 
 
-
+                   
                     var newOrderDetails = new OrderDetails
                     {
                         ProviderID = request.ProviderID,
@@ -612,18 +631,21 @@ namespace Sarvicny.Application.Services
                         Customer = customer,
                         CustomerID = customerId,
                         OrderDate = DateTime.UtcNow,
-                        ExpiryDate = expiryDate,
+
                         OrderDetails = newOrderDetails,
                         OrderDetailsId = newOrderDetails.OrderDetailsID,
+
+                        PaymentMethod = paymentMethod,
+                        PaymentExpiryTime = DateTime.UtcNow.AddHours(2),
+
                     };
 
-
-                    newOrder.PaymentMethod = paymentMethod;
                     var order = await _orderRepository.AddOrder(newOrder);
                     newOrderDetails.OrderId = order.OrderID;
                     // newOrderDetails.Order = newOrder;
                     var orderDetails = await _orderRepository.AddOrderDetails(newOrderDetails);
 
+                    orders.Add(order);
                     var orderAsObject = new
                     {
                         OrderId = order.OrderID,
@@ -646,16 +668,22 @@ namespace Sarvicny.Application.Services
                     };
                     result.Add(orderAsObject);
 
-
-
-
-
                 }
 
-
-
                 await _cartRepository.ClearCart(cart);
+
+                ///var response = await _paymentService.PayOrder(order, PayemntMethod);
+
                 _unitOfWork.Commit();
+
+                foreach (var order in orders)
+                {
+                    var specO = new OrderWithDetailsSpecification(order.OrderID);
+                    var detailedOrder = await _orderRepository.GetOrder(specO);
+                    var orderDetailsForProvider = HelperMethods.GenerateOrderDetailsMessageForProvider(detailedOrder);
+                    var message = new EmailDto(order.OrderDetails.Provider.Email!, "Sarvicny: new Request Alert", $" A new request is ordered, Here is some of its details ,\n\nOrder Details:\n{orderDetailsForProvider} , check the website or the application fo more details.");
+                    _emailService.SendEmail(message);
+                }
 
                 var output = new
                 {
@@ -682,27 +710,27 @@ namespace Sarvicny.Application.Services
             }
         }
 
-        public async Task<Response<object>> PayOrder(string orderId, PaymentMethod PayemntMethod)
-        {
-            var spec = new OrderWithDetailsSpecification(orderId);
-            var order = await _orderRepository.GetOrder(spec);
+        //public async Task<Response<object>> PayOrder(string orderId, PaymentMethod PayemntMethod)
+        //{
+        //    var spec = new OrderWithDetailsSpecification(orderId);
+        //    var order = await _orderRepository.GetOrder(spec);
 
-            if (order == null)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Order Not Found",
-                    Payload = null,
-                    isError = true
+        //    if (order == null)
+        //    {
+        //        return new Response<object>()
+        //        {
+        //            Status = "failed",
+        //            Message = "Order Not Found",
+        //            Payload = null,
+        //            isError = true
 
-                };
-            }
-            var response = await _paymentService.PayOrder(order, PayemntMethod);
+        //        };
+        //    }
+        //    var response = await _paymentService.PayOrder(order, PayemntMethod);
 
-            return response;
+        //    return response;
 
-        }
+        //}
 
         public async Task<Response<object>> ShowCustomerProfile(string customerId)
         {
@@ -919,6 +947,15 @@ namespace Sarvicny.Application.Services
             }
             order.OrderStatus = OrderStatusEnum.Completed;
 
+            var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+            if (originalSlot != null)
+            {
+                originalSlot.isActive = true;
+            }
+
+
+            _unitOfWork.Commit();
+
             var details = _orderService.ShowAllOrderDetailsForCustomer(orderId);
             return new Response<object>()
             {
@@ -1126,97 +1163,51 @@ namespace Sarvicny.Application.Services
             return response;
         }
 
-        public async Task<Response<object>> ReAssignOrder(string orderId)
+        public async Task<Response<object>> GetCustomerCanceledOrders(string customerId)
         {
-            var spec = new OrderWithDetailsSpecification(orderId);
-            var order = await _orderRepository.GetOrder(spec);
-            if (order == null)
+            var customer = await _customerRepository.GetCustomerById(new CustomerWithOrdersSpecification(customerId));
+            if (customer == null)
             {
                 return new Response<object>()
                 {
                     Status = "failed",
-                    Message = "Order Not Found",
+                    Message = "Customer Not Found",
                     Payload = null,
                     isError = true
-
                 };
-
             }
-            var requestedSlot = order.OrderDetails.RequestedSlot;
-            var services = order.OrderDetails.RequestedServices.Services;
-            List<string> servicesIds = new List<string>();
-            foreach (var service in services)
+            var orders = customer.Orders.Where(o => o.OrderStatus == OrderStatusEnum.CanceledByProvider);
+
+
+            List<object> result = new List<object>();
+            foreach (var order in orders)
             {
-                servicesIds.Add(service.ServiceID);
+                var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(order.OrderID);
+                result.Add(orderDetails);
             }
 
-            var startTime = requestedSlot.StartTime;
-            var dayOfweek = requestedSlot.DayOfWeek;
-            var district = order.OrderDetails.providerDistrict.DistrictID;
-            var customer = order.Customer;
 
-            var provider = order.OrderDetails.ProviderID;
-
-            var matchedProviders = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
-
-            var filteredProviders = matchedProviders.Where(p => p.Id != provider).ToList();
-            order.OrderStatus = OrderStatusEnum.Removed;
-
-            _unitOfWork.Commit();
-
-
-            var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(orderId);
-
-
-            if (filteredProviders.Count() == 0)
+            if (result.Count == 0)
             {
-
-                var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
-                var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
-                _emailService.SendEmail(message);
-
                 return new Response<object>()
                 {
-                    Status = "Success",
-                    Message = " No Matched providers is Found (orderStatus = removed & send email successfully)",
+                    Status = "failed",
+                    Message = "No Orders Found",
                     Payload = null,
-                    isError = false
-
+                    isError = true
                 };
-
-
-
             }
-            List<object> providers = new List<object>();
-            foreach (var matched in filteredProviders)
-            {
 
-                var newfiltered = new
-                {
-                    providerId = matched.Id,
-                    firstName = matched.FirstName,
-                    lastName = matched.LastName,
-
-                };
-                providers.Add(newfiltered);
-
-            }
-            var result = new
-            {
-                orderDetails = orderDetails,
-                matchedProviders = provider,
-
-            };
-            var message2 = new EmailDto(customer.Email!, "Sarvicny:Matched Providers are Found", " New Recmmondations are found !! \n Please Select new provider from our recommendations.");
-            _emailService.SendEmail(message2);
             return new Response<object>()
             {
                 Status = "Success",
-                Message = "Matched providers are Found",
+                Message = "Action Done Successfully",
                 Payload = result,
                 isError = false
             };
-        }
 
+
+        }
     }
+
 }

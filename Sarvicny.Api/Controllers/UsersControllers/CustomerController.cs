@@ -142,19 +142,19 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
 
-        [HttpPost]
-        [Route("payOrder/{orderId}")]
-        public async Task<IActionResult> PayOrder(string orderId, PaymentMethod paymentMethod)
-        {
-            var Response = await _customerService.PayOrder(orderId, paymentMethod);
+        //[HttpPost]
+        //[Route("payOrder/{orderId}")]
+        //public async Task<IActionResult> PayOrder(string orderId, PaymentMethod paymentMethod)
+        //{
+        //    var Response = await _customerService.PayOrder(orderId, paymentMethod);
 
-            if (Response.isError)
-            {
-                return BadRequest(Response);
-            }
-            return Ok(Response);
+        //    if (Response.isError)
+        //    {
+        //        return BadRequest(Response);
+        //    }
+        //    return Ok(Response);
 
-        }
+        //}
 
         [HttpGet]
         [Route("getCart")]
@@ -272,26 +272,48 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             var response = await _orderService.GetAllMatchedProviderSortedbyFav(matchingProviderDto);
             if (response.isError)
             {
-                return BadRequest(response);
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+        [HttpPost]
+        [Route("getFirstSuggestionsSortedbyFav")]
+        public async Task<IActionResult> getFirstSuggestionsSortedbyFav([FromBody] MatchingProviderDto matchingProviderDto)
+        {
+
+            var response = await _orderService.SuggestNewProvidersIfNoMatchesFoundLevel1(matchingProviderDto);
+            if (response.isError)
+            {
+                return NotFound(response);
             }
             return Ok(response);
         }
 
         [HttpPost]
-        [Route("ReAssignOrder/{orderId}")]
-        public async Task<IActionResult> ReAssignOrder(string orderId)
+        [Route("getSecondSuggestionsSortedbyFav")]
+        public async Task<IActionResult> getSecondSuggestionsSortedbyFav([FromBody] MatchingProviderDto matchingProviderDto)
         {
-            var response = await _customerService.ReAssignOrder(orderId);
 
+            var response = await _orderService.SuggestNewProvidersIfNoMatchesFoundLevel2(matchingProviderDto);
             if (response.isError)
             {
                 return NotFound(response);
             }
-
-
             return Ok(response);
-
         }
+
+
+        [HttpGet("customerOrders/{customerId}/status/canceled")]
+    public async Task<IActionResult> GetCustomerCanceledOrders(string customerId)
+    {
+        var response = await _customerService.GetCustomerCanceledOrders(customerId);
+
+        if (response.isError)
+        {
+            return NotFound(response);
+        }
+        return Ok(response);
+    }
     }
 
 }

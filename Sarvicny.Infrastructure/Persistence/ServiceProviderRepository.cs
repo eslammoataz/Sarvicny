@@ -9,6 +9,7 @@ using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
+using System;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
@@ -167,7 +168,10 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return await ApplySpecification(spec).Where(p => p.IsVerified == false).ToListAsync();
         }
-
+        public async Task<ICollection<Provider>> GetProvidersServiceRegistrationRequest(ISpecifications<Provider> spec)
+        {
+            return await ApplySpecification(spec).Where(p => p.IsVerified == true && p.ProviderServices.Any(ps=>ps.isVerified== false)).ToListAsync();
+        }
         public async Task<ICollection<Provider>> GetAllServiceProviders(ISpecifications<Provider> spec)
         {
             return await ApplySpecification(spec).ToListAsync();
@@ -182,13 +186,13 @@ namespace Sarvicny.Infrastructure.Persistence
                 .Where(p => p.Availabilities.Any(a =>
                     a.DayOfWeek == dayOfWeek && a.Slots.Any(s =>
                     s.StartTime == startTime && s.isActive)))
-                .Where(p => p.ProviderDistricts.Any(d => d.DistrictID == districtId))
+                .Where(p => p.ProviderDistricts.Any(d => d.DistrictID == districtId && d.enable == true))
                 .Include(p => p.ProviderServices)
                 .ToListAsync();
 
             var matchedProviders = initialProviders
                 .Where(p => services.All(id =>
-                    p.ProviderServices.Any(ps => ps.ServiceID == id)))
+                    p.ProviderServices.Any(ps => ps.isVerified== true && ps.ServiceID == id )))
                 .ToList();
 
             var totalPricePerProvider = matchedProviders
@@ -226,14 +230,104 @@ namespace Sarvicny.Infrastructure.Persistence
             return matchedProviders;
         }
 
+        public async Task<List<Provider>> SuggestionLevel1(List<string> services, string dayOfWeek, string districtId, string customerId)
+        {
+            var initialProviders = await _context.Provider
+               .Where(p => p.IsVerified && !p.IsBlocked)
+               .Where(p => p.Availabilities.Any(a =>
+                   a.DayOfWeek == dayOfWeek && a.Slots.Any(s =>s.isActive)))
+               .Where(p => p.ProviderDistricts.Any(d => d.DistrictID == districtId && d.enable== true) )
+               .Include(p => p.ProviderServices)
+               .ToListAsync();
 
+            var suggestedProviders = initialProviders
+                .Where(p => services.All(id =>
+                    p.ProviderServices.Any(ps => ps.isVerified == true && ps.ServiceID == id)))
+                .ToList();
 
+            var totalPricePerProvider = suggestedProviders
+                .Select(p => new
+                {
+                    Provider = p,
+                    TotalPrice = p.ProviderServices
+                        .Where(ps => services.Contains(ps.ServiceID))
+                        .Sum(ps => ps.Price)
+                })
+                .ToList();
 
+            var customer = await _context.Customers
+                .Include(c => c.Favourites)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
 
+            if (customer != null && customer.Favourites.Count() != 0)
+            {
+                var favoriteProviderIds = customer.Favourites.Select(f => f.providerId).ToHashSet();
 
+                suggestedProviders = totalPricePerProvider
+                    .OrderByDescending(pp => favoriteProviderIds.Contains(pp.Provider.Id))
+                    .ThenBy(pp => pp.TotalPrice)
+                    .Select(pp => pp.Provider)
+                    .ToList();
+            }
+            else
+            {
+                suggestedProviders = totalPricePerProvider
+                    .OrderBy(pp => pp.TotalPrice)
+                    .Select(pp => pp.Provider)
+                    .ToList();
+            }
 
+            return suggestedProviders;
+        }
 
+        public async Task<List<Provider>> SuggestionLevel2(List<string> services, string districtId, string customerId)
+        {
+            var initialProviders = await _context.Provider
+              .Where(p => p.IsVerified && !p.IsBlocked)
+              .Where(p => p.Availabilities.Any(a => a.Slots.Any(s => s.isActive)))
+              .Where(p => p.ProviderDistricts.Any(d => d.DistrictID == districtId && d.enable == true))
+              .Include(p => p.ProviderServices)
+              .ToListAsync();
 
+            var suggestedProviders = initialProviders
+                .Where(p => services.All(id =>
+                    p.ProviderServices.Any(ps => ps.isVerified == true && ps.ServiceID == id)))
+                .ToList();
+
+            var totalPricePerProvider = suggestedProviders
+                .Select(p => new
+                {
+                    Provider = p,
+                    TotalPrice = p.ProviderServices
+                        .Where(ps => services.Contains(ps.ServiceID))
+                        .Sum(ps => ps.Price)
+                })
+                .ToList();
+
+            var customer = await _context.Customers
+                .Include(c => c.Favourites)
+                .FirstOrDefaultAsync(c => c.Id == customerId);
+
+            if (customer != null && customer.Favourites.Count() != 0)
+            {
+                var favoriteProviderIds = customer.Favourites.Select(f => f.providerId).ToHashSet();
+
+                suggestedProviders = totalPricePerProvider
+                    .OrderByDescending(pp => favoriteProviderIds.Contains(pp.Provider.Id))
+                    .ThenBy(pp => pp.TotalPrice)
+                    .Select(pp => pp.Provider)
+                    .ToList();
+            }
+            else
+            {
+                suggestedProviders = totalPricePerProvider
+                    .OrderBy(pp => pp.TotalPrice)
+                    .Select(pp => pp.Provider)
+                    .ToList();
+            }
+
+            return suggestedProviders;
+        }
     }
 
 }

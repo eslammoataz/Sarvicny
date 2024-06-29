@@ -118,7 +118,7 @@ namespace Sarvicny.Application.Services
                 await _orderRepository.ChangeOrderPaidStatus(order, transactionID, saleId, paymentMethod, transactionStatus);
 
 
-                var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessage(order);
+                var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessageForCustomer(order);
                 var message = new EmailDto(customer.Email!, "Sarvicny: order is removed ", $"Sorry your order is removed due to failed transaction  with payment Method. \n\nOrder Details:\n{orderDetailsForCustomer}");
 
 

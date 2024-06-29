@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -26,6 +27,7 @@ public class AdminService : IAdminService
     private readonly IOrderRepository _orderRepository;
     private readonly IDistrictRepository _districtRepository;
     private readonly ICustomerRepository _customerRepository;
+
 
 
     private readonly IUnitOfWork _unitOfWork;
@@ -133,17 +135,18 @@ public class AdminService : IAdminService
         };
     }
 
-    public async Task<Response<Provider>> ApproveServiceProviderRegister(string workerId)
+    public async Task<Response<object>> ApproveProviderRegisteration(string workerId)
     {
-
-        var provider = await _userRepository.GetUserByIdAsync(workerId);
+        var spec = new ProviderWithDetailsSpecification(workerId);
+        var provider = await _providerRepository.FindByIdAsync(spec);
         if (provider == null)
         {
-            return new Response<Provider>()
+            return new Response<object>()
             {
                 Status = "Fail",
                 Message = "Provider Not Found",
                 Payload = null,
+                isError= true,
 
             };
 
@@ -152,29 +155,58 @@ public class AdminService : IAdminService
 
         //Add Token to Verify the email....
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(provider);
-        var output = await _adminRepository.ApproveServiceProviderRegister(workerId);
+        var approved = await _adminRepository.ApproveServiceProviderRegister(spec);
+        var outputAsObject = new
+        {
+            approved.Id,
+            approved.FirstName,
+            approved.LastName,
+           
+            isVerified = approved.IsVerified,
+            services = approved.ProviderServices.Select(s => new
+            {
+                s.ServiceID,
+                s.Service.ServiceName,
+
+                s.Service.ParentServiceID,
+                parentServiceName = s.Service.ParentService?.ServiceName,
+                s.Service.CriteriaID,
+                s.Service.Criteria?.CriteriaName
+            }).ToList(),
+
+            districts = approved.ProviderDistricts.Select(d => new
+            {
+                d.DistrictID,
+                d.District.DistrictName,
+
+            }).ToList(),
+
+        };
+   
         _unitOfWork.Commit();
 
         var message = new EmailDto(provider.Email!, "Sarvicny: Worker Approved Successfully", "Congratulations you are accepted");
 
         _emailService.SendEmail(message);
-        return new Response<Provider>()
+        return new Response<object>()
         {
             Status = "Success",
             Message = "Worker Approved Successfully , Verification Email sent to provider's email ",
-            Payload = output,
+            Payload = outputAsObject,
 
         };
 
 
     }
 
-    public async Task<Response<Provider>> RejectServiceProviderRegister(string workerId)
+
+
+    public async Task<Response<object>> RejectProviderRegisteration(string workerId)
     {
         var provider = await _userRepository.GetUserByIdAsync(workerId);
         if (provider == null)
         {
-            return new Response<Provider>()
+            return new Response<object>()
             {
                 Status = "Fail",
                 Message = "Provider Not Found",
@@ -192,19 +224,205 @@ public class AdminService : IAdminService
         var message = new EmailDto(provider.Email!, "Sarvicny: Worker Rejected", "Sorry you are rejected");
 
         _emailService.SendEmail(message);
-        return new Response<Provider>()
+        var rejected = await _adminRepository.RejectServiceProviderRegister(workerId);
+        var outputAsObject = new
+        {
+            rejected.Id,
+            rejected.FirstName,
+            rejected.LastName,
+
+            isVerified = rejected.IsVerified,
+            services = rejected.ProviderServices.Select(s => new
+            {
+                s.ServiceID,
+                s.Service.ServiceName,
+
+                s.Service.ParentServiceID,
+                parentServiceName = s.Service.ParentService?.ServiceName,
+                s.Service.CriteriaID,
+                s.Service.Criteria?.CriteriaName
+            }).ToList(),
+
+            districts = rejected.ProviderDistricts.Select(d => new
+            {
+                d.DistrictID,
+                d.District.DistrictName,
+
+            }).ToList(),
+
+        };
+        return new Response<object>()
         {
             Status = "Success",
             Message = "Worker Rejected Successfully , Verification Email sent to provider's email ",
-            Payload = await _adminRepository.RejectServiceProviderRegister(workerId),
+            Payload = outputAsObject,
             isError = false
 
         };
     }
 
+    public async Task<Response<object>> ApproveServiceForProvider(string providerId,string providerServiceID)
+    {
+        var spec = new ProviderWithDetailsSpecification(providerId);
+
+        var provider = await _providerRepository.FindByIdAsync(spec);
+        if (provider == null)
+        {
+            return new Response<object>()
+            {
+                Status = "Fail",
+                Message = "Provider Not Found",
+                Payload = null,
+                isError= true,
+            };
+
+        }
+        var providerService = provider.ProviderServices.FirstOrDefault(p => p.ProviderServiceID == providerServiceID);
+
+        if (providerService == null)
+        {
+            return new Response<object>()
+            {
+                Status = "Fail",
+                Message = "Service Provider Not Found",
+                Payload = null,
+                isError = true,
+
+            };
+        }
+        if (providerService.isVerified == true)
+        {
+            return new Response<object>()
+            {
+                Status = "Fail",
+                Message = "Service is already verified ",
+                Payload = null,
+                isError = true,
+
+            };
+        }
+        _adminRepository.ApproveProviderService(providerServiceID);
+
+        _unitOfWork.Commit();
+
+        var message = new EmailDto(provider.Email!, "Sarvicny: Service Approved Successfully", "Congratulations you are request of applying to the service accepted");
+
+        _emailService.SendEmail(message);
+
+        return new Response<object>()
+        {
+            Status = "Success ",
+            Message = "Service Provider is verified ",
+            Payload = null
+
+
+        };
+
+    }
+
+    public async Task<Response<object>> RejectServiceForProvider(string providerId, string providerServiceID)
+    {
+        var spec = new ProviderWithDetailsSpecification(providerId);
+
+        var provider = await _providerRepository.FindByIdAsync(spec);
+        if (provider == null)
+        {
+            return new Response<object>()
+            {
+                Status = "Fail",
+                Message = "Provider Not Found",
+                Payload = null,
+
+            };
+
+        }
+        var providerService = provider.ProviderServices.FirstOrDefault(p => p.ProviderServiceID == providerServiceID);
+
+        if (providerService == null)
+        {
+            return new Response<object>()
+            {
+                Status = "Fail",
+                Message = "Service For the Provider Not Found",
+                Payload = null,
+                isError = true,
+
+            };
+        }
+        if (providerService.isVerified== true)
+        {
+            return new Response<object>()
+            {
+                Status = "Fail",
+                Message = "Service is already verified ",
+                Payload = null,
+                isError = true,
+
+            };
+        }
+
+        _adminRepository.RejectProviderService(providerServiceID);
+        _unitOfWork.Commit();
+
+        var message = new EmailDto(provider.Email!, "Sarvicny: Service Addition Rejected", "Unfortunatly! you are request of applying to the service is rejected");
+
+        _emailService.SendEmail(message);
+
+        return new Response<object>()
+        {
+            Status = "Success ",
+            Message = "Service Provider is removed ",
+            Payload = null,
+            
+
+        };
+    }
+
+    public async Task<Response<List<object>>> GetProvidersRegisterServiceRequests()
+    {
+        var spec = new ProviderWithDetailsSpecification();
+
+        var unHandledProviders = await _providerRepository.GetProvidersServiceRegistrationRequest(spec);
+
+        var unHandeledProvidersAsObjects = unHandledProviders.Select(p => new
+        {
+
+            p.Id,
+            p.FirstName,
+            p.LastName,
+    
+            isVerified = p.IsVerified,
+            services = p.ProviderServices.Where(ps=>ps.isVerified==false).Select(s => new
+            {
+                s.ServiceID,
+                s.Service.ServiceName,
+
+                s.Service.ParentServiceID,
+                parentServiceName = s.Service.ParentService?.ServiceName,
+                s.Service.CriteriaID,
+                s.Service.Criteria?.CriteriaName
+            }).ToList(),
+
+        }).ToList<object>();
+
+
+        var response = new Response<List<object>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = unHandeledProvidersAsObjects,
+            isError = false
+        };
+
+        return response;
+    }
+
+
+
     public async Task<Response<List<object>>> GetServiceProvidersRegistrationRequests()
     {
-        var spec = new ServiceProviderWithService_DistrictSpecificationcs();
+        var spec = new ProviderWithDetailsSpecification();
+
         var unHandledProviders = await _providerRepository.GetProvidersRegistrationRequest(spec);
 
         var unHandeledProvidersAsObjects = unHandledProviders.Select(p => new
@@ -229,11 +447,13 @@ public class AdminService : IAdminService
                 s.Service.Criteria?.CriteriaName
             }).ToList(),
 
-            //districts=p.ProviderDistricts.Select(d => new
-            //{
-            //    d.DistrictID, d.District.DistrictName,
+            districts = p.ProviderDistricts.Select(d => new
+            {
+                d.DistrictID,
+                d.District.DistrictName,
 
-            //}).ToList(),
+            }).ToList(),
+
         }).ToList<object>();
 
 
@@ -287,10 +507,10 @@ public class AdminService : IAdminService
 
     }
 
-    public async Task<Response<List<object>>> getAllPendingOrders()
+    public async Task<Response<List<object>>> getAllPendingOrPaidOrders()
     {
         var spec = new OrderWithDetailsSpecification();
-        var pending = await _orderRepository.GetAllPendingOrders(spec);
+        var pending = await _orderRepository.GetAllPendingOrPaidOrders(spec);
 
         List<object> result = new List<object>();
         foreach (var order in pending)
@@ -321,108 +541,108 @@ public class AdminService : IAdminService
 
     }
 
-    public async Task<Response<List<object>>> getAllApprovedOrders()
-    {
+    //public async Task<Response<List<object>>> getAllApprovedOrders()
+    //{
 
-        var spec = new OrderWithDetailsSpecification();
-        var approvedOrders = await _orderRepository.GetAllApprovedOrders(spec);
+    //    var spec = new OrderWithDetailsSpecification();
+    //    var approvedOrders = await _orderRepository.GetAllApprovedOrders(spec);
 
-        List<object> result = new List<object>();
-        foreach (var order in approvedOrders)
-        {
-            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
-        }
+    //    List<object> result = new List<object>();
+    //    foreach (var order in approvedOrders)
+    //    {
+    //        var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+    //        result.Add(orderDetails);
+    //    }
 
-        if (result.Count == 0)
-        {
-            return new Response<List<object>>()
-            {
-                Status = "failed",
-                Message = "No Approved Orders Found",
-                Payload = null,
-                isError = true
-            };
-        }
+    //    if (result.Count == 0)
+    //    {
+    //        return new Response<List<object>>()
+    //        {
+    //            Status = "failed",
+    //            Message = "No Approved Orders Found",
+    //            Payload = null,
+    //            isError = true
+    //        };
+    //    }
 
-        return new Response<List<object>>()
-        {
-            Status = "Success",
-            Message = "Action Done Successfully",
-            Payload = result,
-            isError = false
-        };
+    //    return new Response<List<object>>()
+    //    {
+    //        Status = "Success",
+    //        Message = "Action Done Successfully",
+    //        Payload = result,
+    //        isError = false
+    //    };
 
 
-    }
+    //}
 
-    public async Task<Response<List<object>>> getAllRejectedOrders()
-    {
-        var spec = new OrderWithDetailsSpecification();
-        var Rejected = await _orderRepository.GetAllRejectedOrders(spec);
+    //public async Task<Response<List<object>>> getAllRejectedOrders()
+    //{
+    //    var spec = new OrderWithDetailsSpecification();
+    //    var Rejected = await _orderRepository.GetAllRejectedOrders(spec);
 
-        List<object> result = new List<object>();
-        foreach (var order in Rejected)
-        {
-            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
-        }
+    //    List<object> result = new List<object>();
+    //    foreach (var order in Rejected)
+    //    {
+    //        var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+    //        result.Add(orderDetails);
+    //    }
 
-        if (result.Count == 0)
-        {
-            return new Response<List<object>>()
-            {
-                Status = "failed",
-                Message = "No Rejected Orders Found",
-                Payload = null,
-                isError = true
-            };
-        }
+    //    if (result.Count == 0)
+    //    {
+    //        return new Response<List<object>>()
+    //        {
+    //            Status = "failed",
+    //            Message = "No Rejected Orders Found",
+    //            Payload = null,
+    //            isError = true
+    //        };
+    //    }
 
-        return new Response<List<object>>()
-        {
-            Status = "Success",
-            Message = "Action Done Successfully",
-            Payload = result,
-            isError = false
-        };
-    }
+    //    return new Response<List<object>>()
+    //    {
+    //        Status = "Success",
+    //        Message = "Action Done Successfully",
+    //        Payload = result,
+    //        isError = false
+    //    };
+    //}
 
-    public async Task<Response<List<object>>> getAllExpiredOrders()
-    {
-        var spec = new OrderWithDetailsSpecification();
-        var Expired = await _orderRepository.GetAllExpiredOrders(spec);
+    //public async Task<Response<List<object>>> getAllExpiredOrders()
+    //{
+    //    var spec = new OrderWithDetailsSpecification();
+    //    var Expired = await _orderRepository.GetAllExpiredOrders(spec);
 
-        List<object> result = new List<object>();
-        foreach (var order in Expired)
-        {
-            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
-        }
+    //    List<object> result = new List<object>();
+    //    foreach (var order in Expired)
+    //    {
+    //        var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+    //        result.Add(orderDetails);
+    //    }
 
-        if (result.Count == 0)
-        {
-            return new Response<List<object>>()
-            {
-                Status = "failed",
-                Message = "No Expired Orders Found",
-                Payload = null,
-                isError = true
-            };
-        }
+    //    if (result.Count == 0)
+    //    {
+    //        return new Response<List<object>>()
+    //        {
+    //            Status = "failed",
+    //            Message = "No Expired Orders Found",
+    //            Payload = null,
+    //            isError = true
+    //        };
+    //    }
 
-        return new Response<List<object>>()
-        {
-            Status = "Success",
-            Message = "Action Done Successfully",
-            Payload = result,
-            isError = false
-        };
-    }
+    //    return new Response<List<object>>()
+    //    {
+    //        Status = "Success",
+    //        Message = "Action Done Successfully",
+    //        Payload = result,
+    //        isError = false
+    //    };
+    //}
     public async Task<Response<List<object>>> RemoveAllPaymentExpiredOrders()
     {
         var spec = new OrderWithDetailsSpecification();
-        var expired = await _orderRepository.RemoveAllPaymentExpiredOrders(spec);
+        var expired = await _orderRepository.getAllPaymentExpiredOrders(spec);
 
 
         List<object> result = new List<object>();
@@ -461,10 +681,48 @@ public class AdminService : IAdminService
             isError = false
         };
     }
-    public async Task<Response<List<object>>> getAllCanceledOrders()
+
+    public async Task<Response<List<object>>> EnableSlotsForExpiredOrders()
     {
         var spec = new OrderWithDetailsSpecification();
-        var Canceled = await _orderRepository.GetAllCanceledOrders(spec);
+        var expired = await _orderRepository.getAllExpiredOrders(spec);
+
+        List<object> result = new List<object>();
+
+        foreach (var order in expired)
+        {
+
+            var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+            if (originalSlot != null)
+            {
+                originalSlot.isActive = true;
+            }
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+            result.Add(orderDetails);
+        }
+        _unitOfWork.Commit();
+        if (result.Count == 0)
+        {
+            return new Response<List<object>>()
+            {
+                Status = "failed",
+                Message = "No Expired Orders Found",
+                Payload = null,
+                isError = true
+            };
+        }
+        return new Response<List<object>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = result,
+            isError = false
+        };
+    }
+    public async Task<Response<List<object>>> getAllCanceledByProviderOrders()
+    {
+        var spec = new OrderWithDetailsSpecification();
+        var Canceled = await _orderRepository.GetAllCanceledByProviderOrders(spec);
 
         List<object> result = new List<object>();
         foreach (var order in Canceled)
@@ -620,50 +878,97 @@ public class AdminService : IAdminService
     }
 
 
-    public async Task<Response<object>> GetCustomerOrdersByStatus(string customerId)
+    public async Task<Response<object>> ReAssignOrder(string orderId)
     {
-        var customer = await _customerRepository.GetCustomerById(new CustomerWithOrdersSpecification(customerId));
-        if (customer == null)
+        var spec = new OrderWithDetailsSpecification(orderId);
+        var order = await _orderRepository.GetOrder(spec);
+        if (order == null)
         {
             return new Response<object>()
             {
                 Status = "failed",
-                Message = "Customer Not Found",
+                Message = "Order Not Found",
                 Payload = null,
                 isError = true
+
             };
-        }
-        var orders = customer.Orders.Where(o => o.OrderStatus == OrderStatusEnum.Rejected ||
-                                              o.OrderStatus == OrderStatusEnum.Canceled);
-        // o.ExpiryDate != null && o.ExpiryDate < DateTime.UtcNow 
 
-        List<object> result = new List<object>();
-        foreach (var order in orders)
+        }
+        var requestedSlot = order.OrderDetails.RequestedSlot;
+        var services = order.OrderDetails.RequestedServices.Services;
+        List<string> servicesIds = new List<string>();
+        foreach (var service in services)
         {
-            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
+            servicesIds.Add(service.ServiceID);
         }
 
+        var startTime = requestedSlot.StartTime;
+        var dayOfweek = requestedSlot.DayOfWeek;
+        var district = order.OrderDetails.providerDistrict.DistrictID;
+        var customer = order.Customer;
 
-        if (result.Count == 0)
+        var provider = order.OrderDetails.ProviderID;
+
+        var matchedProviders = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
+
+        var filteredProviders = matchedProviders.Where(p => p.Id != provider).ToList();
+        order.OrderStatus = OrderStatusEnum.Removed;
+
+        _unitOfWork.Commit();
+
+
+        var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(orderId);
+
+
+        if (filteredProviders.Count() == 0)
         {
+
+            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessageForCustomer(order);
+            var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
+            _emailService.SendEmail(message);
+
             return new Response<object>()
             {
-                Status = "failed",
-                Message = "No Orders Found",
+                Status = "Success",
+                Message = " No Matched providers is Found (orderStatus = removed & send email successfully)",
                 Payload = null,
-                isError = true
-            };
-        }
+                isError = false
 
+            };
+
+
+
+        }
+        List<object> providers = new List<object>();
+        foreach (var matched in filteredProviders)
+        {
+
+            var newfiltered = new
+            {
+                providerId = matched.Id,
+                firstName = matched.FirstName,
+                lastName = matched.LastName,
+
+            };
+            providers.Add(newfiltered);
+
+        }
+        var result = new
+        {
+            orderDetails = orderDetails,
+            matchedProviders = provider,
+
+        };
+        var message2 = new EmailDto(customer.Email!, "Sarvicny:Matched Providers are Found", " New Recmmondations are found !! \n Please Select new provider from our recommendations.");
+        _emailService.SendEmail(message2);
         return new Response<object>()
         {
             Status = "Success",
-            Message = "Action Done Successfully",
+            Message = "Matched providers are Found",
             Payload = result,
             isError = false
         };
-
-
     }
+
+
 }

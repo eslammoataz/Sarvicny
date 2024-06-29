@@ -15,11 +15,9 @@ namespace Sarvicny.Contracts.Dtos
         [Required(ErrorMessage = "Services IDs is Required ")]
         public List<string> services { get; set; }
 
-        [Required(ErrorMessage = "Start Time is Required ")]
-        public string startTime { get; set; }
+        public string? startTime { get; set; }
 
-        [Required(ErrorMessage = " Day Of Week is Required ")]
-        public string dayOfWeek { get; set; }
+        public string? dayOfWeek { get; set; }
 
         [Required(ErrorMessage = "District ID is Required ")]
         public string districtId { get; set; }

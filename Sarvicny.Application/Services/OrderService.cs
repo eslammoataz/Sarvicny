@@ -1,11 +1,15 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
+using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Specification;
+using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Sarvicny.Application.Services
 {
@@ -277,7 +281,6 @@ namespace Sarvicny.Application.Services
             {
                 orderId = order.OrderID,
                 orderDate = order.OrderDate,
-                ExpiryDate = order.ExpiryDate,
                 OrderStatus = order.OrderStatus,
                 PaymentExpirytime = order.PaymentExpiryTime,
 
@@ -340,7 +343,6 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-
 
             var provider = order.OrderDetails.Provider;
             var services = order.OrderDetails.RequestedServices.Services;
@@ -414,8 +416,6 @@ namespace Sarvicny.Application.Services
                 customerFN = customer.FirstName,
                 customerLastName = customer.LastName,
 
-
-
                 orderPrice = order.OrderDetails.Price,
 
                 orderService = services.Select(s => new
@@ -438,8 +438,9 @@ namespace Sarvicny.Application.Services
                 DistrictID = order.OrderDetails.providerDistrict.DistrictID,
                 DistrictName = order.OrderDetails.providerDistrict.District.DistrictName,
                 Address = order.OrderDetails.Address,
-                Price = order.OrderDetails.Price,
-                Problem = order.OrderDetails.ProblemDescription
+                
+                Problem = order.OrderDetails.ProblemDescription,
+                profit = Math.Ceiling(order.OrderDetails.Price / (1 + 0.12m))
             };
 
             return new Response<object>()
@@ -478,7 +479,10 @@ namespace Sarvicny.Application.Services
         }
 
 
-
+        public Task<Response<object>> Refund(string orderId)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<Response<List<object>>> GetAllMatchedProviderSortedbyFav(MatchingProviderDto matchingProviderDto)
         {
 
@@ -527,14 +531,33 @@ namespace Sarvicny.Application.Services
             }
 
             List<object> result = new List<object>();
-            foreach (var provider in MatchedProviderSortedbyFav)
+            foreach (var match in MatchedProviderSortedbyFav)
             {
+                var spec = new ProviderWithDetailsSpecification(match.Id);
+                var provider = await _providerRepository.FindByIdAsync(spec);
+                var availability = provider.Availabilities.FirstOrDefault(a=> a.DayOfWeek == matchingProviderDto.dayOfWeek );
+                var slot = availability.Slots.FirstOrDefault(s => s.StartTime == startTime);
+
+               
+                decimal rate = 0.12m;
+
+
                 var providerAsObj = new
                 {
                     providerId = provider.Id,
                     firstname = provider.FirstName,
                     lastname = provider.LastName,
                     email = provider.Email,
+                    slotId= slot.TimeSlotID,
+                    services = provider.ProviderServices
+                        .Where(ps => matchingProviderDto.services.Contains(ps.ServiceID))
+                        .Select(ps => new
+                        {
+                            ps.ServiceID,
+                            price = Math.Ceiling(ps.Price + (ps.Price * rate))
+
+                        }).ToList(),
+
 
                 };
                 result.Add(providerAsObj);
@@ -551,9 +574,180 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public Task<Response<object>> Refund(string orderId)
+
+
+
+        public async Task<Response<List<object>>> SuggestNewProvidersIfNoMatchesFoundLevel1(MatchingProviderDto matchingProviderDto)
         {
-            throw new NotImplementedException();
+            foreach (var Id in matchingProviderDto.services)
+            {
+                var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == Id);
+                var service = await _serviceRepository.GetServiceById(serviceSpec);
+                if (service == null)
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "Service Not Found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+                if (service.ParentServiceID == null)
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "Service Not Found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+
+            }
+            
+            var Suggestions = await _providerRepository.SuggestionLevel1(matchingProviderDto.services, matchingProviderDto.dayOfWeek, matchingProviderDto.districtId, matchingProviderDto.customerId);
+            if (Suggestions == null)
+            {
+
+                return new Response<List<object>>
+                {
+                    isError = true,
+                    Message = "No MatchedProvider in This day of week",
+                    Payload= null,
+
+                };
+
+            }
+
+            List<object> result = new List<object>();
+            foreach (var match in Suggestions)
+            {
+                var spec = new ProviderWithDetailsSpecification(match.Id);
+                var provider = await _providerRepository.FindByIdAsync(spec);
+                var availability = provider.Availabilities.FirstOrDefault(a => a.DayOfWeek == matchingProviderDto.dayOfWeek);
+               
+                decimal rate = 0.12m;
+     
+
+                var providerAsObj = new
+                {
+                    providerId = provider.Id,
+                    firstname = provider.FirstName,
+                    lastname = provider.LastName,
+                    email = provider.Email,
+                    availabilities= availability.Slots.Select(s=> new
+                    {
+                        s.TimeSlotID,
+                        s.StartTime
+                    }).ToList(),
+                    services = provider.ProviderServices
+                        .Where(ps => matchingProviderDto.services.Contains(ps.ServiceID))
+                        .Select(ps => new
+                        {
+                            ps.ServiceID,
+                            price= Math.Ceiling(ps.Price + (ps.Price * rate))
+                           
+                        }).ToList(),
+                   
+
+
+                };
+                result.Add(providerAsObj);
+            }
+
+            return new Response<List<object>>
+            {
+                isError = false,
+                Errors = null,
+                Status = "Success",
+                Payload = result,
+                Message = "Action done Successfully",
+            };
+        }
+        public async Task<Response<List<object>>> SuggestNewProvidersIfNoMatchesFoundLevel2(MatchingProviderDto matchingProviderDto)
+        {
+            foreach (var Id in matchingProviderDto.services)
+            {
+                var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == Id);
+                var service = await _serviceRepository.GetServiceById(serviceSpec);
+                if (service == null)
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "Service Not Found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+                if (service.ParentServiceID == null)
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "Service Not Found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+
+            }
+
+            var Suggestions = await _providerRepository.SuggestionLevel2(matchingProviderDto.services, matchingProviderDto.districtId, matchingProviderDto.customerId);
+            if (Suggestions == null)
+            {
+
+                return new Response<List<object>>
+                {
+                    isError = true,
+                    Message = "No MatchedProvider for your Requirments (district or combination of services)",
+                    Payload = null,
+
+                };
+
+            }
+
+            List<object> result = new List<object>();
+            foreach (var match in Suggestions)
+            {
+                var spec = new ProviderWithDetailsSpecification(match.Id);
+                var provider = await _providerRepository.FindByIdAsync(spec);
+
+
+                decimal rate = 0.12m;
+
+
+                var availabilities= provider.Availabilities.Select(a=>a.Slots.Select( s=> new
+                {
+                    s.TimeSlotID,
+                    s.StartTime,
+                    s.ProviderAvailability.DayOfWeek
+                }
+                 )).ToList();
+
+
+                var providerAsObj = new
+                {
+                    providerId = provider.Id,
+                    firstname = provider.FirstName,
+                    lastname = provider.LastName,
+                    email = provider.Email,
+                    avalability= availabilities,
+                    services = provider.ProviderServices
+                        .Where(ps => matchingProviderDto.services.Contains(ps.ServiceID))
+                        .Select(ps => new
+                        {
+                            ps.ServiceID,
+                            price = Math.Ceiling(ps.Price + (ps.Price * rate))
+
+                        }).ToList(),
+
+
+                };
+                result.Add(providerAsObj);
+            }
+
+            return new Response<List<object>>
+            {
+                isError = false,
+                Errors = null,
+                Status = "Success",
+                Payload = result,
+                Message = "Action done Successfully",
+            };
         }
     }
 }
