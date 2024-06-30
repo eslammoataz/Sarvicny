@@ -555,10 +555,10 @@ namespace Sarvicny.Application.Services
 
                 return new Response<List<object>>()
                 {
-                    Status = "failed",
+                    Status = "Success",
                     Message = "No Orders Found",
                     Payload = null,
-                    isError = true
+                    isError = false
                 };
             }
 

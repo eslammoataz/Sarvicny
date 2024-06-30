@@ -492,10 +492,10 @@ public class AdminService : IAdminService
         {
             return new Response<List<object>>()
             {
-                Status = "failed",
+                Status = "Success",
                 Message = "No Orders Found",
                 Payload = null,
-                isError = true
+                isError = false
             };
         }
 
@@ -527,10 +527,10 @@ public class AdminService : IAdminService
         {
             return new Response<List<object>>()
             {
-                Status = "failed",
-                Message = "No Rejected Orders Found",
+                Status = "Success",
+                Message = "No pending Orders Found",
                 Payload = null,
-                isError = true
+                isError = false
             };
         }
 
@@ -709,10 +709,10 @@ public class AdminService : IAdminService
         {
             return new Response<List<object>>()
             {
-                Status = "failed",
+                Status = "Success",
                 Message = "No Expired Orders Found",
                 Payload = null,
-                isError = true
+                isError = false
             };
         }
         return new Response<List<object>>()
@@ -739,10 +739,10 @@ public class AdminService : IAdminService
         {
             return new Response<List<object>>()
             {
-                Status = "failed",
+                Status = "Success",
                 Message = "No Canceled Orders Found",
                 Payload = null,
-                isError = true
+                isError = false
             };
         }
 

@@ -129,7 +129,7 @@ public class AdminController : ControllerBase
 
         if (response.isError)
         {
-            return NotFound(response);
+            return BadRequest(response);
         }
 
 
@@ -159,7 +159,7 @@ public class AdminController : ControllerBase
 
         if (response.isError)
         {
-            return NotFound(response);
+            return BadRequest(response);
         }
         return Ok(response);
 
@@ -171,7 +171,7 @@ public class AdminController : ControllerBase
 
         if (response.isError)
         {
-            return NotFound(response);
+            return BadRequest(response);
         }
 
 

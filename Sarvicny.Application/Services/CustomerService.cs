@@ -870,14 +870,14 @@ namespace Sarvicny.Application.Services
 
             }
             var orders = customer.Orders;
-            if (orders == null)
+            if (orders.Count()==0)
             {
                 return new Response<object>()
                 {
-                    isError = true,
+                    isError = false,
                     Payload = null,
                     Message = "No Orders found",
-                    Status = "Failed"
+                    Status = "Success"
 
                 };
             }

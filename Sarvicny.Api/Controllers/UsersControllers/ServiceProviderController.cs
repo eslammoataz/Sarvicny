@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
@@ -159,7 +160,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
             if (response.isError)
             {
-                return NotFound(response);
+                return BadRequest(response);
             }
 
 
