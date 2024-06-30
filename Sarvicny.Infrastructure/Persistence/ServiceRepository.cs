@@ -54,10 +54,10 @@ public class ServiceRepository : IServiceRepository
         return SpecificationBuilder<ProviderService>.Build(_context.ProviderServices, spec);
     }
 
-    public Task<ICollection<Provider>> GetServiceById(string serviceId)
-    {
-        throw new NotImplementedException();
-    }
+    //public Task<ICollection<Pr>> GetServiceById(string serviceId)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     public async Task<ICollection<Service>> GetAllParentServices(ISpecifications<Service> spec)
     {
@@ -67,5 +67,9 @@ public class ServiceRepository : IServiceRepository
    public  async Task AddRequestedService(RequestedService requestedService)
     {
         await _context.RequestedServices.AddAsync(requestedService);
+    }
+    public async Task RemoveRequestedService(RequestedService requestedService)
+    {
+        _context.RequestedServices.Remove(requestedService);
     }
 }

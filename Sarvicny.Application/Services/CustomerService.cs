@@ -63,6 +63,28 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> addToCart(RequestServiceDto requestServiceDto, string customerId)
         {
+            var customerSpec = new CustomerWithCartSpecification(customerId);
+            var customer = await _customerRepository.GetCustomerById(customerSpec);
+
+            if (customer == null)
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Customer Not Found" },
+                    Status = "Error",
+                    Message = "Customer Not Found",
+                };
+            var cart = customer.Cart;
+
+            if (cart is null)
+            {
+                customer.Cart = new Cart
+                {
+                    CustomerID = customer.Id,
+                    LastChangeTime = DateTime.UtcNow,
+                    Customer = customer
+                };
+            }
             if (requestServiceDto.RequestDay < DateTime.Today)
             {
                 return new Response<object>
@@ -123,7 +145,9 @@ namespace Sarvicny.Application.Services
                 };
             }
 
+
             List<Service> services = new List<Service>();
+            List<RequestedService> requestedServices = new List<RequestedService>();
             decimal price = 0;
 
 
@@ -160,14 +184,23 @@ namespace Sarvicny.Application.Services
                         Message = "Failed",
                     };
 
+                var requestedService = new RequestedService
+                {
+                    ServiceId = service.ServiceID,
+                    Service= service,
+                    CartId= cart.CartID
+                };
+                await _serviceRepository.AddRequestedService(requestedService);
+
+                requestedServices.Add(requestedService);
                 services.Add(service);
                 price += providerService.Price;
 
 
             }
 
-            //decimal rate = 0.12m;
-            //price = price+price * rate;
+            decimal rate = 0.12m;
+            price = price + price * rate;
             price = Math.Ceiling(price);
 
             if (services.Count() != requestServiceDto.ServiceIDs.Count())
@@ -181,10 +214,10 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            var requestedServices = new RequestedService();
-            requestedServices.Services = services;
 
-            await _serviceRepository.AddRequestedService(requestedServices);
+            
+
+           
 
 
             var district = await _districtRepository.GetDistrictById(requestServiceDto.DistrictID);
@@ -206,20 +239,7 @@ namespace Sarvicny.Application.Services
                     Message = "Failed",
                 };
 
-            var customerSpec = new CustomerWithCartSpecification(customerId);
-            var customer = await _customerRepository.GetCustomerById(customerSpec);
-
-            if (customer == null)
-                return new Response<object>
-                {
-                    isError = true,
-                    Errors = new List<string> { "Customer Not Found" },
-                    Status = "Error",
-                    Message = "Customer Not Found",
-                };
-
-
-
+           
 
 
             var dayofweek = requestServiceDto.RequestDay.DayOfWeek.ToString();
@@ -236,17 +256,7 @@ namespace Sarvicny.Application.Services
             }
 
 
-            var cart = customer.Cart;
 
-            if (cart is null)
-            {
-                customer.Cart = new Cart
-                {
-                    CustomerID = customer.Id,
-                    LastChangeTime = DateTime.UtcNow,
-                    Customer = customer
-                };
-            }
             var cartRequest = cart.CartServiceRequests.ToList();
             foreach (var request in cartRequest)  //check not already in cart
             {
@@ -258,7 +268,7 @@ namespace Sarvicny.Application.Services
                         isError = true,
 
                         Status = "Error",
-                        Message = "Provider is already Found in the cart",
+                        Message = "request with the same availabilty  is already Found in the cart",
                     };
                 }
 
@@ -293,6 +303,7 @@ namespace Sarvicny.Application.Services
             await _customerRepository.AddRequest(newRequest);
             _unitOfWork.Commit();
 
+
             var output = new
             {
                 RequestId = newRequest.CartServiceRequestID,
@@ -302,12 +313,16 @@ namespace Sarvicny.Application.Services
                 District = providerDistrict.District.DistrictName,
                 Address = Address,
                 ProviderName = provider.FirstName + " " + provider.LastName,
-                Services = requestedServices.Services.Select(s => new
-                {
-                    s.ServiceID,
-                    s.ServiceName
 
-                }).ToList<object>(),
+                Services= requestedServices.Select( r=> new
+                {
+                    ServiceId = r.ServiceId,
+                    ServiceName= r.Service.ServiceName,
+                    Price = Math.Ceiling((r.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m),
+
+
+                }
+                ).ToList<object>(),
 
                 Price = price,
                 ProblemDescription = requestServiceDto.ProblemDescription
@@ -380,12 +395,14 @@ namespace Sarvicny.Application.Services
 
                     ProviderID = serviceRequest.Provider.Id,
                     ProviderName = serviceRequest.Provider.FirstName + " " + serviceRequest.Provider.LastName,
-                    Services = serviceRequest.RequestedServices.Services.Select(s => new
+                    Services = serviceRequest.RequestedServices.Select(r => new
                     {
-                        s.ServiceID,
-                        s.ServiceName
+                        ServiceId = r.ServiceId,
+                        ServiceName = r.Service.ServiceName,
 
-                    }).ToList<object>(),
+                    }
+                ).ToList<object>(),
+
                     SlotId = serviceRequest.SlotID,
                     RequestedDate = serviceRequest.RequestedDate,
                     DayOfWeek = serviceRequest.Slot != null ? serviceRequest.Slot.ProviderAvailability.DayOfWeek : null,
@@ -463,14 +480,15 @@ namespace Sarvicny.Application.Services
                 providerId = s.Provider.Id,
                 s.Provider.FirstName,
                 s.Provider.LastName,
-                Services = s.RequestedServices.Services.Select(s => new
+                Services = s.RequestedServices.Select(s => new
                 {
-                    s.ServiceID,
-                    s.ServiceName,
-                    s.ParentServiceID,
-                    parentServiceName = s.ParentService?.ServiceName,
-                    s.CriteriaID,
-                    s.Criteria?.CriteriaName,
+                    s.ServiceId,
+                    s.Service.ServiceName,
+                    s.Service.ParentServiceID,
+                    parentServiceName = s.Service.ParentService?.ServiceName,
+                    s.Service.CriteriaID,
+                    s.Service.Criteria?.CriteriaName,
+                    Price = Math.Ceiling((s.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m),
 
                 }).ToList<object>(),
 
@@ -548,12 +566,20 @@ namespace Sarvicny.Application.Services
                 };
             }
             var deleted = cartServiceRequests.Any(r => r.Slot == null);
+
             if (deleted)
             {
+                var deletedRequest= cartServiceRequests.Where(r=>r.Slot==null).Select( r=> new
+                {
+                    r.CartServiceRequestID,
+                    r.Slot?.TimeSlotID,
+                }
+
+                );
                 return new Response<object>
                 {
                     isError = true,
-                    Payload = null,
+                    Payload = deletedRequest,
                     Status = "Error",
                     Message = "Request slots seams to be not found anymore ,may be deleted",
                 };
@@ -562,6 +588,12 @@ namespace Sarvicny.Application.Services
 
             if (reserved)
             {
+                var resveredRequest = cartServiceRequests.Where(r => r.Slot.isActive == false).Select(r => new
+                {
+                    r.CartServiceRequestID,
+                    r.Slot?.TimeSlotID,
+                    r.Slot.isActive
+                });
                 return new Response<object>
                 {
                     isError = true,
@@ -574,15 +606,16 @@ namespace Sarvicny.Application.Services
             #endregion
 
 
-            var totalPrice = cartServiceRequests.Sum(s => s.Price);
+           
 
             List<object> result = new List<object>();
             List<Order> orders = new List<Order>();
-
+            decimal totalPrice = 0;
             try
             {
                 foreach (var request in cartServiceRequests)
                 {
+                    totalPrice += request.Price;
                     var startTime = request.Slot.StartTime;
                     var allowedRange = DateTime.UtcNow.AddHours(2).TimeOfDay;
                     if (request.RequestedDate == DateTime.Today && startTime <= allowedRange)
@@ -612,13 +645,12 @@ namespace Sarvicny.Application.Services
                     }
 
 
-
                     var newOrderDetails = new OrderDetails
                     {
                         ProviderID = request.ProviderID,
                         Provider = request.Provider,
-                        RequestedServicesID = request.RequestedServicesID,
                         RequestedServices = request.RequestedServices,
+   
                         Price = request.Price,
                         RequestedSlot = newRequestedSlot,
                         RequestedSlotID = newRequestedSlot.RequestedSlotId,
@@ -641,13 +673,37 @@ namespace Sarvicny.Application.Services
                         //PaymentExpiryTime = DateTime.UtcNow.AddHours(2),
 
                     };
-
+                 
                     var order = await _orderRepository.AddOrder(newOrder);
+
+                    List<RequestedService> requestedServices= new List<RequestedService>();
+                    foreach (var requested in request.RequestedServices)
+                    {
+                        var newRequestService = new RequestedService
+                        {
+                            Service = requested.Service,
+                            ServiceId = requested.ServiceId,
+                            OrderId = newOrder.OrderID,
+
+                        };
+                        _serviceRepository.RemoveRequestedService(requested);
+
+                        _serviceRepository.AddRequestedService(newRequestService);
+                        requestedServices.Add(newRequestService);
+
+                    }
+
                     newOrderDetails.OrderId = order.OrderID;
+                    newOrderDetails.RequestedServices = requestedServices;
                     // newOrderDetails.Order = newOrder;
                     var orderDetails = await _orderRepository.AddOrderDetails(newOrderDetails);
 
                     orders.Add(order);
+
+                    //var specO = new OrderWithDetailsSpecification(order.OrderID);
+
+                    //var Order = await _orderRepository.GetOrder(specO);
+
                     var orderAsObject = new
                     {
                         OrderId = order.OrderID,
@@ -656,12 +712,17 @@ namespace Sarvicny.Application.Services
                         ProviderID = orderDetails.ProviderID,
                         ProviderFName = orderDetails.Provider.FirstName,
                         ProviderLName = orderDetails.Provider.LastName,
-                        RequestedServicesID = orderDetails.RequestedServicesID,
-                        RequestedServices = orderDetails.RequestedServices.Services.Select(s => new
+                        
+                        RequestedServices =orderDetails.RequestedServices.Select(s => new
                         {
-                            s.ServiceID,
-                            s.ServiceName
+                            s.ServiceId,
+                            s.Service.ServiceName,
+                            //Price = Math.Ceiling((s.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m)
+
+
+                            
                         }).ToList<object>(),
+
                         Price = orderDetails.Price,
                         RequestedSlotID = orderDetails.RequestedSlotID,
                         ProviderDistrictID = orderDetails.ProviderDistrictID,
@@ -674,12 +735,13 @@ namespace Sarvicny.Application.Services
 
                 await _cartRepository.ClearCart(cart);
 
-                var rate = 0.12m;
+                //var rate = 0.12m;  already total price is multipied by rate
                 TransactionPayment transactionPayment = new TransactionPayment
                 {
-                    Amount = totalPrice + (totalPrice * rate),
+                    Amount = totalPrice,
                     OrderList = orders,
-                    PaymentMethod = paymentMethod
+                    PaymentMethod = paymentMethod,
+                    PaymentExpiryTime= DateTime.UtcNow.AddHours(2),
 
                 };
 
@@ -974,15 +1036,11 @@ namespace Sarvicny.Application.Services
             {
                 originalSlot.isActive = true;
             }
-
-
             _unitOfWork.Commit();
 
-            var details = _orderService.ShowAllOrderDetailsForCustomer(orderId);
             return new Response<object>()
             {
                 isError = true,
-                Payload = details,
                 Message = "Action Done Successfully",
                 Errors = null,
             };
@@ -1228,6 +1286,64 @@ namespace Sarvicny.Application.Services
                 isError = false
             };
 
+
+        }
+
+        public async Task<Response<object>> GetReAssignedCartServiceRequest(string customerId)
+        {
+            var spec = new CartServiceRequestWithDetailsSpecification();
+            var requets= await _customerRepository.GetReAssignedCartServiceRequest(spec, customerId);
+
+            if (requets.Count()==0)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "No Reassigned Requests",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            List<object> result = new List<object>();
+            foreach(var request in requets)
+            {
+                var requestAsObject = new
+                {
+                    request.CartServiceRequestID,
+                    providerId = request.Provider.Id,
+                    request.Provider.FirstName,
+                    request.Provider.LastName,
+                    Services = request.RequestedServices.Select(s => new
+                    {
+                        s.ServiceId,
+                        s.Service.ServiceName,
+                        s.Service.ParentServiceID,
+                        parentServiceName = s.Service.ParentService?.ServiceName,
+                        s.Service.CriteriaID,
+                        s.Service.Criteria?.CriteriaName,
+                        Price = Math.Ceiling((s.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m),
+
+                    }).ToList<object>(),
+                    request.SlotID,
+                    request.RequestedDate,
+                    request.Slot?.ProviderAvailability.DayOfWeek,
+                    request.Slot?.StartTime,
+                    request.providerDistrict.DistrictID,
+                    request.providerDistrict.District.DistrictName,
+                    request.Address,
+                    request.Price,
+                    request.ProblemDescription,
+                };
+                result.Add(requestAsObject);
+
+            }
+            return new Response<object>()
+            {
+                Status = "Success",
+                Message = "Reassigned Requests",
+                Payload = result,
+                isError = false
+            };
 
         }
     }

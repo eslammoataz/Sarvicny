@@ -245,12 +245,11 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> ReAssignOrder(string orderId)
     {
         var response = await _adminService.ReAssignOrder(orderId);
-
+        
         if (response.isError)
         {
             return NotFound(response);
         }
-
 
         return Ok(response);
 

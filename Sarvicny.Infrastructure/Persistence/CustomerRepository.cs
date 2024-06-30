@@ -91,5 +91,11 @@ namespace Sarvicny.Infrastructure.Persistence
              _context.FavProviders.Remove(fav);
 
         }
+
+        public async Task<List<CartServiceRequest>> GetReAssignedCartServiceRequest(ISpecifications<CartServiceRequest> spec, string customerId)
+        {
+
+            return await ApplySpecificationS(spec).Where(r=> r.Cart.CustomerID==customerId && r.ReAssigned==true).ToListAsync();
+        }
     }
 }

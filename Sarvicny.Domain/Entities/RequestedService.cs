@@ -12,9 +12,15 @@ namespace Sarvicny.Domain.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string RequestedServicesId { get; set; }
+        public string RequestedServiceId { get; set; }
 
-        public List<Service> Services { get; set; } = new List<Service>();
+        public string ServiceId { get; set; }
+
+        public Service Service { get; set; }
+
+        public string? OrderId { get; set; }
+
+        public string? CartId { get; set; }
 
 
         

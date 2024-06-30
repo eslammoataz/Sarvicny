@@ -11,7 +11,6 @@ namespace Sarvicny.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string CartServiceRequestID { get; set; }
 
-
         public string CartID { get; set; }
 
         [ForeignKey("CartID")]
@@ -22,10 +21,7 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("ProviderID")]
         public Provider Provider{ get; set; }
 
-        public string RequestedServicesID { get; set; }
-
-        [ForeignKey("RequestedServicesID")]
-        public RequestedService RequestedServices { get; set; }
+       public List<RequestedService> RequestedServices { get; set; }
 
         public DateTime RequestedDate { get; set; }
 
@@ -46,6 +42,8 @@ namespace Sarvicny.Domain.Entities
 
         [MaxLength(255)]
         public string? ProblemDescription { get; set; }
+
+        public bool ReAssigned { get; set; } = false;
 
 
 

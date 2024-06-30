@@ -190,10 +190,14 @@ namespace Sarvicny.Infrastructure.Persistence
                 .Include(p => p.ProviderServices)
                 .ToListAsync();
 
-            var matchedProviders = initialProviders
-                .Where(p => services.All(id =>
-                    p.ProviderServices.Any(ps => ps.isVerified== true && ps.ServiceID == id )))
-                .ToList();
+
+
+             var matchedProviders = initialProviders
+            .Where(p => services.All(serviceId =>
+                p.ProviderServices.Where(ps => services.Contains(ps.ServiceID))
+                    .Any(ps => ps.isVerified && ps.ServiceID == serviceId)))
+            .ToList();
+
 
             var totalPricePerProvider = matchedProviders
                 .Select(p => new
@@ -240,9 +244,11 @@ namespace Sarvicny.Infrastructure.Persistence
                .Include(p => p.ProviderServices)
                .ToListAsync();
 
+
             var suggestedProviders = initialProviders
-                .Where(p => services.All(id =>
-                    p.ProviderServices.Any(ps => ps.isVerified == true && ps.ServiceID == id)))
+                .Where(p => services.All(serviceId =>
+                   p.ProviderServices.Where(ps => services.Contains(ps.ServiceID))
+                       .Any(ps => ps.isVerified && ps.ServiceID == serviceId)))
                 .ToList();
 
             var totalPricePerProvider = suggestedProviders
@@ -289,10 +295,16 @@ namespace Sarvicny.Infrastructure.Persistence
               .Include(p => p.ProviderServices)
               .ToListAsync();
 
-            var suggestedProviders = initialProviders
-                .Where(p => services.All(id =>
-                    p.ProviderServices.Any(ps => ps.isVerified == true && ps.ServiceID == id)))
-                .ToList();
+            //var suggestedProviders = initialProviders
+            //    .Where(p => services.All(id =>
+            //        p.ProviderServices.Any(ps => ps.isVerified == true && ps.ServiceID == id)))
+            //    .ToList();
+
+             var suggestedProviders = initialProviders
+            .Where(p => services.All(serviceId =>
+               p.ProviderServices.Where(ps => services.Contains(ps.ServiceID))
+                   .Any(ps => ps.isVerified && ps.ServiceID == serviceId)))
+            .ToList();
 
             var totalPricePerProvider = suggestedProviders
                 .Select(p => new

@@ -27,10 +27,7 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("ProviderID")]
         public Provider Provider { get; set; }
 
-        public string RequestedServicesID { get; set; }
-
-        [ForeignKey("RequestedServicesID")]
-        public RequestedService RequestedServices { get; set; }
+        public List<RequestedService> RequestedServices { get; set; }
 
         public decimal Price { get; set; }
 

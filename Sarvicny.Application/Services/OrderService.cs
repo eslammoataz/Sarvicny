@@ -1,4 +1,5 @@
-﻿using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Microsoft.VisualBasic;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
@@ -273,8 +274,9 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
             var provider = order.OrderDetails.Provider;
-            var services = order.OrderDetails.RequestedServices.Services;
-            var orderAsObject = new
+            var services = order.OrderDetails.RequestedServices;
+
+            var orderAsobject = new
             {
                 orderId = order.OrderID,
                 orderDate = order.OrderDate,
@@ -295,12 +297,13 @@ namespace Sarvicny.Application.Services
                 orderService = services.Select(s => new
                 {
 
-                    s.ServiceID,
-                    s.ServiceName,
-                    s.ParentServiceID,
-                    parentServiceName = s.ParentService?.ServiceName,
-                    s.CriteriaID,
-                    s.Criteria?.CriteriaName,
+                    s.ServiceId,
+                    s.Service.ServiceName,
+                    s.Service.ParentServiceID,
+                    parentServiceName = s.Service.ParentService?.ServiceName,
+                    s.Service.CriteriaID,
+                    s.Service.Criteria?.CriteriaName,
+                    Price = Math.Ceiling((s.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m),
 
                 }).ToList<object>(),
 
@@ -320,7 +323,7 @@ namespace Sarvicny.Application.Services
             {
                 Status = "Success",
                 Message = "Action Done Successfully",
-                Payload = orderAsObject
+                Payload = orderAsobject
             };
         }  //feha tfasel provider
 
@@ -342,7 +345,9 @@ namespace Sarvicny.Application.Services
             }
 
             var provider = order.OrderDetails.Provider;
-            var services = order.OrderDetails.RequestedServices.Services;
+
+            var services = order.OrderDetails.RequestedServices;
+    ;
             var orderAsObject = new
             {
                 orderId = order.OrderID,
@@ -358,12 +363,13 @@ namespace Sarvicny.Application.Services
                 orderService = services.Select(s => new
                 {
 
-                    s.ServiceID,
-                    s.ServiceName,
-                    s.ParentServiceID,
-                    parentServiceName = s.ParentService?.ServiceName,
-                    s.CriteriaID,
-                    s.Criteria?.CriteriaName,
+                    s.ServiceId,
+                    s.Service.ServiceName,
+                    s.Service.ParentServiceID,
+                    parentServiceName = s.Service.ParentService?.ServiceName,
+                    s.Service.CriteriaID,
+                    s.Service.Criteria?.CriteriaName,
+                    Price = Math.Ceiling((s.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m),
 
                 }).ToList<object>(),
 
@@ -402,7 +408,8 @@ namespace Sarvicny.Application.Services
 
             var customer = order.Customer;
 
-            var services = order.OrderDetails.RequestedServices.Services;
+            var services = order.OrderDetails.RequestedServices;
+    
             var orderAsObject = new
             {
                 orderId = order.OrderID,
@@ -418,12 +425,13 @@ namespace Sarvicny.Application.Services
                 orderService = services.Select(s => new
                 {
 
-                    s.ServiceID,
-                    s.ServiceName,
-                    s.ParentServiceID,
-                    parentServiceName = s.ParentService?.ServiceName,
-                    s.CriteriaID,
-                    s.Criteria?.CriteriaName,
+                    s.ServiceId,
+                    s.Service.ServiceName,
+                    s.Service.ParentServiceID,
+                    parentServiceName = s.Service.ParentService?.ServiceName,
+                    s.Service.CriteriaID,
+                    s.Service.Criteria?.CriteriaName,
+                    Price = Math.Ceiling((s.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m),
 
                 }).ToList<object>(),
 
@@ -483,7 +491,6 @@ namespace Sarvicny.Application.Services
         public async Task<Response<List<object>>> GetAllMatchedProviderSortedbyFav(MatchingProviderDto matchingProviderDto)
         {
 
-
             foreach (var Id in matchingProviderDto.services)
             {
                 var serviceSpec = new BaseSpecifications<Service>(s => s.ServiceID == Id);
@@ -505,15 +512,9 @@ namespace Sarvicny.Application.Services
                         Status = "Error",
                         Message = "Failed",
                     };
-
-
-
-
-
-
-
             }
             TimeSpan startTime = TimeSpan.Parse(matchingProviderDto.startTime);
+
             var MatchedProviderSortedbyFav = await _providerRepository.GetAllMatchedProviders(matchingProviderDto.services, startTime, matchingProviderDto.dayOfWeek, matchingProviderDto.districtId, matchingProviderDto.customerId);
             if (MatchedProviderSortedbyFav == null)
             {
@@ -618,7 +619,7 @@ namespace Sarvicny.Application.Services
             {
                 var spec = new ProviderWithDetailsSpecification(match.Id);
                 var provider = await _providerRepository.FindByIdAsync(spec);
-                var availability = provider.Availabilities.FirstOrDefault(a => a.DayOfWeek == matchingProviderDto.dayOfWeek);
+                var availability = provider.Availabilities.FirstOrDefault();
 
                 decimal rate = 0.12m;
 
@@ -629,7 +630,7 @@ namespace Sarvicny.Application.Services
                     firstname = provider.FirstName,
                     lastname = provider.LastName,
                     email = provider.Email,
-                    availabilities = availability.Slots.Select(s => new
+                    availabilities = availability.Slots.Where(s=>s.isActive==true).Select(s => new
                     {
                         s.TimeSlotID,
                         s.StartTime
@@ -707,7 +708,7 @@ namespace Sarvicny.Application.Services
                 decimal rate = 0.12m;
 
 
-                var availabilities = provider.Availabilities.Select(a => a.Slots.Select(s => new
+                var availabilities = provider.Availabilities.Select(a => a.Slots.Where(s => s.isActive == true).Select(s => new
                 {
                     s.TimeSlotID,
                     s.StartTime,

@@ -8,11 +8,14 @@ using Sarvicny.Application.Services.Specifications.DistrictSpecification;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
+using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
+using System.Reflection.Metadata;
 
 namespace Sarvicny.Application.Services;
 
@@ -471,6 +474,7 @@ public class AdminService : IAdminService
     public async Task<Response<List<object>>> getAllOrders()
     {
         var spec = new OrderWithDetailsSpecification();
+
         var orders = await _orderRepository.GetAllOrders(spec);
 
 
@@ -878,6 +882,254 @@ public class AdminService : IAdminService
     }
 
 
+
+    public async Task<Response<object>> GetMatched(Order order, List<string> services, Provider provider)
+    {
+        decimal newPrice = 0;
+        var specProvider = new ProviderWithDetailsSpecification(provider.Id);
+        var filteredProvider = await _providerRepository.FindByIdAsync(specProvider);
+
+
+        var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+ 
+        List<RequestedService> requestedServices = new List<RequestedService>();
+        foreach (var serviceId in services)
+        {
+            var ps = provider.ProviderServices.FirstOrDefault(p => p.ServiceID == serviceId);
+            newPrice += ps.Price * 1.12m;
+
+            var spec = new BaseSpecifications<Service>(s => s.ServiceID == serviceId);
+            var service =await _serviceRepository.GetServiceById(spec);
+            var requestedService = new RequestedService
+            {
+                ServiceId = serviceId,
+                Service= service,
+                
+                CartId = order.Customer.CartID
+            };
+            await _serviceRepository.AddRequestedService(requestedService);
+
+            requestedServices.Add(requestedService);
+        }
+
+
+        order.OrderStatus = OrderStatusEnum.ReAssigned;
+
+        
+
+
+
+
+
+        var newRequest = new CartServiceRequest
+        {
+            CartID = order.Customer.CartID,
+            Cart = order.Customer.Cart,
+            Provider = provider,
+            ProviderID = provider.Id,
+            RequestedServices = requestedServices,
+            providerDistrict = order.OrderDetails.providerDistrict,
+            ProviderDistrictID = order.OrderDetails.ProviderDistrictID,
+            RequestedDate = order.OrderDetails.RequestedSlot.RequestedDay,
+            Slot = originalSlot,
+            SlotID = originalSlot.TimeSlotID,
+            Address = order.OrderDetails.Address,
+            ProblemDescription = order.OrderDetails.ProblemDescription,
+            Price = newPrice,
+            ReAssigned = true
+        };
+
+
+        await _customerRepository.AddRequest(newRequest);
+
+
+        var message = new EmailDto(order.Customer.Email!, "Sarvicny: Order is ReAssigned  ", $"We provided new suitable provider to serve your early canceled order, please check your cart so you can order again");
+
+        _emailService.SendEmail(message);
+        _unitOfWork.Commit();
+
+        var output = new
+        {
+            providerId = provider.Id,
+            newCartRequestId = newRequest.CartServiceRequestID
+
+        };
+        return new Response<object>()
+        {
+            Message = "Order Is reAssigned with new Provider",
+            Payload = output,
+            isError = false
+
+        };
+
+    }
+    public async Task<Response<object>> GetSuggestion1(Order order, List<string> services, Provider provider)
+    {
+        decimal newPrice = 0;
+
+        var specProvider = new ProviderWithDetailsSpecification(provider.Id);
+        var filteredProvider = await _providerRepository.FindByIdAsync(specProvider);
+
+        var today = DateTime.UtcNow.DayOfWeek;
+
+        // Find the next availability that is after today
+        var selectedAvailability = filteredProvider.Availabilities.FirstOrDefault(); //already al youm ali ana 3aizah
+           
+        var selectedSlot = selectedAvailability.Slots.Where(s => s.isActive == true).OrderBy(s => s.StartTime).FirstOrDefault();
+
+
+        List<RequestedService> requestedServices = new List<RequestedService>();
+        foreach (var serviceId in services)
+        {
+            var ps = provider.ProviderServices.FirstOrDefault(p => p.ServiceID == serviceId);
+            newPrice += ps.Price * 1.12m;
+
+            var spec = new BaseSpecifications<Service>(s => s.ServiceID == serviceId);
+            var service = await _serviceRepository.GetServiceById(spec);
+            var requestedService = new RequestedService
+            {
+                ServiceId = serviceId,
+                Service = service,
+
+                CartId = order.Customer.CartID
+            };
+            await _serviceRepository.AddRequestedService(requestedService);
+
+            requestedServices.Add(requestedService);
+        }
+
+
+        order.OrderStatus = OrderStatusEnum.ReAssigned;
+
+
+        var newRequest = new CartServiceRequest
+        {
+            CartID = order.Customer.CartID,
+            Cart = order.Customer.Cart,
+            Provider = provider,
+            ProviderID = provider.Id,
+            RequestedServices = requestedServices,
+            providerDistrict = order.OrderDetails.providerDistrict,
+            ProviderDistrictID = order.OrderDetails.ProviderDistrictID,
+            RequestedDate = order.OrderDetails.RequestedSlot.RequestedDay,
+            Slot = selectedSlot,
+            SlotID = selectedSlot.TimeSlotID,
+            Address = order.OrderDetails.Address,
+            ProblemDescription = order.OrderDetails.ProblemDescription,
+            Price = newPrice,
+            ReAssigned = true
+        };
+
+
+        await _customerRepository.AddRequest(newRequest);
+
+
+        var message = new EmailDto(order.Customer.Email!, "Sarvicny: Order is ReAssigned  ", $"We provided new suitable provider to serve your early canceled order, please check your cart so you can order again");
+
+        _emailService.SendEmail(message);
+        _unitOfWork.Commit();
+
+        var output = new
+        {
+            providerId = provider.Id,
+            newCartRequestId = newRequest.CartServiceRequestID
+
+        };
+        return new Response<object>()
+        {
+            Message = "Order Is reAssigned with new Provider",
+            Payload = output,
+            isError = false
+
+        };
+
+    }
+
+    public async Task<Response<object>> GetSuggestion2(Order order, List<string> services,Provider provider )
+    {
+        decimal newPrice = 0;
+        var specProvider = new ProviderWithDetailsSpecification(provider.Id);
+        var filteredProvider = await _providerRepository.FindByIdAsync(specProvider);
+
+        var today = DateTime.UtcNow.DayOfWeek;
+
+        // Find the next availability that is after today
+        var selectedAvailability = filteredProvider.Availabilities
+            .OrderBy(a => ((DayOfWeek)Enum.Parse(typeof(DayOfWeek), a.DayOfWeek) - today + 7) % 7).FirstOrDefault();
+
+        var selectedSlot = selectedAvailability.Slots.Where(s => s.isActive == true).OrderBy(s => s.StartTime).FirstOrDefault();
+
+        // Calculate the nearest date matching the availability's day of the week
+        var availabilityDay = ((DayOfWeek)Enum.Parse(typeof(DayOfWeek), selectedAvailability.DayOfWeek));
+        var daysUntilNextAvailability = ((int)availabilityDay - (int)today + 7) % 7;
+        var nearestAvailabilityDate = DateTime.UtcNow.Date.AddDays(daysUntilNextAvailability);
+
+
+        List<RequestedService> requestedServices = new List<RequestedService>();
+        foreach (var serviceId in services)
+        {
+            var ps = provider.ProviderServices.FirstOrDefault(p => p.ServiceID == serviceId);
+            newPrice += ps.Price * 1.12m;
+
+            var spec = new BaseSpecifications<Service>(s => s.ServiceID == serviceId);
+            var service = await _serviceRepository.GetServiceById(spec);
+            var requestedService = new RequestedService
+            {
+                ServiceId = serviceId,
+                Service = service,
+
+                CartId = order.Customer.CartID
+            };
+            await _serviceRepository.AddRequestedService(requestedService);
+
+            requestedServices.Add(requestedService);
+        }
+
+
+        order.OrderStatus = OrderStatusEnum.ReAssigned;
+
+        var newRequest = new CartServiceRequest
+        {
+            CartID = order.Customer.CartID,
+            Cart = order.Customer.Cart,
+            Provider = provider,
+            ProviderID = provider.Id,
+            RequestedServices = requestedServices,
+            providerDistrict = order.OrderDetails.providerDistrict,
+            ProviderDistrictID = order.OrderDetails.ProviderDistrictID,
+            RequestedDate = nearestAvailabilityDate,
+            Slot = selectedSlot,
+            SlotID = selectedSlot.TimeSlotID,
+            Address = order.OrderDetails.Address,
+            ProblemDescription = order.OrderDetails.ProblemDescription,
+            Price = newPrice,
+            ReAssigned = true
+        };
+
+        await _customerRepository.AddRequest(newRequest);
+
+
+        var message = new EmailDto(order.Customer.Email!, "Sarvicny: Order is ReAssigned  ", $"We provided new suitable provider to serve your early canceled order, please check your cart so you can order again");
+
+        _emailService.SendEmail(message);
+        _unitOfWork.Commit();
+
+        var output = new
+        {
+            providerId = provider.Id,
+            newCartRequestId = newRequest.CartServiceRequestID
+
+        };
+        return new Response<object>()
+        {
+            Message = "Order Is reAssigned with new Provider",
+            Payload = output,
+            isError = false
+
+        };
+
+    }
+
     public async Task<Response<object>> ReAssignOrder(string orderId)
     {
         var spec = new OrderWithDetailsSpecification(orderId);
@@ -894,13 +1146,32 @@ public class AdminService : IAdminService
             };
 
         }
-        var requestedSlot = order.OrderDetails.RequestedSlot;
-        var services = order.OrderDetails.RequestedServices.Services;
+        if (order.OrderStatus != OrderStatusEnum.CanceledByProvider)
+        {
+            return new Response<object>()
+            {
+                Status = "failed",
+                Message = "Order is Not Canceled by Provider",
+                Payload = null,
+                isError = true
+
+            };
+        }
+
+        var services = order.OrderDetails.RequestedServices.Select(r => new
+        {
+            r.ServiceId,
+            r.Service.ServiceName
+        }).ToList();
+
         List<string> servicesIds = new List<string>();
         foreach (var service in services)
         {
-            servicesIds.Add(service.ServiceID);
+            servicesIds.Add(service.ServiceId);
         }
+
+        var requestedSlot = order.OrderDetails.RequestedSlot;
+        var allowedRange = DateTime.UtcNow.AddHours(2).TimeOfDay;
 
         var startTime = requestedSlot.StartTime;
         var dayOfweek = requestedSlot.DayOfWeek;
@@ -909,66 +1180,60 @@ public class AdminService : IAdminService
 
         var provider = order.OrderDetails.ProviderID;
 
-        var matchedProviders = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
 
-        var filteredProviders = matchedProviders.Where(p => p.Id != provider).ToList();
-        order.OrderStatus = OrderStatusEnum.Removed;
+        var suggestion2 = await _providerRepository.SuggestionLevel2(servicesIds, district, customer.Id);
+        var filteredSuggest2Providers = suggestion2.Where(p => p.Id != provider).ToList();
 
-        _unitOfWork.Commit();
-
-
-        var orderDetails = await _orderService.ShowAllOrderDetailsForCustomer(orderId);
-
-
-        if (filteredProviders.Count() == 0)
+        if (!filteredSuggest2Providers.Any())
         {
+            order.OrderStatus = OrderStatusEnum.Removed;
 
             var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessageForCustomer(order);
-            var message = new EmailDto(customer.Email!, "Sarvicny: No Other Matched Providers Found", $"Unfortunately! Your Order is Canceled, Please try again with another time availabilities ,We hope better experiencenext time, see you soon. \n\nOrder Details:\n{orderDetailsForCustomer}");
-            _emailService.SendEmail(message);
+            var message = new EmailDto(customer.Email!, "Sarvicny: Order is removed ", $"Sorry your order is removed due to failure in finding new suitable provider applicable to your order. \n\nOrder Details:\n{orderDetailsForCustomer}");
 
+
+            _emailService.SendEmail(message);
+            _unitOfWork.Commit();
             return new Response<object>()
             {
-                Status = "Success",
-                Message = " No Matched providers is Found (orderStatus = removed & send email successfully)",
+                Status = "failed",
+                Message = "No suitable Provider Found",
                 Payload = null,
-                isError = false
+                isError = true
 
             };
-
-
-
         }
-        List<object> providers = new List<object>();
-        foreach (var matched in filteredProviders)
+
+        if (order.OrderDetails.RequestedSlot.RequestedDay == DateTime.Today)
         {
-
-            var newfiltered = new
-            {
-                providerId = matched.Id,
-                firstName = matched.FirstName,
-                lastName = matched.LastName,
-
-            };
-            providers.Add(newfiltered);
-
+            var provider2 = filteredSuggest2Providers.FirstOrDefault();
+            return await GetSuggestion2(order, servicesIds, provider2);
         }
-        var result = new
-        {
-            orderDetails = orderDetails,
-            matchedProviders = provider,
 
-        };
-        var message2 = new EmailDto(customer.Email!, "Sarvicny:Matched Providers are Found", " New Recmmondations are found !! \n Please Select new provider from our recommendations.");
-        _emailService.SendEmail(message2);
-        return new Response<object>()
+
+        var suggestion1 = await _providerRepository.SuggestionLevel1(servicesIds, dayOfweek, district, customer.Id);
+        var filteredSuggest1Providers = suggestion1.Where(p => p.Id != provider).ToList();
+
+
+        if (!filteredSuggest1Providers.Any()) // not found in the same dayofWeek
         {
-            Status = "Success",
-            Message = "Matched providers are Found",
-            Payload = result,
-            isError = false
-        };
+            var provider2 = filteredSuggest2Providers.FirstOrDefault();
+            return await GetSuggestion2(order, servicesIds, provider2);
+        }
+
+        var matched = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
+        var FilteredMatchedProviders = matched.Where(p => p.Id != provider).ToList();
+
+        if (!FilteredMatchedProviders.Any())
+        {
+            var provider1 = filteredSuggest1Providers.FirstOrDefault();
+            return await GetSuggestion1(order, servicesIds, provider1);
+        }
+
+        var provider0 = FilteredMatchedProviders.FirstOrDefault();
+        return await GetMatched(order, servicesIds, provider0);
+
+
     }
-
 
 }

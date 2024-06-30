@@ -10,9 +10,11 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
         {
 
             AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}");
+            AddInclude($"{nameof(Order.TransactionPayment)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.ParentService)}");
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.Criteria)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ParentService)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.Criteria)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ProviderServices)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedSlot)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.providerDistrict)}.{nameof(ProviderDistrict.District)}");
             AddInclude($"{nameof(Order.CRate)}");
@@ -22,9 +24,11 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
         public OrderWithDetailsSpecification(string orderId) : base(o => o.OrderID == orderId)
         {
             AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}");
+            AddInclude($"{nameof(Order.TransactionPayment)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.ParentService)}");
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.Criteria)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ParentService)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.Criteria)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ProviderServices)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedSlot)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.providerDistrict)}.{nameof(ProviderDistrict.District)}");
             AddInclude($"{nameof(Order.CRate)}");

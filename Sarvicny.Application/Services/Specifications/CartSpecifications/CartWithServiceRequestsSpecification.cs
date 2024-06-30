@@ -8,8 +8,9 @@ public class CartWithServiceRequestsSpecification : BaseSpecifications<Cart>
     public CartWithServiceRequestsSpecification()
     {
         AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Provider)}");
-        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.ParentService)}");
-        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.Criteria)}");
+        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ParentService)}");
+        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.Criteria)}");
+        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ProviderServices)}");
         AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Slot)}");
         AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
     }
@@ -18,8 +19,9 @@ public class CartWithServiceRequestsSpecification : BaseSpecifications<Cart>
     {
 
         AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Provider)}");
-        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.ParentService)}");
-        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Services)}.{nameof(Service.Criteria)}");
+        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ParentService)}");
+        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.Criteria)}");
+        AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ProviderServices)}");
         AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.Slot)}");
         AddInclude($"{nameof(Cart.CartServiceRequests)}.{nameof(CartServiceRequest.providerDistrict)}.{nameof(ProviderDistrict.District)}");
 

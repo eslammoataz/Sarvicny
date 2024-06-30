@@ -30,8 +30,9 @@ namespace Sarvicny.Application.Services.Abstractions
 
         Task<Response<object>> Refund(string orderId);
         
-
         Task<Response<object>> GetCustomerCanceledOrders(string customerId);
+
+        Task<Response<object>> GetReAssignedCartServiceRequest(string customerId);
 
     }
 }

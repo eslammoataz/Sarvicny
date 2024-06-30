@@ -48,8 +48,6 @@ namespace Sarvicny.Application.Services
                 return await _paypalPaymentService.Pay(order);
             }
 
-
-
             return new Response<object>()
             {
                 isError = true,

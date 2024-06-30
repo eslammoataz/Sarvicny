@@ -535,7 +535,6 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<List<object>>> getAllOrdersForProvider(string workerId)
         {
-
             var provider = await _userRepository.GetUserByIdAsync(workerId);
             if (provider == null)
             {
@@ -1130,20 +1129,19 @@ namespace Sarvicny.Application.Services
                 };
 
             }
-            //var paymentMethod = order.PaymentMethod;
-            //if (paymentMethod != PaymentMethod.Cash && !order.IsPaid)
-            //{
-            //    return new Response<object>()
+            var paymentMethod = order.TransactionPayment.PaymentMethod;
+            if (paymentMethod != PaymentMethod.Cash && !order.IsPaid)
+            {
+                return new Response<object>()
 
-            //    {
-            //        isError = true,
-            //        Payload = null,
-            //        Message = "Order is't paid",
-            //        Errors = new List<string>() { "Error with order" },
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "Order is't paid",
+                    Errors = new List<string>() { "Error with order" },
 
-            //    };
-            //}
-
+                };
+            }
 
             if (status == order.OrderStatus)
             {

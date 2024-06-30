@@ -238,6 +238,19 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
+        [Route("MarkOrderComplete/{orderId}")]
+        public async Task<IActionResult> MarkOrderComplete(string orderId)
+        {
+
+            var response = await _customerService.MarkOrderComplete(orderId);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost]
         [Route("addCustomerRating/{orderId}")]
         public async Task<IActionResult> AddCustomerRating(RatingDto customerRatingDto, string orderId)
         {
@@ -303,7 +316,20 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
 
-        [HttpGet("customerOrders/{customerId}/status/canceled")]
+        [HttpPost]
+        [Route("getAllReAssignedCartRequests/{customerId}")]
+        public async Task<IActionResult> getAllReAssignedCartRequests(string customerId)
+        {
+            var response = await _customerService.GetReAssignedCartServiceRequest(customerId);
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+
+
+        [HttpGet("customerOrders/{customerId}/status/canceledByOrder")]
     public async Task<IActionResult> GetCustomerCanceledOrders(string customerId)
     {
         var response = await _customerService.GetCustomerCanceledOrders(customerId);

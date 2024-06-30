@@ -63,7 +63,7 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<List<Order>> GetAllOrders(ISpecifications<Order> spec)
         {
 
-            var orders = await ApplySpecification(spec).OrderByDescending(or => or.OrderDate).ToListAsync();
+            var orders = await ApplySpecification(spec).OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date).ToListAsync();
             return orders;
 
         }
@@ -71,7 +71,7 @@ namespace Sarvicny.Infrastructure.Persistence
         {
 
             var orders = await ApplySpecification(spec).Where(or => or.OrderDetails.ProviderID == providerId)
-                .OrderByDescending(or => or.OrderDate).ToListAsync();
+                .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay).ToListAsync();
             return orders;
 
         }
@@ -93,9 +93,7 @@ namespace Sarvicny.Infrastructure.Persistence
             var paidStatus = OrderStatusEnum.Paid.ToString();
             var orders = await ApplySpecification(spec)
                 .Where(or => or.OrderDetails.ProviderID == providerId)
-                .OrderByDescending(or => or.OrderDate)
-
-                .ToListAsync();
+                .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date).ToListAsync();
 
             var result = orders.Where(or => or.OrderStatusString == pendingStatus || or.OrderStatusString == paidStatus);
             return orders;
@@ -107,8 +105,7 @@ namespace Sarvicny.Infrastructure.Persistence
             var canceledStatus = OrderStatusEnum.CanceledByProvider.ToString();
             var orders = await ApplySpecification(spec)
                 .Where(or => or.OrderStatusString == canceledStatus)
-                .OrderByDescending(or => or.OrderDate)
-                .ToListAsync();
+                .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date).ToListAsync();
             return orders;
 
 
@@ -121,7 +118,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
             var orders = await ApplySpecification(spec)
                 .Where(or => or.OrderStatusString == PendingStatus || or.OrderStatusString == paid)
-                .OrderByDescending(or => or.OrderDate)
+                .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date)
                 .ToListAsync();
             return orders;
 
@@ -190,11 +187,12 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<List<Order>> getAllExpiredOrders(ISpecifications<Order> spec)
         {
 
-
             var completed = OrderStatusEnum.Completed.ToString();
+
             var orders = await ApplySpecification(spec)
-                    .Where(or => or.OrderStatusString != completed && or.OrderDetails.RequestedSlot.RequestedDay < DateTime.Today)
-                    .OrderByDescending(or => or.OrderDate)
+                    .Where(or => or.OrderStatusString != completed && or.OrderDetails.RequestedSlot.RequestedDay.Date <DateTime.Today)
+                    
+                    .OrderByDescending(or=> or.OrderDetails.RequestedSlot.RequestedDay.Date)
                     .ToListAsync();
             return orders;
 
@@ -203,14 +201,13 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<List<Order>> getAllPaymentExpiredOrders(ISpecifications<Order> spec) //case ano al paymeny expiry date 3da we m7awlsh yedf3 fa al order mt3mlosh remove fa al admin yeshelo
         {
 
-
             var removed = OrderStatusEnum.Removed.ToString();
-            //var orders = await ApplySpecification(spec)
-            //        .Where(or => or.OrderStatusString != removed && or.PaymentExpiryTime != null && or.PaymentExpiryTime < DateTime.UtcNow)
-            //        .OrderByDescending(or => or.OrderDate)
-            //        .ToListAsync();
+            var orders = await ApplySpecification(spec)
+                    .Where(or => or.OrderStatusString != removed && or.TransactionPayment.PaymentExpiryTime != null && or.TransactionPayment.PaymentExpiryTime < DateTime.UtcNow)
+                    .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date)
+                    .ToListAsync();
 
-            return null;
+            return orders;
 
 
         }

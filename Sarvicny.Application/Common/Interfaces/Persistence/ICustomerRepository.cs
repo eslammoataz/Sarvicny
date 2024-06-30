@@ -15,6 +15,8 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<Customer?> GetCustomerById(ISpecifications<Customer> specifications);
 
         Task<CartServiceRequest> GetCartServiceRequestById(ISpecifications<CartServiceRequest> spec);
+
+        Task<List<CartServiceRequest>> GetReAssignedCartServiceRequest(ISpecifications<CartServiceRequest> spec, string customerId);
         Task AddRequest(CartServiceRequest newRequest);
         Task RemoveRequest(CartServiceRequest specificRequest);
         Task EmptyCart(Cart cart);
