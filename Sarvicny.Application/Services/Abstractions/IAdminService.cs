@@ -16,8 +16,8 @@ public interface IAdminService
     Task<Response<object>> ApproveServiceForProvider(string provider,string providerServiceID);
     Task<Response<object>> RejectServiceForProvider(string provider,string providerServiceID);
 
-    Task<Response<List<object>>> GetServiceProvidersRegistrationRequests();
-    Task<Response<List<object>>> GetProvidersRegisterServiceRequests();
+    Task<Response<List<object>>> GetProvidersRegistrationRequests();
+    Task<Response<List<object>>> GetProvidersAddtionalServiceRequests();
     Task<Response<List<object>>> getAllOrders();
     Task<Response<List<object>>> getAllPendingOrPaidOrders();
     Task<Response<List<object>>> getAllCanceledByProviderOrders();

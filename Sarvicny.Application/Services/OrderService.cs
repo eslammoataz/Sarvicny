@@ -316,7 +316,12 @@ namespace Sarvicny.Application.Services
                 DistrictName = order.OrderDetails.providerDistrict.District.DistrictName,
                 Address = order.OrderDetails.Address,
                 Price = order.OrderDetails.Price,
-                Problem = order.OrderDetails.ProblemDescription
+                Problem = order.OrderDetails.ProblemDescription,
+
+                providerRating = order.PRate.Rate,
+                providerComment = order.PRate.Comment,
+                customerRating = order.CRate.Rate,
+                customerComment = order.CRate.Comment,
             };
 
             return new Response<object>()
@@ -326,7 +331,6 @@ namespace Sarvicny.Application.Services
                 Payload = orderAsobject
             };
         }  //feha tfasel provider
-
 
         public async Task<object> ShowAllOrderDetailsForCustomer(string orderId)
         {
@@ -347,7 +351,7 @@ namespace Sarvicny.Application.Services
             var provider = order.OrderDetails.Provider;
 
             var services = order.OrderDetails.RequestedServices;
-    ;
+            ;
             var orderAsObject = new
             {
                 orderId = order.OrderID,
@@ -382,12 +386,16 @@ namespace Sarvicny.Application.Services
                 DistrictName = order.OrderDetails.providerDistrict.District.DistrictName,
                 Address = order.OrderDetails.Address,
                 Price = order.OrderDetails.Price,
-                Problem = order.OrderDetails.ProblemDescription
+                Problem = order.OrderDetails.ProblemDescription,
+
+                providerRating = order.PRate.Rate,
+                providerComment = order.PRate.Comment,
+                customerRating = order.CRate.Rate,
+                customerComment = order.CRate.Comment,
             };
 
             return orderAsObject;
         } //mfhash customer
-
 
 
         public async Task<Response<object>> ShowAllOrderDetailsForProvider(string orderId) //feha tfasel customer

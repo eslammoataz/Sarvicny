@@ -41,7 +41,7 @@ public class AdminController : ControllerBase
     [HttpGet("GetServiceProvidersRegisterationRequests")]
     public async Task<IActionResult> GetServiceProvidersRegistrationRequests()
     {
-        var response = await _adminService.GetServiceProvidersRegistrationRequests();
+        var response = await _adminService.GetProvidersAddtionalServiceRequests();
 
         if (response.isError)
         {
@@ -85,7 +85,7 @@ public class AdminController : ControllerBase
     [HttpGet("GetProvidersServiceRegisterationRequests")]
     public async Task<IActionResult> GetServiceProvidersServiceRegistrationRequests()
     {
-        var response = await _adminService.GetProvidersRegisterServiceRequests();
+        var response = await _adminService.GetProvidersRegistrationRequests();
 
         if (response.isError)
         {

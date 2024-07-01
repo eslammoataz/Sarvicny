@@ -417,6 +417,7 @@ namespace Sarvicny.Application.Services
 
 
                 };
+                
                 await _customerRepository.RemoveRequest(serviceRequest);
 
                 _unitOfWork.Commit();
@@ -831,6 +832,9 @@ namespace Sarvicny.Application.Services
 
                 };
             }
+            var completedOrders = customer.Orders.Where(o => o.OrderStatus == OrderStatusEnum.Completed);
+            var completedOrdersCount = completedOrders.Count();
+            var avgProvidersRate = completedOrders.Select(o => o.PRate?.Rate).Average();
             var profile = new
             {
                 customer.FirstName,
@@ -838,9 +842,12 @@ namespace Sarvicny.Application.Services
                 customer.UserName,
                 customer.Email,
                 customer.Address,
-                customer.PhoneNumber
+                customer.PhoneNumber,
+                completedOrdersCount,
+                avgProvidersRate,
 
             };
+
             return new Response<object>()
             {
                 Payload = profile,
@@ -870,14 +877,14 @@ namespace Sarvicny.Application.Services
 
             }
             var orders = customer.Orders;
-            if (orders.Count()==0)
+            if (orders == null)
             {
                 return new Response<object>()
                 {
                     isError = false,
                     Payload = null,
                     Message = "No Orders found",
-                    Status = "Success"
+                    Status = "Sucess"
 
                 };
             }
@@ -905,6 +912,11 @@ namespace Sarvicny.Application.Services
 
 
         }
+
+
+
+
+    
 
         public async Task<Response<object>> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto, string customerId)
         {

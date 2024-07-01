@@ -104,7 +104,10 @@ namespace Sarvicny.Domain.Entities
         Canceled = 12,
 
         [Description("Refunded")]
-        Refunded = 13
+        Refunded = 13,
+
+        [Description("RemovedWithRefund")]
+        RemovedWithRefund = 14
 
     }
 

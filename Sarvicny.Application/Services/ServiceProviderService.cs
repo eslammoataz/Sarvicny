@@ -438,6 +438,7 @@ namespace Sarvicny.Application.Services
             }
 
 
+
             _unitOfWork.Commit();
 
 
@@ -531,6 +532,7 @@ namespace Sarvicny.Application.Services
 
         //    };
         //}
+
 
 
         public async Task<Response<List<object>>> getAllOrdersForProvider(string workerId)
@@ -651,10 +653,10 @@ namespace Sarvicny.Application.Services
 
                 return new Response<List<object>>()
                 {
-                    Status = "failed",
+                    Status = "sucess",
                     Message = "No Approved Orders Found",
                     Payload = null,
-                    isError = true
+                    isError = false
                 };
             }
 
@@ -809,14 +811,14 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            if (serviceProvider.IsVerified == false || serviceProvider.IsBlocked == true)
+            if (serviceProvider.IsBlocked == true)
             {
                 return new Response<object>()
 
                 {
                     isError = true,
                     Payload = null,
-                    Message = "Provider may be Not Verified, or blocked "
+                    Message = "Provider may be Not blocked "
                 };
             }
             var district = await _districtRepository.GetDistrictById(districtID);
@@ -880,7 +882,6 @@ namespace Sarvicny.Application.Services
             };
 
         }
-
 
         public async Task<Response<object>> DisableDistrictFromProvider(string providerId, string districtID)
         {

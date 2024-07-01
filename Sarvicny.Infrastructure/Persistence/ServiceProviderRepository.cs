@@ -209,6 +209,7 @@ namespace Sarvicny.Infrastructure.Persistence
                 })
                 .ToList();
 
+
             var customer = await _context.Customers
                 .Include(c => c.Favourites)
                 .FirstOrDefaultAsync(c => c.Id == customerId);
@@ -270,11 +271,12 @@ namespace Sarvicny.Infrastructure.Persistence
                 var favoriteProviderIds = customer.Favourites.Select(f => f.providerId).ToHashSet();
 
                 suggestedProviders = totalPricePerProvider
-                    .OrderByDescending(pp => favoriteProviderIds.Contains(pp.Provider.Id))
-                    .ThenBy(pp => pp.TotalPrice)
-                    .Select(pp => pp.Provider)
-                    .ToList();
+           .OrderBy(pp => favoriteProviderIds.Contains(pp.Provider.Id) ? 0 : 1)
+           .ThenBy(pp => pp.TotalPrice)
+           .Select(pp => pp.Provider)
+           .ToList();
             }
+
             else
             {
                 suggestedProviders = totalPricePerProvider

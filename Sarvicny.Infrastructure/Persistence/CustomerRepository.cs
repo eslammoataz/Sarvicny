@@ -97,5 +97,6 @@ namespace Sarvicny.Infrastructure.Persistence
 
             return await ApplySpecificationS(spec).Where(r=> r.Cart.CustomerID==customerId && r.ReAssigned==true).ToListAsync();
         }
+
     }
 }

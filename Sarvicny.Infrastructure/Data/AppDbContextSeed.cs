@@ -208,31 +208,31 @@ namespace Sarvicny.Infrastructure.Data
             //await context.RequestedServices.AddAsync(requestedServices);
             await context.SaveChangesAsync();
 
-            var slots = context.Slots.ToList();
+            //var slots = context.Slots.ToList();
 
-            var newRequest = new CartServiceRequest
-            {
-                RequestedDate = DateTime.Now.AddDays(1),
-                Provider = workerData,
-                ProviderID = workerData.Id,
-                
-                providerDistrict = providerDistrictData,
-                Slot = slots.FirstOrDefault(),
-                SlotID = slots.FirstOrDefault().TimeSlotID,
-                CartID = customerData.Cart.CartID,
-                Cart = customerData.Cart,
+            //var newRequest = new CartServiceRequest
+            //{
+            //    RequestedDate = DateTime.Now.AddDays(1),
+            //    Provider = workerData,
+            //    ProviderID = workerData.Id,
 
-                Price = 100,
-                ProblemDescription = "this is problem discriotfdasfasf",
-                Address = "sample address",
-            };
+            //    providerDistrict = providerDistrictData,
+            //    Slot = slots.FirstOrDefault(),
+            //    SlotID = slots.FirstOrDefault().TimeSlotID,
+            //    CartID = customerData.Cart.CartID,
+            //    Cart = customerData.Cart,
+
+            //    Price = 100,
+            //    ProblemDescription = "this is problem discriotfdasfasf",
+            //    Address = "sample address",
+            //};
 
             //newRequest.RequestedServices.Add(requestedServices);
 
 
-            context.CartServiceRequests.Add(newRequest);
+            //context.CartServiceRequests.Add(newRequest);
 
-            customerData.Cart.CartServiceRequests.Add(newRequest);
+            //customerData.Cart.CartServiceRequests.Add(newRequest);
             await context.SaveChangesAsync();
 
         }
@@ -328,6 +328,11 @@ namespace Sarvicny.Infrastructure.Data
                     {
                         OrderStatusID = "13",
                         StatusName = "Refunded"
+                    },
+                    new OrderStatus
+                    {
+                        OrderStatusID = "14",
+                        StatusName = "RemovedWithRefund"
                     }
                 };
 

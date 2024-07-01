@@ -381,7 +381,7 @@ public class AdminService : IAdminService
         };
     }
 
-    public async Task<Response<List<object>>> GetProvidersRegisterServiceRequests()
+    public async Task<Response<List<object>>> GetProvidersAddtionalServiceRequests()
     {
         var spec = new ProviderWithDetailsSpecification();
 
@@ -422,7 +422,7 @@ public class AdminService : IAdminService
 
 
 
-    public async Task<Response<List<object>>> GetServiceProvidersRegistrationRequests()
+    public async Task<Response<List<object>>> GetProvidersRegistrationRequests()
     {
         var spec = new ProviderWithDetailsSpecification();
 
@@ -1054,17 +1054,25 @@ public class AdminService : IAdminService
         var today = DateTime.UtcNow.DayOfWeek;
 
         // Find the next availability that is after today
-        var selectedAvailability = filteredProvider.Availabilities
-            .OrderBy(a => ((DayOfWeek)Enum.Parse(typeof(DayOfWeek), a.DayOfWeek) - today + 7) % 7).FirstOrDefault();
 
+        var requestDay =  (DayOfWeek)Enum.Parse(typeof(DayOfWeek), order.OrderDetails.RequestedSlot.DayOfWeek);
+
+        var selectedAvailability = filteredProvider.Availabilities
+         .OrderBy(a =>
+         {
+             var availabilityDay = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), a.DayOfWeek);
+             var difference = ((int)availabilityDay - (int)requestDay + 7) % 7;
+           
+             return difference;
+         }).FirstOrDefault();
         var selectedSlot = selectedAvailability.Slots.Where(s => s.isActive == true).OrderBy(s => s.StartTime).FirstOrDefault();
 
         // Calculate the nearest date matching the availability's day of the week
         var availabilityDay = ((DayOfWeek)Enum.Parse(typeof(DayOfWeek), selectedAvailability.DayOfWeek));
-        var daysUntilNextAvailability = ((int)availabilityDay - (int)today + 7) % 7;
-        var nearestAvailabilityDate = DateTime.UtcNow.Date.AddDays(daysUntilNextAvailability);
+        var daysUntilNextAvailability = ((int)availabilityDay - (int)requestDay + 7) % 7;
+        var nearestAvailabilityDate = order.OrderDetails.RequestedSlot.RequestedDay.AddDays(daysUntilNextAvailability);
 
-
+       
         List<RequestedService> requestedServices = new List<RequestedService>();
         foreach (var serviceId in services)
         {
@@ -1130,6 +1138,23 @@ public class AdminService : IAdminService
 
     }
 
+    public bool ProviderIsCheaper(Order order, List<string> services, Provider provider)
+    {
+        var orderPrice = order.OrderDetails.Price;
+
+        var totalProviderPrice = provider.ProviderServices
+                         .Where(ps => services.Contains(ps.ServiceID))
+                         .Sum(ps => ps.Price);
+
+        if (totalProviderPrice > orderPrice)
+        {
+
+            return false;
+        }
+        return true;
+
+    }
+
     public async Task<Response<object>> ReAssignOrder(string orderId)
     {
         var spec = new OrderWithDetailsSpecification(orderId);
@@ -1186,10 +1211,10 @@ public class AdminService : IAdminService
 
         if (!filteredSuggest2Providers.Any())
         {
-            order.OrderStatus = OrderStatusEnum.Removed;
+            order.OrderStatus = OrderStatusEnum.RemovedWithRefund;
 
             var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessageForCustomer(order);
-            var message = new EmailDto(customer.Email!, "Sarvicny: Order is removed ", $"Sorry your order is removed due to failure in finding new suitable provider applicable to your order. \n\nOrder Details:\n{orderDetailsForCustomer}");
+            var message = new EmailDto(customer.Email!, "Sarvicny: Order is removed ", $"Sorry your order is removed due to failure in finding new suitable provider applicable to your order, wait for your Refund. \n\nOrder Details:\n{orderDetailsForCustomer}");
 
 
             _emailService.SendEmail(message);
@@ -1204,10 +1229,31 @@ public class AdminService : IAdminService
             };
         }
 
-        if (order.OrderDetails.RequestedSlot.RequestedDay == DateTime.Today)
+        var favoriteProviderIds = customer.Favourites?.Select(f => f.providerId).ToHashSet();
+
+        if (order.OrderDetails.RequestedSlot.RequestedDay == DateTime.Today && startTime <= allowedRange)
         {
-            var provider2 = filteredSuggest2Providers.FirstOrDefault();
-            return await GetSuggestion2(order, servicesIds, provider2);
+            var provider2 = filteredSuggest2Providers.FirstOrDefault(); // may be fav
+
+            if (ProviderIsCheaper(order, servicesIds, provider2))
+            {
+                return await GetSuggestion2(order, servicesIds, provider2);
+            }
+
+            if (favoriteProviderIds.Contains(provider2.Id))
+            {
+
+                var another = filteredSuggest2Providers.FirstOrDefault(p => !favoriteProviderIds.Contains(p.Id)); // not fav
+                                                                                                                  // Handle case where there is no non-favorite provider available
+                if (another != null)
+                {
+                    return await GetSuggestion2(order, servicesIds, another);
+                }
+                return await GetSuggestion2(order, servicesIds, provider2); // a8la bs mafesh 8er fav
+
+            }
+            return await GetSuggestion2(order, servicesIds, provider2); // a8la and not fav
+
         }
 
 
@@ -1218,7 +1264,25 @@ public class AdminService : IAdminService
         if (!filteredSuggest1Providers.Any()) // not found in the same dayofWeek
         {
             var provider2 = filteredSuggest2Providers.FirstOrDefault();
-            return await GetSuggestion2(order, servicesIds, provider2);
+            if (ProviderIsCheaper(order, servicesIds, provider2))
+            {
+                return await GetSuggestion2(order, servicesIds, provider2);
+            }
+
+            if (favoriteProviderIds.Contains(provider2.Id))
+            {
+
+                var another = filteredSuggest2Providers.FirstOrDefault(p => !favoriteProviderIds.Contains(p.Id)); // not fav
+                                                                                                                  // Handle case where there is no non-favorite provider available
+                if (another != null)
+                {
+                    return await GetSuggestion2(order, servicesIds, another);
+                }
+                return await GetSuggestion2(order, servicesIds, provider2); // a8la bs mafesh 8er fav
+
+            }
+            return await GetSuggestion2(order, servicesIds, provider2); // a8la and not fav
+
         }
 
         var matched = await _providerRepository.GetAllMatchedProviders(servicesIds, startTime, dayOfweek, district, customer.Id);
@@ -1227,13 +1291,49 @@ public class AdminService : IAdminService
         if (!FilteredMatchedProviders.Any())
         {
             var provider1 = filteredSuggest1Providers.FirstOrDefault();
-            return await GetSuggestion1(order, servicesIds, provider1);
+            if (ProviderIsCheaper(order, servicesIds, provider1))
+            {
+                return await GetSuggestion2(order, servicesIds, provider1);
+            }
+
+            if (favoriteProviderIds.Contains(provider1.Id))
+            {
+
+                var another = filteredSuggest2Providers.FirstOrDefault(p => !favoriteProviderIds.Contains(p.Id)); // not fav
+                                                                                                                  // Handle case where there is no non-favorite provider available
+                if (another != null)
+                {
+                    return await GetSuggestion2(order, servicesIds, another);
+                }
+                return await GetSuggestion2(order, servicesIds, provider1); // a8la bs mafesh 8er fav
+
+            }
+            return await GetSuggestion2(order, servicesIds, provider1); // a8la and not fav
+
         }
 
+
         var provider0 = FilteredMatchedProviders.FirstOrDefault();
-        return await GetMatched(order, servicesIds, provider0);
+        if (ProviderIsCheaper(order, servicesIds, provider0))
+        {
+            return await GetSuggestion2(order, servicesIds, provider0);
+        }
+
+        if (favoriteProviderIds.Contains(provider0.Id))
+        {
+
+            var another = filteredSuggest2Providers.FirstOrDefault(p => !favoriteProviderIds.Contains(p.Id)); // not fav
+                                                                                                              // Handle case where there is no non-favorite provider available
+            if (another != null)
+            {
+                return await GetSuggestion2(order, servicesIds, another);
+            }
+            return await GetSuggestion2(order, servicesIds, provider0); // a8la bs mafesh 8er fav
+
+        }
+        return await GetSuggestion2(order, servicesIds, provider0); // a8la and not fav
+
 
 
     }
-
 }
