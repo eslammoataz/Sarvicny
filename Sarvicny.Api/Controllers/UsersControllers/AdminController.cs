@@ -210,20 +210,20 @@ public class AdminController : ControllerBase
 
 
 
-    [HttpGet("RemoveAllPaymentExpiredOrders")]
-    public async Task<IActionResult> RemoveAllPaymentExpiredOrders()
-    {
-        var response = await _adminService.RemoveAllPaymentExpiredOrders();
+    //[HttpGet("RemoveAllPaymentExpiredOrders")]
+    //public async Task<IActionResult> RemoveAllPaymentExpiredOrders()
+    //{
+    //    var response = await _adminService.RemoveAllPaymentExpiredOrders();
 
-        if (response.isError)
-        {
-            return NotFound(response);
-        }
+    //    if (response.isError)
+    //    {
+    //        return NotFound(response);
+    //    }
 
 
-        return Ok(response);
+    //    return Ok(response);
 
-    }
+    //}
 
 
     [HttpPost]

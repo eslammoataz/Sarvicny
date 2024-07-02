@@ -643,49 +643,49 @@ public class AdminService : IAdminService
     //        Payload = result,
     //        isError = false
     //    };
+    ////}
+    //public async Task<Response<List<object>>> RemoveAllPaymentExpiredOrders()
+    //{
+    //    var spec = new OrderWithDetailsSpecification();
+    //    var expired = await _orderRepository.getAllPaymentExpiredOrders(spec);
+
+
+    //    List<object> result = new List<object>();
+
+    //    foreach (var order in expired)
+    //    {
+    //        order.OrderStatus = OrderStatusEnum.Removed;
+    //        var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+    //        if (originalSlot != null)
+    //        {
+    //            originalSlot.isActive = true;
+    //        }
+    //        var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+    //        result.Add(orderDetails);
+    //    }
+    //    _unitOfWork.Commit();
+
+
+
+
+    //    if (result.Count == 0)
+    //    {
+    //        return new Response<List<object>>()
+    //        {
+    //            Status = "failed",
+    //            Message = "No Expired Orders Found",
+    //            Payload = null,
+    //            isError = true
+    //        };
+    //    }
+    //    return new Response<List<object>>()
+    //    {
+    //        Status = "Success",
+    //        Message = "Action Done Successfully",
+    //        Payload = result,
+    //        isError = false
+    //    };
     //}
-    public async Task<Response<List<object>>> RemoveAllPaymentExpiredOrders()
-    {
-        var spec = new OrderWithDetailsSpecification();
-        var expired = await _orderRepository.getAllPaymentExpiredOrders(spec);
-
-
-        List<object> result = new List<object>();
-
-        foreach (var order in expired)
-        {
-            order.OrderStatus = OrderStatusEnum.Removed;
-            var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
-            if (originalSlot != null)
-            {
-                originalSlot.isActive = true;
-            }
-            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
-        }
-        _unitOfWork.Commit();
-
-
-
-
-        if (result.Count == 0)
-        {
-            return new Response<List<object>>()
-            {
-                Status = "failed",
-                Message = "No Expired Orders Found",
-                Payload = null,
-                isError = true
-            };
-        }
-        return new Response<List<object>>()
-        {
-            Status = "Success",
-            Message = "Action Done Successfully",
-            Payload = result,
-            isError = false
-        };
-    }
 
     
     public async Task<Response<List<object>>> getAllCanceledByProviderOrders()

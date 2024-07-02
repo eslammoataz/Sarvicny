@@ -1,4 +1,5 @@
-﻿using Sarvicny.Application.Common.Helper;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -15,6 +16,7 @@ using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Sarvicny.Application.Services
 {
@@ -742,7 +744,7 @@ namespace Sarvicny.Application.Services
                     Amount = totalPrice,
                     OrderList = orders,
                     PaymentMethod = paymentMethod,
-                    PaymentExpiryTime = DateTime.UtcNow.AddHours(2),
+                    //PaymentExpiryTime = DateTime.UtcNow.AddHours(1),
 
                 };
 
@@ -1150,12 +1152,27 @@ namespace Sarvicny.Application.Services
             }
             var fav = customer.Favourites;
             List<object> result = new List<object>();
-            foreach (var provider in fav)
+            foreach (var providerFav in fav)
             {
+                var specP = new ProviderWithDetailsSpecification(providerFav.providerId);
+                var provider = await _providerRepository.FindByIdAsync(specP);
+
+                var specO = new OrderWithDetailsSpecification();
+                var orders = await _orderRepository.GetAllOrdersForProvider(specO, provider.Id);
+
+                var completedOrders = orders.Where(o => o.OrderStatus == OrderStatusEnum.Completed).ToList();
+                var completedOrdersCount = completedOrders.Count();
+                var avgCustomersRate = completedOrders.Select(o => o.CRate?.Rate).Average();
+
                 var favAsObj = new
                 {
-                    providerId = provider.providerId
-                };
+                    providerId = provider.Id,
+                    providerFName = provider.FirstName,
+                    providerLName = provider.LastName,
+                    providerCompletedOrdersCount = completedOrdersCount,
+                    providerAvgCustomerRate = avgCustomersRate
+
+            };
                 result.Add(favAsObj);
             }
 

@@ -40,10 +40,10 @@ namespace Sarvicny.Application.Services
                 return new Response<object>()
                 {
                     Status = "failed",
-                    Message = "Order Not Found",
+                    Message = "Transaction Not Found",
                     Payload = null,
                     isError = true,
-                    Errors = new List<string> { "Order Not Found" }
+                    Errors = new List<string> { "Transaction Not Found" }
 
                 };
             }
@@ -75,7 +75,7 @@ namespace Sarvicny.Application.Services
                 transactionPayment.SaleID = saleId;
                 transactionPayment.PaymentMethod = paymentMethod;
                 transactionPayment.PaymentDate = DateTime.UtcNow;
-                transactionPayment.PaymentExpiryTime = null;
+                //transactionPayment.PaymentExpiryTime = null;
 
                 var orders = transactionPayment.OrderList;
                 foreach (var order in orders)
@@ -128,13 +128,13 @@ namespace Sarvicny.Application.Services
                 transactionPayment.TransactionID = transactionID;
                 transactionPayment.SaleID = saleId;
                 transactionPayment.PaymentMethod = paymentMethod;
-                transactionPayment.PaymentDate = DateTime.UtcNow;
-                transactionPayment.PaymentExpiryTime = null;
+                transactionPayment.PaymentDate = null;
+                //transactionPayment.PaymentExpiryTime = null;
 
                 var orders = transactionPayment.OrderList;
                 foreach (var order in orders)
                 {
-                    order.OrderStatus = OrderStatusEnum.Canceled;
+                    order.OrderStatus = OrderStatusEnum.Removed;
                     order.IsPaid = false;
                     var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
                     if (originalSlot != null)

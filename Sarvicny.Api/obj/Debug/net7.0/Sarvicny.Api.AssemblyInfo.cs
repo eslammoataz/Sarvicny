@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sarvicny.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+49d6f5403c3e7a4fe08e760115651b2c78f399ad")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f988fc5a68039c31d0a265182864c9a2f7416707")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sarvicny.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sarvicny.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -187,19 +187,19 @@ namespace Sarvicny.Infrastructure.Persistence
 
 
 
-        public async Task<List<Order>> getAllPaymentExpiredOrders(ISpecifications<Order> spec) //case ano al paymeny expiry date 3da we m7awlsh yedf3 fa al order mt3mlosh remove fa al admin yeshelo
-        {
+        //public async Task<List<Order>> getAllPaymentExpiredOrders(ISpecifications<Order> spec) //case ano al paymeny expiry date 3da we m7awlsh yedf3 fa al order mt3mlosh remove fa al admin yeshelo
+        //{
 
-            var removed = OrderStatusEnum.Removed.ToString();
-            var orders = await ApplySpecification(spec)
-                    .Where(or => or.OrderStatusString != removed && or.TransactionPayment.PaymentExpiryTime != null && or.TransactionPayment.PaymentExpiryTime < DateTime.UtcNow)
-                    .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date)
-                    .ToListAsync();
+        //    var removed = OrderStatusEnum.Removed.ToString();
+        //    var orders = await ApplySpecification(spec)
+        //            .Where(or => or.OrderStatusString != removed && or.TransactionPayment.PaymentExpiryTime != null && or.TransactionPayment.PaymentExpiryTime < DateTime.UtcNow)
+        //            .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date)
+        //            .ToListAsync();
 
-            return orders;
+        //    return orders;
 
 
-        }
+        //}
 
 
     }

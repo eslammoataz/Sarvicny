@@ -31,7 +31,7 @@ namespace Sarvicny.Domain.Entities
 
         public DateTime? PaymentDate { get; set; }  // update when payment is made
 
-        public DateTime? PaymentExpiryTime { get; set; } = DateTime.UtcNow.AddHours(2);
+        //public DateTime? PaymentExpiryTime { get; set; } = DateTime.UtcNow.AddHours(1);
     }
 
     public enum TransactionPaymentStatusEnum

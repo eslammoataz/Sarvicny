@@ -21,7 +21,7 @@ public interface IAdminService
     Task<Response<List<object>>> getAllOrders();
     Task<Response<List<object>>> getAllPendingOrPaidOrders();
     Task<Response<List<object>>> getAllCanceledByProviderOrders();
-    Task<Response<List<object>>> RemoveAllPaymentExpiredOrders();
+    //Task<Response<List<object>>> RemoveAllPaymentExpiredOrders();
 
     Task<Response<object>> MarkOrderComplete(string orderId);
 
