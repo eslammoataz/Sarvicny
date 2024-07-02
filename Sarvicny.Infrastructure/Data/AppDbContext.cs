@@ -52,7 +52,7 @@ namespace Sarvicny.Infrastructure.Data
 
         public DbSet<TransactionPayment> TransactionPayment { get; set; }
 
-
+        public DbSet<ProviderWallet> ProviderWallets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using MailKit.Search;
+using Microsoft.AspNetCore.Identity;
 using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
@@ -686,43 +687,7 @@ public class AdminService : IAdminService
         };
     }
 
-    public async Task<Response<List<object>>> EnableSlotsForExpiredOrders()
-    {
-        var spec = new OrderWithDetailsSpecification();
-        var expired = await _orderRepository.getAllExpiredOrders(spec);
-
-        List<object> result = new List<object>();
-
-        foreach (var order in expired)
-        {
-
-            var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
-            if (originalSlot != null)
-            {
-                originalSlot.isActive = true;
-            }
-            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
-            result.Add(orderDetails);
-        }
-        _unitOfWork.Commit();
-        if (result.Count == 0)
-        {
-            return new Response<List<object>>()
-            {
-                Status = "Success",
-                Message = "No Expired Orders Found",
-                Payload = null,
-                isError = false
-            };
-        }
-        return new Response<List<object>>()
-        {
-            Status = "Success",
-            Message = "Action Done Successfully",
-            Payload = result,
-            isError = false
-        };
-    }
+    
     public async Task<Response<List<object>>> getAllCanceledByProviderOrders()
     {
         var spec = new OrderWithDetailsSpecification();
@@ -1334,6 +1299,154 @@ public class AdminService : IAdminService
         return await GetSuggestion2(order, servicesIds, provider0); // a8la and not fav
 
 
+
+    }
+    public async Task<Response<object>> MarkOrderComplete(string orderId)
+    {
+        var spec = new OrderWithDetailsSpecification(orderId);
+        var order = await _orderRepository.GetOrder(spec);
+
+        if (order == null)
+        {
+            return new Response<object>()
+
+            {
+                isError = true,
+                Payload = null,
+                Message = "Order Not Found",
+                Errors = new List<string>() { "Error with order" },
+
+            };
+
+
+        }
+
+        if (order.OrderStatus == OrderStatusEnum.Completed)
+        {
+            return new Response<object>()
+
+            {
+                isError = false,
+                Payload = null,
+                Message = "Order Already Completed",
+                Errors = new List<string>() { "Error with order" },
+
+            };
+        }
+
+        if (order.OrderStatus != OrderStatusEnum.Done)
+        {
+            return new Response<object>()
+
+            {
+                isError = false,
+                Payload = null,
+                Message = "provider does't mark order done",
+                Errors = new List<string>() { "Error with order" },
+
+            };
+
+
+        }
+
+       
+        order.OrderStatus = OrderStatusEnum.Completed;
+
+        var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+        if (originalSlot != null)
+        {
+            originalSlot.isActive = true;
+        }
+
+        var provider = order.OrderDetails.Provider;
+        var wallet = provider.Wallet;
+
+        
+
+        if (wallet is null)
+        {
+            provider.Wallet = new ProviderWallet
+            {
+                ProviderId = provider.Id,
+            };
+        }
+         if(order.TransactionPayment.PaymentMethod == PaymentMethod.Paypal || order.TransactionPayment.PaymentMethod == PaymentMethod.Paymob)
+        {
+            wallet.PendingBalance = Math.Ceiling(order.OrderDetails.Price / (1 + 0.12m));
+            
+        }
+        else
+        {
+            wallet.HandedBalance = Math.Ceiling(order.OrderDetails.Price / (1 + 0.12m));
+        }
+
+        _unitOfWork.Commit();
+
+        return new Response<object>()
+        {
+            isError = false,
+            Message = "Action Done Successfully",
+            Errors = null,
+        };
+    }
+
+    public async Task<Response<object>> MarkFraud(string orderId)
+    {
+        var spec = new OrderWithDetailsSpecification(orderId);
+        var order = await _orderRepository.GetOrder(spec);
+
+        if (order == null)
+        {
+            return new Response<object>()
+
+            {
+                isError = true,
+                Payload = null,
+                Message = "Order Not Found",
+                Errors = new List<string>() { "Error with order" },
+
+            };
+
+
+        }
+        if (order.OrderStatus != OrderStatusEnum.Done)
+        {
+            return new Response<object>()
+
+            {
+                isError = false,
+                Payload = null,
+                Message = "provider does't mark order done",
+                Errors = new List<string>() { "Error with order" },
+
+            };
+
+
+        }
+        order.OrderStatus = OrderStatusEnum.CanceledByProvider;
+
+        var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+        if (originalSlot != null)
+        {
+            originalSlot.isActive = true;
+        }
+        var message = new EmailDto(order.OrderDetails.Provider.Email!, "Sarvicny: Fraud Detected", $" We have noticed that you marked order whose ID is: {order.OrderID} Done without actually doing the job this may results in being blocked");
+
+        _emailService.SendEmail(message);
+        _unitOfWork.Commit();
+        var result = new
+        {
+            providerId = order.OrderDetails.ProviderID,
+            order = order.OrderID
+        };
+        
+        return new Response<object>()
+        {
+            isError = false,
+            Message = "Order is canceled To be reassigned",
+            Errors = null,
+            Payload= result
+        };
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
@@ -11,7 +12,7 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
 
             AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}");
             AddInclude($"{nameof(Order.TransactionPayment)}");
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}.{nameof(Provider.Wallet)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.Criteria)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ProviderServices)}");
@@ -25,7 +26,7 @@ namespace Sarvicny.Application.Services.Specifications.OrderSpecifications
         {
             AddInclude($"{nameof(Order.Customer)}.{nameof(Customer.Cart)}");
             AddInclude($"{nameof(Order.TransactionPayment)}");
-            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
+            AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}.{nameof(Provider.Wallet)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ParentService)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.Criteria)}");
             AddInclude($"{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedServices)}.{nameof(RequestedService.Service)}.{nameof(Service.ProviderServices)}");

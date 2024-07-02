@@ -49,7 +49,7 @@ namespace Sarvicny.Application.Services.Abstractions
 
        Task<Response<object>> getProviderServicePrice(string providerId, string customerId);
 
-
+        Task<Response<object>> getWallet(string providerId);
 
     }
 }

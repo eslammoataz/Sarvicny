@@ -832,7 +832,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            var completedOrders = customer.Orders.Where(o => o.OrderStatus == OrderStatusEnum.Completed);
+            var completedOrders = customer.Orders.Where(o => o.OrderStatus == OrderStatusEnum.Completed).ToList();
             var completedOrdersCount = completedOrders.Count();
             var avgProvidersRate = completedOrders.Select(o => o.PRate?.Rate).Average();
             var profile = new
@@ -1008,55 +1008,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> MarkOrderComplete(string orderId)
-        {
-            var spec = new OrderWithDetailsSpecification(orderId);
-            var order = await _orderRepository.GetOrder(spec);
-
-            if (order == null)
-            {
-                return new Response<object>()
-
-                {
-                    isError = true,
-                    Payload = null,
-                    Message = "Order Not Found",
-                    Errors = new List<string>() { "Error with order" },
-
-                };
-
-
-            }
-            if (order.OrderStatus != OrderStatusEnum.Done)
-            {
-                return new Response<object>()
-
-                {
-                    isError = false,
-                    Payload = null,
-                    Message = "provider does't mark order done",
-                    Errors = new List<string>() { "Error with order" },
-
-                };
-
-
-            }
-            order.OrderStatus = OrderStatusEnum.Completed;
-
-            var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
-            if (originalSlot != null)
-            {
-                originalSlot.isActive = true;
-            }
-            _unitOfWork.Commit();
-
-            return new Response<object>()
-            {
-                isError = true,
-                Message = "Action Done Successfully",
-                Errors = null,
-            };
-        }
+       
 
         public async Task<Response<object>> AddProviderToFav(string providerId, string customerId)
         {

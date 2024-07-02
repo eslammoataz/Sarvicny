@@ -237,18 +237,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
-        [HttpPost]
-        [Route("MarkOrderComplete/{orderId}")]
-        public async Task<IActionResult> MarkOrderComplete(string orderId)
-        {
-
-            var response = await _customerService.MarkOrderComplete(orderId);
-            if (response.isError)
-            {
-                return BadRequest(response);
-            }
-            return Ok(response);
-        }
+        
 
         [HttpPost]
         [Route("addCustomerRating/{orderId}")]

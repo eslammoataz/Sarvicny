@@ -38,14 +38,14 @@ public class AdminController : ControllerBase
     }
 
 
-    [HttpGet("GetServiceProvidersRegisterationRequests")]
+    [HttpGet("GetProvidersAddtionalServiceRequests")]
     public async Task<IActionResult> GetServiceProvidersRegistrationRequests()
     {
         var response = await _adminService.GetProvidersAddtionalServiceRequests();
 
         if (response.isError)
         {
-            return NotFound(response);
+            return BadRequest(response);
         }
         else
         {
@@ -82,14 +82,14 @@ public class AdminController : ControllerBase
     }
 
 
-    [HttpGet("GetProvidersServiceRegisterationRequests")]
+    [HttpGet("GetProvidersRegistrationRequests")]
     public async Task<IActionResult> GetServiceProvidersServiceRegistrationRequests()
     {
         var response = await _adminService.GetProvidersRegistrationRequests();
 
         if (response.isError)
         {
-            return NotFound(response);
+            return BadRequest(response);
         }
         else
         {
@@ -225,20 +225,7 @@ public class AdminController : ControllerBase
         return Ok(response);
 
     }
-    [HttpGet("EnableSlotsForExpiredOrders")]
-    public async Task<IActionResult> EnableSlotsForExpiredOrders()
-    {
-        var response = await _adminService.EnableSlotsForExpiredOrders();
-
-        if (response.isError)
-        {
-            return NotFound(response);
-        }
-
-
-        return Ok(response);
-
-    }
+    
 
     [HttpPost]
     [Route("ReAssignOrder/{orderId}")]
@@ -280,6 +267,34 @@ public class AdminController : ControllerBase
 
 
     }
+    [HttpPost]
+    [Route("MarkOrderComplete/{orderId}")]
+    public async Task<IActionResult> MarkOrderComplete(string orderId)
+    {
+        var response = await _adminService.MarkOrderComplete(orderId);
 
+        if (response.isError)
+        {
+            return BadRequest(response);
+        }
+
+        return Ok(response);
+
+    }
+
+    [HttpPost]
+    [Route("MarkFraud/{orderId}")]
+    public async Task<IActionResult> MarkFraud(string orderId)
+    {
+        var response = await _adminService.MarkFraud(orderId);
+
+        if (response.isError)
+        {
+            return BadRequest(response);
+        }
+
+        return Ok(response);
+
+    }
 
 }

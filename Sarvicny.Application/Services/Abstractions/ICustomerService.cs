@@ -20,7 +20,7 @@ namespace Sarvicny.Application.Services.Abstractions
         public Task<Response<object>> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto, string customerId);
         public Task<Response<object>> ViewLogRequest(string customerId); // kol al orders ali tlbha ya3ni
 
-        public Task<Response<object>> MarkOrderComplete(string orderId);
+       
 
         public Task<Response<object>> AddProviderToFav(string providerId, string customerId);
 

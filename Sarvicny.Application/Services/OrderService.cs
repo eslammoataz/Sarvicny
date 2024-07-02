@@ -46,12 +46,12 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            if (order.OrderStatus != OrderStatusEnum.Completed)
+            if (order.OrderStatus != OrderStatusEnum.Completed && order.OrderStatus != OrderStatusEnum.Done)
             {
                 return new Response<object>()
                 {
                     Status = "failed",
-                    Message = "Order Status is not Completed",
+                    Message = "Order Status is not Completed or Done",
                     Payload = null,
                     isError = true
 

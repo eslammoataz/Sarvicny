@@ -23,11 +23,12 @@ public interface IAdminService
     Task<Response<List<object>>> getAllCanceledByProviderOrders();
     Task<Response<List<object>>> RemoveAllPaymentExpiredOrders();
 
-    Task<Response<List<object>>> EnableSlotsForExpiredOrders();
+    Task<Response<object>> MarkOrderComplete(string orderId);
 
     Task<Response<bool>> BlockServiceProvider(string workerId);
     Task<Response<bool>> UnBlockServiceProvider(string workerId);
     Task<Response<List<object>>> GetAllAvailableDistricts();
     Task<Response<District>> AddDistrict(District district);
     Task<Response<object>> ReAssignOrder(string OrderId);
+    Task<Response<object>> MarkFraud(string OrderId);
 }

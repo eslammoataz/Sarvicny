@@ -12,6 +12,7 @@ public class ProviderWithDetailsSpecification : BaseSpecifications<Provider>
         AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
         AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
         AddInclude($"{nameof(Provider.ProviderDistricts)}.{nameof(ProviderDistrict.District)}");
+        AddInclude($"{nameof(Provider.Wallet)}");
     }
 
     public ProviderWithDetailsSpecification(string providerId) : base(p => p.Id == providerId)
@@ -20,5 +21,6 @@ public class ProviderWithDetailsSpecification : BaseSpecifications<Provider>
         AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.Criteria)}");
         AddInclude($"{nameof(Provider.ProviderServices)}.{nameof(ProviderService.Service)}.{nameof(Service.ParentService)}");
         AddInclude($"{nameof(Provider.ProviderDistricts)}.{nameof(ProviderDistrict.District)}");
+        AddInclude($"{nameof(Provider.Wallet)}");
     }
 }

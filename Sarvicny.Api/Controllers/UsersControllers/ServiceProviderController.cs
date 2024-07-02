@@ -260,5 +260,19 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         //    }
         //    return Ok(response);
         //}
+
+        [HttpGet]
+        [Route("GetProviderWallet/{providerId}")]
+        public async Task<IActionResult> GetProviderWallet(string providerId)
+        {
+
+            var response = await _serviceProviderService.getWallet(providerId);
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
     }
 }

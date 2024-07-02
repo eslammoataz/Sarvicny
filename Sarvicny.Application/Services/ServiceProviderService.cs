@@ -10,9 +10,11 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
+using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 using System.Dynamic;
+using System.Runtime.InteropServices;
 
 namespace Sarvicny.Application.Services
 {
@@ -744,6 +746,17 @@ namespace Sarvicny.Application.Services
             profile.Email = serviceProvider.Email;
             profile.PhoneNumber = serviceProvider.PhoneNumber;
             profile.Services = servicesAsObject;
+            profile.Wallet = serviceProvider.Wallet;
+
+            var specO = new OrderWithDetailsSpecification();
+            var orders = await _orderRepository.GetAllOrdersForProvider(specO,providerId);
+
+            var completedOrders = orders.Where(o => o.OrderStatus == OrderStatusEnum.Completed).ToList();
+            var completedOrdersCount = completedOrders.Count();
+            var avgCustomersRate = completedOrders.Select(o => o.CRate?.Rate).Average();
+
+            profile.CompletedOrdersCount = completedOrdersCount;
+            profile.AvgCustomerRate = avgCustomersRate;
 
             var claims = await _userRepository.GetClaims(serviceProvider);
 
@@ -818,7 +831,7 @@ namespace Sarvicny.Application.Services
                 {
                     isError = true,
                     Payload = null,
-                    Message = "Provider may be Not blocked "
+                    Message = "Provider may be blocked "
                 };
             }
             var district = await _districtRepository.GetDistrictById(districtID);
@@ -1169,7 +1182,16 @@ namespace Sarvicny.Application.Services
 
                 };
             }
+            
             order.OrderStatus = status;
+            if (status == OrderStatusEnum.Done)
+            {
+                var admin = await _userRepository.GetUserByIdAsync("1");
+
+                var message = new EmailDto(admin.Email!, "Sarvicny: Order is Done  ", $"New order is done Wit Id: {order.OrderID},\n\n please contact the customer to complete the process here is phone number: {order.Customer.PhoneNumber}");
+
+                _emailService.SendEmail(message);
+            }
             _unitOfWork.Commit();
 
 
@@ -1229,6 +1251,45 @@ namespace Sarvicny.Application.Services
                 Payload = providerService.Price,
                 Message = "success",
             };
+        }
+
+        public async Task<Response<object>> getWallet(string providerId)
+        {
+            var spec = new ProviderWithDetailsSpecification(providerId);
+
+            var provider = await _serviceProviderRepository.FindByIdAsync(spec);
+            if (provider == null)
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Provider Not Found" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            
+            var wallet = provider.Wallet;
+
+            if (wallet is null)
+            {
+                provider.Wallet = new ProviderWallet
+                {
+                    ProviderId = provider.Id,
+                };
+            }
+            var WalletAsObj = new
+            {
+                HandeledBalance =provider.Wallet.HandedBalance,
+                PendingBalance = provider.Wallet.PendingBalance,
+                TotalBalance =provider.Wallet.TotalBalance,
+            };
+            return new Response<object>
+            {
+                isError = false,
+                Errors = null,
+                Payload = WalletAsObj,
+                Message = "success",
+            };
+
         }
     }
 }
