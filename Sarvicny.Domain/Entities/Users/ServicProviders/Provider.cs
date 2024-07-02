@@ -19,14 +19,14 @@ public abstract class Provider : User
     public List<ProviderAvailability> Availabilities { get; set; } // Make sure this property is present
     public List<ProviderDistrict> ProviderDistricts { get; set; }
 
-    public string WalletId { get; set; }
+    public string? WalletId { get; set; }
 
 
     [ForeignKey("WalletId")]
-    public ProviderWallet Wallet { get; set; }
+    public ProviderWallet? Wallet { get; set; }
 
-    
-    
+
+
 
 
 

@@ -326,7 +326,7 @@ public class PaymobPaymentService : IPaymobPaymentService
         return dictionary;
     }
 
-    public async Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount)
+    public async Task<Response<object>> Refund(TransactionPayment transactionPayment, Order order, decimal amount)
     {
         var token = _config["PayMob:RefundKey"];
 

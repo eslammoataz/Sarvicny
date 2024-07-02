@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 
 namespace Sarvicny.Api.Controllers.UsersControllers;
@@ -101,8 +100,8 @@ public class AdminController : ControllerBase
     [Route("ApproveServiceForProvider")]
     public async Task<IActionResult> ApproveServiceForProvider(string workerId, string providerServiceId)
     {
-        var response = await _adminService.ApproveServiceForProvider(workerId,providerServiceId);
-        if (response.isError )
+        var response = await _adminService.ApproveServiceForProvider(workerId, providerServiceId);
+        if (response.isError)
         {
             return BadRequest(response);
         }
@@ -114,7 +113,7 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> RejectServiceForProvider(string workerId, string providerServiceId)
     {
         var response = await _adminService.RejectServiceForProvider(workerId, providerServiceId);
-        if (response.isError )
+        if (response.isError)
         {
             return BadRequest(response);
         }
@@ -225,14 +224,14 @@ public class AdminController : ControllerBase
         return Ok(response);
 
     }
-    
+
 
     [HttpPost]
     [Route("ReAssignOrder/{orderId}")]
     public async Task<IActionResult> ReAssignOrder(string orderId)
     {
         var response = await _adminService.ReAssignOrder(orderId);
-        
+
         if (response.isError)
         {
             return NotFound(response);

@@ -38,6 +38,8 @@ namespace Sarvicny.Domain.Entities
 
         public TransactionPayment TransactionPayment { get; set; }
 
+        public DateTime? CancelDate { get; set; }
+
         [NotMapped]
         public OrderStatusEnum OrderStatus { get; set; } = OrderStatusEnum.Pending;
 

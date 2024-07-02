@@ -20,5 +20,5 @@ public interface IPaymobPaymentService
 
     public bool VerifyHmac(Dictionary<string, string> data, string receivedHmac);
 
-    public Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount);
+    public Task<Response<object>> Refund(TransactionPayment transactionPayment, Order order, decimal amount);
 }

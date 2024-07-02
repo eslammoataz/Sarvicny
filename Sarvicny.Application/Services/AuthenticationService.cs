@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +12,7 @@ using Sarvicny.Contracts;
 using Sarvicny.Contracts.Authentication;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
-using Sarvicny.Domain.Entities.Users.ServicProviders;
-using Sarvicny.Domain.Specification;
+using System.Security.Claims;
 
 
 namespace Sarvicny.Application.Services
@@ -112,7 +110,7 @@ namespace Sarvicny.Application.Services
             List<Claim> claims = new()
             {
                   new Claim("userId", user.Id),
-                  new Claim("role", role),
+                  new Claim("Role", role),
 
             };
 

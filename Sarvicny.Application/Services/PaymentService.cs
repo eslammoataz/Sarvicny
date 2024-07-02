@@ -72,7 +72,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> RefundOrder(string transactionPaymentId, List<string> orderIds)
+        public async Task<Response<object>> RefundOrder(string transactionPaymentId, string orderId)
         {
             var transactionPayment = await _transactionPaymentRepository.GetTransactionPaymentAsync(transactionPaymentId);
             if (transactionPayment == null)
@@ -85,23 +85,8 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-            var orders = transactionPayment.OrderList;
-            var orderIdsInTransaction = orders.Select(o => o.OrderID).ToList();
+            var order = transactionPayment.OrderList.Where(o => o.OrderID == orderId).First();
 
-            foreach (var orderId in orderIds)
-            {
-                if (!orderIdsInTransaction.Contains(orderId))
-                {
-                    return new Response<object>()
-                    {
-                        isError = true,
-                        Message = "Invalid Order ID doesnot exist in this Transaction: " + orderId,
-                        Payload = null
-                    };
-                }
-            }
-
-            var validOrders = orders.Where(o => orderIds.Contains(o.OrderID)).ToList();
 
             var paymentMethod = transactionPayment.PaymentMethod;
 
@@ -115,46 +100,56 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-            decimal totalOrderPrice = orders
-                                    .Where(o => o.OrderDetails != null)
-                                    .Sum(o => o.OrderDetails.Price);
+            decimal totalOrderPrice = order.OrderDetails.Price;
 
             decimal refundAmount = 0;
 
-            TimeSpan timeSincePayment = DateTime.UtcNow - transactionPayment.PaymentDate.Value;
 
-            if (timeSincePayment.TotalDays < 1)
+            if (order.OrderStatus == OrderStatusEnum.Canceled)
             {
-                refundAmount = totalOrderPrice * 1.00m; // 100% refund
+                TimeSpan timeUntilRequest = (TimeSpan)(order.OrderDetails.RequestedSlot.RequestedDay - order.CancelDate);
+
+                if (timeUntilRequest.TotalDays >= 2)
+                {
+                    refundAmount = totalOrderPrice * 1.00m; // 100% refund
+                }
+                else if (timeUntilRequest.TotalDays >= 1)
+                {
+                    refundAmount = totalOrderPrice * 0.50m; // 50% refund
+                }
+                else
+                {
+                    refundAmount = 0; // No refund
+                }
+
+                if (refundAmount == 0)
+                {
+                    return new Response<object>()
+                    {
+                        Status = "failed",
+                        Message = "Refund not allowed it passed refundable days ",
+                        isError = true,
+                        Payload = null
+                    };
+                }
             }
-            else if (timeSincePayment.TotalDays < 2)
-            {
-                refundAmount = totalOrderPrice * 0.75m; // 75% refund
-            }
-            else if (timeSincePayment.TotalDays < 3)
-            {
-                refundAmount = totalOrderPrice * 0.50m; // 50% refund
-            }
+            else if (order.OrderStatus == OrderStatusEnum.ReAssigned || order.OrderStatus == OrderStatusEnum.RemovedWithRefund)
+                refundAmount = totalOrderPrice;
             else
-            {
-                refundAmount = 0; // No refund
-            }
-
-            if (refundAmount == 0)
             {
                 return new Response<object>()
                 {
                     Status = "failed",
-                    Message = "Refund not allowed it passed refundable days ",
+                    Message = "Order is not in a refundable state",
                     isError = true,
                     Payload = null
                 };
             }
 
             if (paymentMethod == PaymentMethod.Paymob)
-                return await _paymobPaymentService.Refund(transactionPayment, validOrders, refundAmount);
+                return await _paymobPaymentService.Refund(transactionPayment, order, refundAmount);
             else if (paymentMethod == PaymentMethod.Paypal)
-                return await _paypalPaymentService.Refund(transactionPayment, validOrders, refundAmount);
+                return await _paypalPaymentService.Refund(transactionPayment, order, refundAmount);
 
             return new Response<object>()
             {

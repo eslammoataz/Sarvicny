@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RestSharp;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
@@ -13,12 +14,15 @@ namespace Sarvicny.Application.Services.Paypal
         private readonly ILogger<PaypalPaymentService> _logger;
         private readonly IConfiguration _config;
         private readonly IHandlePayment _handlePayment;
+        private readonly IOrderRepository _orderRepository;
 
-        public PaypalPaymentService(ILogger<PaypalPaymentService> logger, IConfiguration config, IHandlePayment handlePayment)
+
+        public PaypalPaymentService(ILogger<PaypalPaymentService> logger, IConfiguration config, IHandlePayment handlePayment, IOrderRepository orderRepository)
         {
             _logger = logger;
             _config = config;
             _handlePayment = handlePayment;
+            _orderRepository = orderRepository;
         }
 
         public async Task<string> GetAuthToken()
@@ -389,7 +393,7 @@ namespace Sarvicny.Application.Services.Paypal
             }
         }
 
-        public async Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount)
+        public async Task<Response<object>> Refund(TransactionPayment transactionPayment, Order order, decimal amount)
         {
             string refundUrlFormat = "https://api.sandbox.paypal.com/v1/payments/sale/{0}/refund";
 
@@ -423,6 +427,9 @@ namespace Sarvicny.Application.Services.Paypal
 
             _logger.LogInformation($"Refund successful: {response.Content}");
 
+            order.OrderStatus = OrderStatusEnum.Refunded;
+
+
             return new Response<object>()
             {
                 Status = "success",
@@ -433,5 +440,6 @@ namespace Sarvicny.Application.Services.Paypal
 
 
         }
+
     }
 }
