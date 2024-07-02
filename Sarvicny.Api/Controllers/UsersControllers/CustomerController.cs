@@ -117,7 +117,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         }
 
         [HttpPost]
-        [Route("refundOrder/{orderId}")]
+        [Route("refundOrder")]
         public async Task<IActionResult> Refund(string transactionPaymentId, List<string> orderIds)
         {
             var response = await _paymentService.RefundOrder(transactionPaymentId, orderIds);

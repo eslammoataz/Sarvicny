@@ -45,7 +45,7 @@ public class CriteriaService : ICriteriaService
                 ServiceName = s.ServiceName,
                 Description = s.Description,
                 ParentServiceID = s.ParentServiceID
-                
+
             }).ToList();
         }
 
@@ -79,7 +79,7 @@ public class CriteriaService : ICriteriaService
             ServiceName = s.ServiceName,
             Description = s.Description,
             ParentServiceID = s.ParentServiceID
-            
+
         }).ToList();
 
         return new Response<Criteria>()

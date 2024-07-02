@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -20,13 +21,13 @@ public class PaymobPaymentService : IPaymobPaymentService
     private readonly IConfiguration _config;
     private readonly IHandlePayment _handlePayment;
     private readonly ITransactionPaymentRepository _transactionPaymentRepository;
-
-
-    public PaymobPaymentService(IConfiguration config, IHandlePayment handlePayment, ITransactionPaymentRepository transactionPaymentRepository)
+    private readonly ILogger<PaymobPaymentService> _logger;
+    public PaymobPaymentService(IConfiguration config, IHandlePayment handlePayment, ITransactionPaymentRepository transactionPaymentRepository, ILogger<PaymobPaymentService> logger)
     {
         _config = config;
         _handlePayment = handlePayment;
         _transactionPaymentRepository = transactionPaymentRepository;
+        _logger = logger;
     }
     public async Task<string> GetAuthToken()
     {
@@ -327,20 +328,38 @@ public class PaymobPaymentService : IPaymobPaymentService
 
     public async Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount)
     {
+        var token = _config["PayMob:RefundKey"];
+
+        if (string.IsNullOrEmpty(token))
+        {
+            return new Response<object>
+            {
+                isError = true,
+                Message = "Failed to get auth token",
+                Payload = null
+            };
+        }
+
         // Create the refund request
         var client = new RestClient("https://accept.paymob.com");
         var request = new RestRequest("/api/acceptance/void_refund/refund", Method.Post);
-        request.AddHeader("Authorization", $"Token {_config["PayMob:ApiKey"]}");
+        request.AddHeader("Authorization", $"Token {token}");
         request.AddHeader("Content-Type", "application/json");
 
         var refundRequest = new
         {
             transaction_id = transactionPayment.TransactionID,
-            amount_cents = amount
+            amount_cents = 10 // Convert to integer cents
         };
+
         request.AddJsonBody(refundRequest);
 
         var response = await client.ExecuteAsync(request);
+
+        // Log the request and response for debugging
+        _logger.LogInformation($"Request: {JsonConvert.SerializeObject(refundRequest)}");
+        _logger.LogInformation($"Response: {response.Content}");
+
         if (response.IsSuccessful)
         {
             var jsonResponse = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
@@ -369,10 +388,11 @@ public class PaymobPaymentService : IPaymobPaymentService
             return new Response<object>
             {
                 isError = true,
-                Message = $"Refund processing error: {response.ErrorMessage}",
+                Message = $"Refund processing error: {response.ErrorMessage} - Status: {response.StatusCode} - Content: {response.Content}",
                 Payload = null
             };
         }
     }
+
 
 }

@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Domain.Entities.Users.ServicProviders;
-using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services;
 
@@ -26,7 +23,7 @@ public class ServicesServices : IServicesService
         var spec = new ServiceWithCriteriaSpecification();
         var services = await _serviceRepository.GetAllServices(spec);
 
-        var servicesAsObjects = services.Select(s=>new
+        var servicesAsObjects = services.Select(s => new
         {
             s.ServiceID,
             s.ServiceName,
@@ -74,7 +71,7 @@ public class ServicesServices : IServicesService
         {
             var spec = new ServiceWithParentAndChilds_CriteriaSpecification(newService.ParentServiceID);
             var parent = await _serviceRepository.GetServiceById(spec);
-            if(parent == null)
+            if (parent == null)
             {
                 response.Status = "Fail";
                 response.Message = "ParentService Not Found";
@@ -85,16 +82,16 @@ public class ServicesServices : IServicesService
             }
             var criteria = parent.Criteria;
             newService.Criteria = criteria;
-            newService.CriteriaID= parent.CriteriaID;
-            newService.ParentServiceID= parent.ParentServiceID;
+            newService.CriteriaID = parent.CriteriaID;
+            newService.ParentServiceID = parent.ParentServiceID;
             newService.ParentService = parent;
             parent.ChildServices.Add(newService);
 
-            
+
         }
         await _serviceRepository.AddServiceAsync(newService);
         _unitOfWork.Commit();
-        
+
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = newService;
@@ -124,20 +121,23 @@ public class ServicesServices : IServicesService
         var providers = service.ProviderServices.Select(p => new
         {
             p.Provider.Id,
-            p.Provider.FirstName, p.Provider.LastName,
+            p.Provider.FirstName,
+            p.Provider.LastName,
             p.Provider.Email,
-            availabilities=p.Provider.Availabilities.Select(a => new {
+            availabilities = p.Provider.Availabilities.Select(a => new
+            {
                 a.DayOfWeek,
-               slots= a.Slots.Select(s => new {
-                   s.TimeSlotID,
-                   s.StartTime,
-                   s.EndTime
-               }).ToList<object>(),
+                slots = a.Slots.Select(s => new
+                {
+                    s.TimeSlotID,
+                    s.StartTime,
+                    s.EndTime
+                }).ToList<object>(),
             }).ToList<object>(),
-            
+
 
         });
-        if (providers==null)
+        if (providers == null)
         {
             return new Response<object>()
             {
@@ -148,7 +148,7 @@ public class ServicesServices : IServicesService
             };
         }
 
-        
+
 
 
 
@@ -166,7 +166,7 @@ public class ServicesServices : IServicesService
     public async Task<Response<object>> GetAllChildsForService(string serviceId)
     {
         var spec = new ServiceWithParentAndChilds_CriteriaSpecification(serviceId);
-        var service= await _serviceRepository.GetServiceById(spec);
+        var service = await _serviceRepository.GetServiceById(spec);
 
         var response = new Response<object>();
 
@@ -178,7 +178,7 @@ public class ServicesServices : IServicesService
             response.Payload = null;
 
         }
-        if (service.ChildServices.Count()==0)
+        if (service.ChildServices.Count() == 0)
         {
             response.Status = "Fail";
             response.isError = true;
@@ -190,27 +190,27 @@ public class ServicesServices : IServicesService
 
         var servicesAsObjects = new
         {
-            serviceId=service.ServiceID,
-            serviceName=service.ServiceName,
-            criteriaID=service.CriteriaID,
-            criteriaName=service.Criteria?.CriteriaName,
+            serviceId = service.ServiceID,
+            serviceName = service.ServiceName,
+            criteriaID = service.CriteriaID,
+            criteriaName = service.Criteria?.CriteriaName,
 
-            parentServiceId=service.ParentServiceID,
-            parentServiceName=service.ParentService?.ServiceName,
+            parentServiceId = service.ParentServiceID,
+            parentServiceName = service.ParentService?.ServiceName,
 
-            children=service.ChildServices?.Select(ch=> new
+            children = service.ChildServices?.Select(ch => new
             {
-                childServiceID= ch.ServiceID,
-                childServiceName=ch.ServiceName,
+                childServiceID = ch.ServiceID,
+                childServiceName = ch.ServiceName,
 
             }).ToList<object>()
         };
 
-       
+
         response.Status = "Success";
         response.Message = "Action Done Successfully";
         response.Payload = servicesAsObjects;
-        response.isError=false;
+        response.isError = false;
 
 
         return response;
@@ -221,9 +221,9 @@ public class ServicesServices : IServicesService
     }
     public async Task<Response<List<object>>> GetAllParentServices()
     {
-       var spec = new ServiceWithParentAndChilds_CriteriaSpecification();
-       var services = await _serviceRepository.GetAllParentServices(spec);
-        if (services.Count()==null)
+        var spec = new ServiceWithParentAndChilds_CriteriaSpecification();
+        var services = await _serviceRepository.GetAllParentServices(spec);
+        if (services.Count() == null)
         {
             return new Response<List<object>>()
             {
