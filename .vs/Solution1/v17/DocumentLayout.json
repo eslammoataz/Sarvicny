@@ -62,7 +62,8 @@
               "RelativeToolTip": "Sarvicny.Api\\Controllers\\PaymentController.cs",
               "ViewState": "AQIAABUAAAAAAAAAAIAwwCoAAAAMAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-02T11:16:17.914Z"
+              "WhenOpened": "2024-07-02T11:16:17.914Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -72,7 +73,7 @@
               "RelativeDocumentMoniker": "Sarvicny.Api\\appsettings.json",
               "ToolTip": "E:\\Github Repos\\Sarvicny\\Sarvicny.Api\\appsettings.json",
               "RelativeToolTip": "Sarvicny.Api\\appsettings.json",
-              "ViewState": "AQIAAA8AAAAAAAAAAAAAACIAAAACAAAA",
+              "ViewState": "AQIAABUAAAAAAAAAAAAwwCkAAAALAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2024-07-02T11:37:43.773Z",
               "EditorCaption": ""
@@ -123,7 +124,8 @@
               "RelativeToolTip": "Sarvicny.Api\\Controllers\\UsersControllers\\CustomerController.cs",
               "ViewState": "AQIAAGoAAAAAAAAAAAA4wIIAAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-02T11:16:17.978Z"
+              "WhenOpened": "2024-07-02T11:16:17.978Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
