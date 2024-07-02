@@ -72,6 +72,16 @@ namespace Sarvicny.Infrastructure.Data
 
             if (!context.Workers.Any())
             {
+                var wallet = new ProviderWallet
+                {
+                    ProviderId= workerData.Id,
+                    PendingBalance=0.0m,
+                    HandedBalance=0.0m,
+
+
+                };
+                workerData.Wallet= wallet ;
+                workerData.WalletId = wallet.WalletId;
                 await userManager.CreateAsync(workerData, "Worker123#");
                 await userManager.AddToRoleAsync(workerData, "ServiceProvider");
                 await userManager.AddClaimAsync(workerData, new Claim("UserType", "Worker"));

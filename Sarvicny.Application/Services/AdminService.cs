@@ -1443,7 +1443,7 @@ public class AdminService : IAdminService
         return new Response<object>()
         {
             isError = false,
-            Message = "Order is canceled To be reassigned",
+            Message = "Order is canceled and ready To be reassigned",
             Errors = null,
             Payload= result
         };

@@ -22,13 +22,15 @@ namespace Sarvicny.Domain.Entities
         public decimal PendingBalance { get; set; }
         public decimal HandedBalance{ get; set; }
 
-        
+
         public decimal TotalBalance
         {
             get
             {
                 return PendingBalance - HandedBalance;
             }
+
+            set {;}
         }
 
     }

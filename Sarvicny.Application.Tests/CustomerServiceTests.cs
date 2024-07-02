@@ -2,6 +2,7 @@ using Moq;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.CartSpecifications;
 using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Domain.Entities;
@@ -27,7 +28,10 @@ namespace Sarvicny.Application.Tests
 
         private readonly Mock<IPaymentService> _mockPaymentService = new Mock<IPaymentService>();
         private readonly Mock<IDistrictRepository> _mockDistrictRepository = new Mock<IDistrictRepository>();
+        private readonly Mock<IAdminService> _mockAdminService = new Mock<IAdminService>();
+        private readonly Mock<IEmailService> _mockEmailService = new Mock<IEmailService>();
 
+        private readonly Mock<ITransactionPaymentRepository> _mockTransactionRepository = new Mock<ITransactionPaymentRepository>();
         private CustomerService _customerService;
 
         public CustomerServiceTests()
@@ -43,7 +47,13 @@ namespace Sarvicny.Application.Tests
                 _mockOrderService.Object,
                 _mockServiceProviderService.Object,
                 _mockPaymentService.Object,
-                _mockDistrictRepository.Object);
+                _mockDistrictRepository.Object,
+                _mockAdminService.Object,
+                _mockEmailService.Object,
+                _mockTransactionRepository.Object
+
+
+                );
         }
 
         [Fact]
@@ -91,22 +101,22 @@ namespace Sarvicny.Application.Tests
             var result = await _customerService.GetCustomerCart(testCustomerId);
 
             // Assert
-             
+
             Assert.False(result.isError);
             Assert.NotNull(result.Payload); // First, ensure the payload itself is not null.
-           
+
 
             // Cast the payload to a dynamic type before accessing properties
             dynamic actualPayload = result.Payload;
 
             string actualCartId = actualPayload.CartID.ToString();
-           
+
             // Now, assert that actualPayload indeed contains 'CartID'.
             // But before that, ensure actualPayload actually has the structure we expect.
             // If you're not sure, you can convert result.Payload to a dictionary or examine it under a debugger.
             Assert.NotNull(actualPayload.CartID); // This will throw an exception if actualPayload doesn't have 'CartID'.
             Assert.Equal(cart.CartID, actualPayload.CartID.ToString());
-            
+
         }
 
 

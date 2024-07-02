@@ -13,6 +13,8 @@ namespace Sarvicny.Application.Services.Specifications.CustomerSpecification
             AddInclude($"{nameof(Customer.Orders)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
             AddInclude($"{nameof(Customer.Orders)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedSlot)}");
             AddInclude($"{nameof(Customer.Orders)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.providerDistrict)}.{nameof(ProviderDistrict.District)}");
+            
+
 
         }
         public CustomerWithOrdersSpecification(string customerID) : base(c => c.Id == customerID)
@@ -23,6 +25,7 @@ namespace Sarvicny.Application.Services.Specifications.CustomerSpecification
             AddInclude($"{nameof(Customer.Orders)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.Provider)}");
             AddInclude($"{nameof(Customer.Orders)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.RequestedSlot)}");
             AddInclude($"{nameof(Customer.Orders)}.{nameof(Order.OrderDetails)}.{nameof(OrderDetails.providerDistrict)}.{nameof(ProviderDistrict.District)}");
+            
         }
     }
 }

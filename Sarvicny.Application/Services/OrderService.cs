@@ -318,10 +318,10 @@ namespace Sarvicny.Application.Services
                 Price = order.OrderDetails.Price,
                 Problem = order.OrderDetails.ProblemDescription,
 
-                providerRating = order.PRate.Rate,
-                providerComment = order.PRate.Comment,
+                providerRating = order.PRate?.Rate,
+                providerComment = order.PRate?.Comment,
                 customerRating = order.CRate.Rate,
-                customerComment = order.CRate.Comment,
+                customerComment = order.CRate?.Comment,
             };
 
             return new Response<object>()
@@ -388,10 +388,10 @@ namespace Sarvicny.Application.Services
                 Price = order.OrderDetails.Price,
                 Problem = order.OrderDetails.ProblemDescription,
 
-                providerRating = order.PRate.Rate,
-                providerComment = order.PRate.Comment,
-                customerRating = order.CRate.Rate,
-                customerComment = order.CRate.Comment,
+                providerRating = order.PRate?.Rate,
+                providerComment = order.PRate?.Comment,
+                customerRating = order.CRate?.Rate,
+                customerComment = order.CRate?.Comment,
             };
 
             return orderAsObject;

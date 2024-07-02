@@ -819,7 +819,7 @@ namespace Sarvicny.Application.Services
 
         public async Task<Response<object>> ShowCustomerProfile(string customerId)
         {
-            var spec = new BaseSpecifications<Customer>(c => c.Id == customerId);
+            var spec = new CustomerWithOrdersSpecification(customerId);
             var customer = await _customerRepository.GetCustomerById(spec);
             if (customer == null)
             {
