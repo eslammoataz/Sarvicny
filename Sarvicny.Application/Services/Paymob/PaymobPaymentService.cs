@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Payment;
@@ -18,11 +19,14 @@ public class PaymobPaymentService : IPaymobPaymentService
 {
     private readonly IConfiguration _config;
     private readonly IHandlePayment _handlePayment;
+    private readonly ITransactionPaymentRepository _transactionPaymentRepository;
 
-    public PaymobPaymentService(IConfiguration config, IHandlePayment handlePayment)
+
+    public PaymobPaymentService(IConfiguration config, IHandlePayment handlePayment, ITransactionPaymentRepository transactionPaymentRepository)
     {
         _config = config;
         _handlePayment = handlePayment;
+        _transactionPaymentRepository = transactionPaymentRepository;
     }
     public async Task<string> GetAuthToken()
     {
@@ -49,7 +53,7 @@ public class PaymobPaymentService : IPaymobPaymentService
 
     }
 
-    public async Task<OrderResponse> OrderRegistration(Order order)
+    public async Task<OrderResponse> OrderRegistration(TransactionPayment order)
     {
         var orderUrl = "https://accept.paymob.com/api/ecommerce/orders";
         var restClient = new RestClient(orderUrl);
@@ -60,7 +64,7 @@ public class PaymobPaymentService : IPaymobPaymentService
 
         string authToken = await GetAuthToken();
 
-        var orderPriceInCents = order.OrderDetails.Price * 100;
+        var orderPriceInCents = order.Amount * 100;
 
         var orderRequest = new OrderRequest
         {
@@ -68,7 +72,7 @@ public class PaymobPaymentService : IPaymobPaymentService
             DeliveryNeeded = true,
             AmountCents = orderPriceInCents.ToString(),
             Items = new List<object>(),
-            MerchantOrderId = order.OrderID
+            MerchantOrderId = order.TransactionPaymentID
         };
 
         // Serialize the OrderRequest to JSON
@@ -88,7 +92,7 @@ public class PaymobPaymentService : IPaymobPaymentService
 
     }
 
-    public async Task<Response<object>> Pay(Order order)
+    public async Task<Response<object>> Pay(TransactionPayment order)
     {
 
         var orderUrl = "https://accept.paymob.com/api/acceptance/payment_keys";
@@ -110,8 +114,10 @@ public class PaymobPaymentService : IPaymobPaymentService
             };
         }
 
-        var customer = order.Customer;
-        var orderPriceInCents = order.OrderDetails.Price * 100;
+
+        var customer = await _transactionPaymentRepository.GetCustomerByTransactionPaymentId(order.TransactionPaymentID);
+
+        var orderPriceInCents = order.Amount * 100;
 
         var requestBody = new PaymentKeyRequest()
         {
@@ -319,8 +325,54 @@ public class PaymobPaymentService : IPaymobPaymentService
         return dictionary;
     }
 
-    public Task<Response<object>> Refund(Order order, decimal amount)
+    public async Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount)
     {
-        throw new NotImplementedException();
+        // Create the refund request
+        var client = new RestClient("https://accept.paymob.com");
+        var request = new RestRequest("/api/acceptance/void_refund/refund", Method.Post);
+        request.AddHeader("Authorization", $"Token {_config["PayMob:ApiKey"]}");
+        request.AddHeader("Content-Type", "application/json");
+
+        var refundRequest = new
+        {
+            transaction_id = transactionPayment.TransactionID,
+            amount_cents = amount
+        };
+        request.AddJsonBody(refundRequest);
+
+        var response = await client.ExecuteAsync(request);
+        if (response.IsSuccessful)
+        {
+            var jsonResponse = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+
+            if (jsonResponse != null)
+            {
+                return new Response<object>
+                {
+                    isError = false,
+                    Message = "Refund processed successfully",
+                    Payload = new { RefundAmount = amount }
+                };
+            }
+            else
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Message = "Refund failed",
+                    Payload = null
+                };
+            }
+        }
+        else
+        {
+            return new Response<object>
+            {
+                isError = true,
+                Message = $"Refund processing error: {response.ErrorMessage}",
+                Payload = null
+            };
+        }
     }
+
 }

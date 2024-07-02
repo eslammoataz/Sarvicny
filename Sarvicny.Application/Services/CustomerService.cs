@@ -187,8 +187,8 @@ namespace Sarvicny.Application.Services
                 var requestedService = new RequestedService
                 {
                     ServiceId = service.ServiceID,
-                    Service= service,
-                    CartId= cart.CartID
+                    Service = service,
+                    CartId = cart.CartID
                 };
                 await _serviceRepository.AddRequestedService(requestedService);
 
@@ -215,9 +215,9 @@ namespace Sarvicny.Application.Services
 
             }
 
-            
 
-           
+
+
 
 
             var district = await _districtRepository.GetDistrictById(requestServiceDto.DistrictID);
@@ -239,7 +239,7 @@ namespace Sarvicny.Application.Services
                     Message = "Failed",
                 };
 
-           
+
 
 
             var dayofweek = requestServiceDto.RequestDay.DayOfWeek.ToString();
@@ -314,10 +314,10 @@ namespace Sarvicny.Application.Services
                 Address = Address,
                 ProviderName = provider.FirstName + " " + provider.LastName,
 
-                Services= requestedServices.Select( r=> new
+                Services = requestedServices.Select(r => new
                 {
                     ServiceId = r.ServiceId,
-                    ServiceName= r.Service.ServiceName,
+                    ServiceName = r.Service.ServiceName,
                     Price = Math.Ceiling((r.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m),
 
 
@@ -417,7 +417,7 @@ namespace Sarvicny.Application.Services
 
 
                 };
-                
+
                 await _customerRepository.RemoveRequest(serviceRequest);
 
                 _unitOfWork.Commit();
@@ -570,7 +570,7 @@ namespace Sarvicny.Application.Services
 
             if (deleted)
             {
-                var deletedRequest= cartServiceRequests.Where(r=>r.Slot==null).Select( r=> new
+                var deletedRequest = cartServiceRequests.Where(r => r.Slot == null).Select(r => new
                 {
                     r.CartServiceRequestID,
                     r.Slot?.TimeSlotID,
@@ -607,7 +607,7 @@ namespace Sarvicny.Application.Services
             #endregion
 
 
-           
+
 
             List<object> result = new List<object>();
             List<Order> orders = new List<Order>();
@@ -651,7 +651,7 @@ namespace Sarvicny.Application.Services
                         ProviderID = request.ProviderID,
                         Provider = request.Provider,
                         RequestedServices = request.RequestedServices,
-   
+
                         Price = request.Price,
                         RequestedSlot = newRequestedSlot,
                         RequestedSlotID = newRequestedSlot.RequestedSlotId,
@@ -674,10 +674,10 @@ namespace Sarvicny.Application.Services
                         //PaymentExpiryTime = DateTime.UtcNow.AddHours(2),
 
                     };
-                 
+
                     var order = await _orderRepository.AddOrder(newOrder);
 
-                    List<RequestedService> requestedServices= new List<RequestedService>();
+                    List<RequestedService> requestedServices = new List<RequestedService>();
                     foreach (var requested in request.RequestedServices)
                     {
                         var newRequestService = new RequestedService
@@ -713,15 +713,15 @@ namespace Sarvicny.Application.Services
                         ProviderID = orderDetails.ProviderID,
                         ProviderFName = orderDetails.Provider.FirstName,
                         ProviderLName = orderDetails.Provider.LastName,
-                        
-                        RequestedServices =orderDetails.RequestedServices.Select(s => new
+
+                        RequestedServices = orderDetails.RequestedServices.Select(s => new
                         {
                             s.ServiceId,
                             s.Service.ServiceName,
                             //Price = Math.Ceiling((s.Service.ProviderServices.FirstOrDefault()?.Price ?? 0) * 1.12m)
 
 
-                            
+
                         }).ToList<object>(),
 
                         Price = orderDetails.Price,
@@ -742,7 +742,7 @@ namespace Sarvicny.Application.Services
                     Amount = totalPrice,
                     OrderList = orders,
                     PaymentMethod = paymentMethod,
-                    PaymentExpiryTime= DateTime.UtcNow.AddHours(2),
+                    PaymentExpiryTime = DateTime.UtcNow.AddHours(2),
 
                 };
 
@@ -916,7 +916,7 @@ namespace Sarvicny.Application.Services
 
 
 
-    
+
 
         public async Task<Response<object>> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto, string customerId)
         {
@@ -1008,7 +1008,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-       
+
 
         public async Task<Response<object>> AddProviderToFav(string providerId, string customerId)
         {
@@ -1170,43 +1170,6 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> Refund(string orderId)
-        {
-            var order = await _orderRepository.GetOrder(new OrderWithDetailsSpecification(orderId));
-
-            if (order == null)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Order Not Found",
-                    Payload = null,
-                    isError = true
-
-                };
-            }
-            var orderPrice = order.OrderDetails.Price;
-
-
-            if (order.OrderStatus != OrderStatusEnum.Paid)
-            {
-                return new Response<object>()
-                {
-                    Status = "failed",
-                    Message = "Order Status is not Paid",
-                    Payload = null,
-                    isError = true
-
-                };
-            }
-
-            var response = await _paymentService.RefundOrder(order, orderPrice);
-
-            _unitOfWork.Commit();
-
-            return response;
-        }
-
         public async Task<Response<object>> GetCustomerCanceledOrders(string customerId)
         {
             var customer = await _customerRepository.GetCustomerById(new CustomerWithOrdersSpecification(customerId));
@@ -1256,9 +1219,9 @@ namespace Sarvicny.Application.Services
         public async Task<Response<object>> GetReAssignedCartServiceRequest(string customerId)
         {
             var spec = new CartServiceRequestWithDetailsSpecification();
-            var requets= await _customerRepository.GetReAssignedCartServiceRequest(spec, customerId);
+            var requets = await _customerRepository.GetReAssignedCartServiceRequest(spec, customerId);
 
-            if (requets.Count()==0)
+            if (requets.Count() == 0)
             {
                 return new Response<object>()
                 {
@@ -1269,7 +1232,7 @@ namespace Sarvicny.Application.Services
                 };
             }
             List<object> result = new List<object>();
-            foreach(var request in requets)
+            foreach (var request in requets)
             {
                 var requestAsObject = new
                 {

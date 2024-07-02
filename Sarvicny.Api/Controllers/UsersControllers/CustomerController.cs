@@ -17,12 +17,15 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         private readonly IAuthenticationService _authenticationService;
         private readonly ICustomerService _customerService;
         private readonly IOrderService _orderService;
+        private readonly IPaymentService _paymentService;
 
-        public CustomerController(IAuthenticationService authenticationService, ICustomerService customerService, IOrderService orderService)
+
+        public CustomerController(IAuthenticationService authenticationService, ICustomerService customerService, IOrderService orderService, IPaymentService paymentService)
         {
             _authenticationService = authenticationService;
             _customerService = customerService;
             _orderService = orderService;
+            _paymentService = paymentService;
         }
 
 
@@ -87,7 +90,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         [HttpPost]
         [Route("orderCart")]
-        public async Task<IActionResult> OrderCart(string customerId, PaymentMethod paymentMethod)
+        public async Task<IActionResult> GetTransactionOrder(string customerId, PaymentMethod paymentMethod)
         {
             var Response = await _customerService.OrderCart(customerId, paymentMethod);
 
@@ -98,6 +101,35 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(Response);
 
         }
+
+        [HttpPost]
+        [Route("payTransaction")]
+        public async Task<IActionResult> PayTransaction(string transactionID)
+        {
+            var Response = await _paymentService.PayOrder(transactionID);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+            return Ok(Response);
+
+        }
+
+        [HttpPost]
+        [Route("refundOrder/{orderId}")]
+        public async Task<IActionResult> Refund(string transactionPaymentId, List<string> orderIds)
+        {
+            var response = await _paymentService.RefundOrder(transactionPaymentId, orderIds);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+
+        }
+
 
         [HttpPost]
         [Route("AddProviderToFav")]
@@ -170,19 +202,6 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
-        [HttpPost]
-        [Route("refundOrder/{orderId}")]
-        public async Task<IActionResult> Refund(string orderId)
-        {
-            var response = await _customerService.Refund(orderId);
-
-            if (response.isError)
-            {
-                return BadRequest(response);
-            }
-            return Ok(response);
-
-        }
 
         [HttpGet]
         [Route("getOrderStatus")]
@@ -237,7 +256,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
-        
+
 
         [HttpPost]
         [Route("addCustomerRating/{orderId}")]
@@ -319,16 +338,16 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
         [HttpGet("customerOrders/{customerId}/status/canceledByOrder")]
-    public async Task<IActionResult> GetCustomerCanceledOrders(string customerId)
-    {
-        var response = await _customerService.GetCustomerCanceledOrders(customerId);
-
-        if (response.isError)
+        public async Task<IActionResult> GetCustomerCanceledOrders(string customerId)
         {
-            return NotFound(response);
+            var response = await _customerService.GetCustomerCanceledOrders(customerId);
+
+            if (response.isError)
+            {
+                return NotFound(response);
+            }
+            return Ok(response);
         }
-        return Ok(response);
-    }
     }
 
 }

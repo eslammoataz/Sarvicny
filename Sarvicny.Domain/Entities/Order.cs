@@ -22,7 +22,6 @@ namespace Sarvicny.Domain.Entities
         [ForeignKey("OrderDetailsId")]
         public OrderDetails OrderDetails { get; set; }
 
-
         public string? customerRatingId { get; set; }
 
         public OrderRating? CRate { get; set; }

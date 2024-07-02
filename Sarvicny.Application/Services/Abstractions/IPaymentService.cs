@@ -1,11 +1,10 @@
 ﻿using Sarvicny.Contracts;
-using Sarvicny.Domain.Entities;
 
 namespace Sarvicny.Application.Services.Abstractions
 {
     public interface IPaymentService
     {
-        public Task<Response<object>> PayOrder(Order order, PaymentMethod paymentMethod);
-        Task<Response<object>> RefundOrder(Order order, decimal amount);
+        public Task<Response<object>> PayOrder(string TransactionId);
+        Task<Response<object>> RefundOrder(string transactionPaymentId, List<string> orderIds);
     }
 }

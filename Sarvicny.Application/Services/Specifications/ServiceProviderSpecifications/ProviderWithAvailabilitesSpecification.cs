@@ -9,13 +9,10 @@ namespace Sarvicny.Application.Services.Specifications.ServiceProviderSpecificat
         public ProviderWithAvailabilitesSpecification()
         {
 
-
             AddInclude($"{nameof(Provider.Availabilities)}.{nameof(ProviderAvailability.Slots)}");
         }
         public ProviderWithAvailabilitesSpecification(string providerId) : base(p => p.Id == providerId)
         {
-
-
             AddInclude($"{nameof(Provider.Availabilities)}.{nameof(ProviderAvailability.Slots)}");
         }
     }

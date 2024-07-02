@@ -10,11 +10,9 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
-using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 using System.Dynamic;
-using System.Runtime.InteropServices;
 
 namespace Sarvicny.Application.Services
 {
@@ -749,7 +747,7 @@ namespace Sarvicny.Application.Services
             profile.Wallet = serviceProvider.Wallet;
 
             var specO = new OrderWithDetailsSpecification();
-            var orders = await _orderRepository.GetAllOrdersForProvider(specO,providerId);
+            var orders = await _orderRepository.GetAllOrdersForProvider(specO, providerId);
 
             var completedOrders = orders.Where(o => o.OrderStatus == OrderStatusEnum.Completed).ToList();
             var completedOrdersCount = completedOrders.Count();
@@ -1182,7 +1180,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            
+
             order.OrderStatus = status;
             if (status == OrderStatusEnum.Done)
             {
@@ -1266,7 +1264,7 @@ namespace Sarvicny.Application.Services
                     Status = "Error",
                     Message = "Failed",
                 };
-            
+
             var wallet = provider.Wallet;
 
             if (wallet is null)
@@ -1278,9 +1276,9 @@ namespace Sarvicny.Application.Services
             }
             var WalletAsObj = new
             {
-                HandeledBalance =provider.Wallet.HandedBalance,
+                HandeledBalance = provider.Wallet.HandedBalance,
                 PendingBalance = provider.Wallet.PendingBalance,
-                TotalBalance =provider.Wallet.TotalBalance,
+                TotalBalance = provider.Wallet.TotalBalance,
             };
             return new Response<object>
             {

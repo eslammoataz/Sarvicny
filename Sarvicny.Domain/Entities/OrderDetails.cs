@@ -1,13 +1,7 @@
 ﻿using Sarvicny.Domain.Entities.Avaliabilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Sarvicny.Domain.Entities
 {
@@ -20,7 +14,7 @@ namespace Sarvicny.Domain.Entities
 
         public string OrderId { get; set; }
 
-       
+
 
         public string ProviderID { get; set; }
 

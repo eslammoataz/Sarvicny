@@ -9,7 +9,6 @@ using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
-using System;
 
 namespace Sarvicny.Infrastructure.Persistence
 {
@@ -94,14 +93,14 @@ namespace Sarvicny.Infrastructure.Persistence
                 ServiceProviderID = provider.Id,
                 ServiceProvider = provider,
                 DayOfWeek = availabilityDto.DayOfWeek,
-                
- 
-                
+
+
+
             };
 
             List<AvailabilityTimeSlot> timeSlots = await ConvertToTimeSlot(availabilityDto.Slots, providerAvailability);
             providerAvailability.Slots = timeSlots;
-            
+
             _context.ProviderAvailabilities.Add(providerAvailability);
 
             return providerAvailability;
@@ -124,7 +123,7 @@ namespace Sarvicny.Infrastructure.Persistence
                     {
                         StartTime = currentHour,
                         EndTime = currentHour.Add(TimeSpan.FromHours(1)),
-                        isActive=true,
+                        isActive = true,
                         ProviderAvailabilityID = providerAvailability.ProviderAvailabilityID,
                         ProviderAvailability = providerAvailability
 
@@ -138,7 +137,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         public async Task RemoveAvailability(ProviderAvailability providerAvailability)
         {
-             _context.ProviderAvailabilities.Remove(providerAvailability);
+            _context.ProviderAvailabilities.Remove(providerAvailability);
         }
 
         public async Task<List<ProviderAvailability>> getAvailability(ISpecifications<Provider> spec)
@@ -170,7 +169,7 @@ namespace Sarvicny.Infrastructure.Persistence
         }
         public async Task<ICollection<Provider>> GetProvidersServiceRegistrationRequest(ISpecifications<Provider> spec)
         {
-            return await ApplySpecification(spec).Where(p => p.IsVerified == true && p.ProviderServices.Any(ps=>ps.isVerified== false)).ToListAsync();
+            return await ApplySpecification(spec).Where(p => p.IsVerified == true && p.ProviderServices.Any(ps => ps.isVerified == false)).ToListAsync();
         }
         public async Task<ICollection<Provider>> GetAllServiceProviders(ISpecifications<Provider> spec)
         {
@@ -192,11 +191,11 @@ namespace Sarvicny.Infrastructure.Persistence
 
 
 
-             var matchedProviders = initialProviders
-            .Where(p => services.All(serviceId =>
-                p.ProviderServices.Where(ps => services.Contains(ps.ServiceID))
-                    .Any(ps => ps.isVerified && ps.ServiceID == serviceId)))
-            .ToList();
+            var matchedProviders = initialProviders
+           .Where(p => services.All(serviceId =>
+               p.ProviderServices.Where(ps => services.Contains(ps.ServiceID))
+                   .Any(ps => ps.isVerified && ps.ServiceID == serviceId)))
+           .ToList();
 
 
             var totalPricePerProvider = matchedProviders
@@ -214,7 +213,7 @@ namespace Sarvicny.Infrastructure.Persistence
                 .Include(c => c.Favourites)
                 .FirstOrDefaultAsync(c => c.Id == customerId);
 
-            if (customer != null && customer.Favourites.Count() !=0 )
+            if (customer != null && customer.Favourites.Count() != 0)
             {
                 var favoriteProviderIds = customer.Favourites.Select(f => f.providerId).ToHashSet();
 
@@ -240,8 +239,8 @@ namespace Sarvicny.Infrastructure.Persistence
             var initialProviders = await _context.Provider
                .Where(p => p.IsVerified && !p.IsBlocked)
                .Where(p => p.Availabilities.Any(a =>
-                   a.DayOfWeek == dayOfWeek && a.Slots.Any(s =>s.isActive)))
-               .Where(p => p.ProviderDistricts.Any(d => d.DistrictID == districtId && d.enable== true) )
+                   a.DayOfWeek == dayOfWeek && a.Slots.Any(s => s.isActive)))
+               .Where(p => p.ProviderDistricts.Any(d => d.DistrictID == districtId && d.enable == true))
                .Include(p => p.ProviderServices)
                .ToListAsync();
 
@@ -302,11 +301,11 @@ namespace Sarvicny.Infrastructure.Persistence
             //        p.ProviderServices.Any(ps => ps.isVerified == true && ps.ServiceID == id)))
             //    .ToList();
 
-             var suggestedProviders = initialProviders
-            .Where(p => services.All(serviceId =>
-               p.ProviderServices.Where(ps => services.Contains(ps.ServiceID))
-                   .Any(ps => ps.isVerified && ps.ServiceID == serviceId)))
-            .ToList();
+            var suggestedProviders = initialProviders
+           .Where(p => services.All(serviceId =>
+              p.ProviderServices.Where(ps => services.Contains(ps.ServiceID))
+                  .Any(ps => ps.isVerified && ps.ServiceID == serviceId)))
+           .ToList();
 
             var totalPricePerProvider = suggestedProviders
                 .Select(p => new

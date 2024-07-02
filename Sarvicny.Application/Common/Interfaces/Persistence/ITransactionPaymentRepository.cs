@@ -1,4 +1,5 @@
 ﻿using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users;
 
 namespace Sarvicny.Application.Common.Interfaces.Persistence
 {
@@ -8,5 +9,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         Task<TransactionPayment> GetTransactionPaymentAsync(string transactionPaymentId);
         Task UpdateTransactionPaymentAsync(TransactionPayment transactionPayment);
         Task DeleteTransactionPaymentAsync(TransactionPayment transactionPayment);
+
+        Task<Customer> GetCustomerByTransactionPaymentId(string transactionPaymentId);
     }
 }

@@ -9,11 +9,11 @@ namespace Sarvicny.Application.Services.Paypal
         public Task<object> CreateOrder(Order order);
         public Task<object> CaptureOrder(string orderId);
 
-        public Task<Response<object>> Pay(Order order);
+        public Task<Response<object>> Pay(TransactionPayment order);
         public Task<Response<object>> ExecutePayment(string paymentId, string payerId, string token);
 
         public Task<object> GetPayment(string paymentId);
 
-        public Task<Response<object>> Refund(Order order, decimal amount);
+        public Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount);
     }
 }

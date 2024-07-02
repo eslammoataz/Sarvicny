@@ -204,7 +204,7 @@ namespace Sarvicny.Application.Services.Paypal
             }
         }
 
-        public async Task<Response<object>> Pay(Order order)
+        public async Task<Response<object>> Pay(TransactionPayment order)
         {
             var accessToken = await GetAuthToken();
 
@@ -238,11 +238,11 @@ namespace Sarvicny.Application.Services.Paypal
                         amount = new
                         {
                             currency = "USD",
-                            total = order.OrderDetails.Price.ToString("0.00")
+                            total = order.Amount.ToString("0.00")
                         },
                         description = "this is the payment transaction description",
                         invoice_number = invoiceNumber,
-                        custom = order.OrderID,
+                        custom = order.TransactionPaymentID ,
                     }
     }
             };
@@ -308,10 +308,10 @@ namespace Sarvicny.Application.Services.Paypal
                 _logger.LogInformation($"Sale ID: {saleId}");
 
                 // Extract custom attribute
-                string orderId = executePaymentResponse?.transactions?[0]?.custom?.Value.ToString();
+                string transactionPaymentId = executePaymentResponse?.transactions?[0]?.custom?.Value.ToString();
 
 
-                var handlePaymentResponse = await _handlePayment.validateOrder(orderId, true, invoiceNumber, saleId, PaymentMethod.Paypal);
+                var handlePaymentResponse = await _handlePayment.validateOrder(transactionPaymentId, true, invoiceNumber, saleId, PaymentMethod.Paypal);
 
                 return handlePaymentResponse;
             }
@@ -389,7 +389,7 @@ namespace Sarvicny.Application.Services.Paypal
             }
         }
 
-        public async Task<Response<object>> Refund(Order order, decimal amount)
+        public async Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount)
         {
             string refundUrlFormat = "https://api.sandbox.paypal.com/v1/payments/sale/{0}/refund";
 
@@ -402,6 +402,7 @@ namespace Sarvicny.Application.Services.Paypal
 
             request.AddHeader("Authorization", "Bearer " + accessToken);
             request.AddHeader("Content-Type", "application/json");
+
 
             var refundRequest = new
             {

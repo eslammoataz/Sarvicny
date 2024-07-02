@@ -8,8 +8,8 @@ namespace Sarvicny.Application.Services.Paymob;
 public interface IPaymobPaymentService
 {
     public Task<string> GetAuthToken();
-    public Task<OrderResponse> OrderRegistration(Order order);
-    public Task<Response<object>> Pay(Order order);
+    public Task<OrderResponse> OrderRegistration(TransactionPayment order);
+    public Task<Response<object>> Pay(TransactionPayment order);
     public Task<Response<object>> TransactionProcessedCallback(dynamic Payload, string hmac);
 
     public Task<Response<object>> TransactionResponseCallback(Dictionary<string, string> data, string hmac);
@@ -20,5 +20,5 @@ public interface IPaymobPaymentService
 
     public bool VerifyHmac(Dictionary<string, string> data, string receivedHmac);
 
-    public Task<Response<object>> Refund(Order order, decimal amount);
+    public Task<Response<object>> Refund(TransactionPayment transactionPayment, List<Order> orders, decimal amount);
 }

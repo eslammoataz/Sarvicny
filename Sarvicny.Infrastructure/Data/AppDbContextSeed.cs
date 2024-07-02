@@ -74,13 +74,13 @@ namespace Sarvicny.Infrastructure.Data
             {
                 var wallet = new ProviderWallet
                 {
-                    ProviderId= workerData.Id,
-                    PendingBalance=0.0m,
-                    HandedBalance=0.0m,
+                    ProviderId = workerData.Id,
+                    PendingBalance = 0.0m,
+                    HandedBalance = 0.0m,
 
 
                 };
-                workerData.Wallet= wallet ;
+                workerData.Wallet = wallet;
                 workerData.WalletId = wallet.WalletId;
                 await userManager.CreateAsync(workerData, "Worker123#");
                 await userManager.AddToRoleAsync(workerData, "ServiceProvider");
@@ -127,6 +127,7 @@ namespace Sarvicny.Infrastructure.Data
                 Description = "This is a test service.",
             };
 
+
             Service childService = null;
 
             if (!context.Services.Any())
@@ -153,14 +154,14 @@ namespace Sarvicny.Infrastructure.Data
                 var providerService = new ProviderService()
                 {
                     ProviderID = workerData.Id,
-                    ServiceID = serviceData.ServiceID,
+                    ServiceID = childService.ServiceID,
                     Price = 99.99M,
                     Provider = workerData,
                     Service = childService
                 };
                 await context.ProviderServices.AddAsync(providerService);
 
-                serviceData.ProviderServices.Add(providerService);
+                childService.ProviderServices.Add(providerService);
                 workerData.ProviderServices.Add(providerService);
             }
 

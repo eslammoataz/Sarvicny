@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using Sarvicny.Application.Common.Interfaces.Persistence;
+﻿using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
@@ -417,7 +416,7 @@ namespace Sarvicny.Application.Services
             var customer = order.Customer;
 
             var services = order.OrderDetails.RequestedServices;
-    
+
             var orderAsObject = new
             {
                 orderId = order.OrderID,
@@ -638,7 +637,7 @@ namespace Sarvicny.Application.Services
                     firstname = provider.FirstName,
                     lastname = provider.LastName,
                     email = provider.Email,
-                    availabilities = availability.Slots.Where(s=>s.isActive==true).Select(s => new
+                    availabilities = availability.Slots.Where(s => s.isActive == true).Select(s => new
                     {
                         s.TimeSlotID,
                         s.StartTime

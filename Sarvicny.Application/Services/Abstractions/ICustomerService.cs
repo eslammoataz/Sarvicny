@@ -20,16 +20,13 @@ namespace Sarvicny.Application.Services.Abstractions
         public Task<Response<object>> UpdateCustomerProfile(UpdateCustomerDto updateCustomerDto, string customerId);
         public Task<Response<object>> ViewLogRequest(string customerId); // kol al orders ali tlbha ya3ni
 
-       
+
 
         public Task<Response<object>> AddProviderToFav(string providerId, string customerId);
 
         public Task<Response<List<object>>> getCustomerFavourites(string customerId);
 
         public Task<Response<object>> RemoveFavProvider(string customerId, string providerId);
-
-        Task<Response<object>> Refund(string orderId);
-        
         Task<Response<object>> GetCustomerCanceledOrders(string customerId);
 
         Task<Response<object>> GetReAssignedCartServiceRequest(string customerId);
