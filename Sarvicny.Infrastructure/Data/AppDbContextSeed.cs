@@ -67,7 +67,8 @@ namespace Sarvicny.Infrastructure.Data
                 FirstName = "Customer1111",
                 LastName = "Customer11111",
                 PhoneNumber = "Customer",
-                Address = "Customer"
+                Address = "Customer",
+                DistrictName= "Giza"
             };
 
             if (!context.Workers.Any())

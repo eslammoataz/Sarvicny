@@ -26,6 +26,7 @@ namespace Sarvicny.Domain.Entities
 
         public OrderRating? CRate { get; set; }
 
+
         public string? providerRatingId { get; set; }
 
         public OrderRating? PRate { get; set; }

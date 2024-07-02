@@ -18,8 +18,7 @@ namespace Sarvicny.Contracts.Dtos
         [Required(ErrorMessage = "Slot ID is Required ")] 
         public string SlotID { get; set; }
 
-        [Required(ErrorMessage = "District ID is Required ")]
-        public string DistrictID { get; set; }
+        public string? DistrictID { get; set; }
 
         public string? Address { get; set; }
 

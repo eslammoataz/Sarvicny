@@ -18,5 +18,7 @@ namespace Sarvicny.Contracts.Dtos
         public string? PhoneNumber { get; set; }
         public string? Address { get; set; }
 
+        public string? DistrictName { get; set; }
+
     }
 }

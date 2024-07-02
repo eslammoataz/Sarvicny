@@ -10,8 +10,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
     public interface ICustomerRepository
     {
         
-        
-
+       
         Task<Customer?> GetCustomerById(ISpecifications<Customer> specifications);
 
         Task<CartServiceRequest> GetCartServiceRequestById(ISpecifications<CartServiceRequest> spec);

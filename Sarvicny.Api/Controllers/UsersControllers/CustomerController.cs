@@ -41,6 +41,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 Address = registrationDto.Address,
                 LastName = registrationDto.LastName,
                 FirstName = registrationDto.FirstName,
+                DistrictName = registrationDto.DistrictName,
             };
 
             var Response = await _authenticationService.Register(user, role, registrationDto.UserType, registrationDto.Password);
@@ -328,7 +329,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         [Route("getAllReAssignedCartRequests/{customerId}")]
         public async Task<IActionResult> getAllReAssignedCartRequests(string customerId)
         {
-            var response = await _customerService.GetReAssignedCartServiceRequest(customerId);
+            var response = await _customerService.GetReAssignedCartServiceRequests(customerId);
             if (response.isError)
             {
                 return NotFound(response);

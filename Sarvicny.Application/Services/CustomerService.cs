@@ -218,20 +218,41 @@ namespace Sarvicny.Application.Services
             }
 
 
+            var districtId = requestServiceDto.DistrictID;
+
+            District district = null;
+
+            if (districtId is null)
+            {
+                district = await _districtRepository.GetDistrictByName(customer.DistrictName);
+
+                if (district == null)
+                    return new Response<object>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "district not found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
 
 
+            }
+            else
+            {
+
+                district = await _districtRepository.GetDistrictById(districtId);
+                if (district == null)
+                    return new Response<object>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "district not found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+            }
 
 
-            var district = await _districtRepository.GetDistrictById(requestServiceDto.DistrictID);
-            if (district == null)
-                return new Response<object>
-                {
-                    isError = true,
-                    Errors = new List<string> { "district not found" },
-                    Status = "Error",
-                    Message = "Failed",
-                };
-            var providerDistrict = provider.ProviderDistricts.SingleOrDefault(d => d.DistrictID == requestServiceDto.DistrictID && d.enable == true);
+            var providerDistrict = provider.ProviderDistricts.SingleOrDefault(d => d.DistrictID == district.DistrictID && d.enable == true);
             if (providerDistrict == null)
                 return new Response<object>
                 {
@@ -294,7 +315,6 @@ namespace Sarvicny.Application.Services
                 SlotID = slotExist.TimeSlotID,
                 CartID = customer.Cart.CartID,
                 Cart = customer.Cart,
-
                 Price = price,
                 ProblemDescription = requestServiceDto.ProblemDescription,
                 Address = Address,
@@ -938,6 +958,7 @@ namespace Sarvicny.Application.Services
             var email = updateCustomerDto.Email;
             var phone = updateCustomerDto.PhoneNumber;
             var address = updateCustomerDto.Address;
+            var districtName= updateCustomerDto.DistrictName;
 
 
             if (usrname != null)
@@ -984,6 +1005,11 @@ namespace Sarvicny.Application.Services
                 customer.Address = address;
 
             }
+            if (districtName != null)
+            {
+                customer.DistrictName = districtName;
+
+            }
 
             await _userRepository.UpdateUserAsync(customer);
             _unitOfWork.Commit();
@@ -995,6 +1021,7 @@ namespace Sarvicny.Application.Services
 
                 phone = customer.PhoneNumber,
                 address = customer.Address,
+                districtName = customer.DistrictName,
 
 
             };
@@ -1233,7 +1260,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> GetReAssignedCartServiceRequest(string customerId)
+        public async Task<Response<object>> GetReAssignedCartServiceRequests(string customerId)
         {
             var spec = new CartServiceRequestWithDetailsSpecification();
             var requets = await _customerRepository.GetReAssignedCartServiceRequest(spec, customerId);
@@ -1289,6 +1316,11 @@ namespace Sarvicny.Application.Services
                 isError = false
             };
 
+        }
+
+        public Task<Response<object>> AddDistrictToCustomer(string districtId, string customerId)
+        {
+            throw new NotImplementedException();
         }
     }
 

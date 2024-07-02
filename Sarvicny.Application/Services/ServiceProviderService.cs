@@ -1,4 +1,5 @@
-﻿using Sarvicny.Application.Common.Helper;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -233,6 +234,18 @@ namespace Sarvicny.Application.Services
                     isError = true,
                     Payload = null,
                     Message = "Availabilty Not Found"
+                };
+            }
+
+            if (!provider.Availabilities.Any())
+            {
+
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Provider cannot remove all his availabilities ",
+                    Payload = null,
+                    isError = true
                 };
 
             }
@@ -953,6 +966,18 @@ namespace Sarvicny.Application.Services
                 };
 
             }
+            if (!serviceProvider.ProviderDistricts.Any(pd => pd.enable == true))
+            {
+
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Provider cannot disable all his districts",
+                    Payload = null,
+                    isError = true
+                };
+
+            }
             providerDistrict.enable = false;
             _unitOfWork.Commit();
 
@@ -1032,6 +1057,7 @@ namespace Sarvicny.Application.Services
                 };
 
             }
+
             providerDistrict.enable = true;
             _unitOfWork.Commit();
 

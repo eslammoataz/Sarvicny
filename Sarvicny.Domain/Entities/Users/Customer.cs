@@ -5,7 +5,8 @@ namespace Sarvicny.Domain.Entities.Users
 {
     public class Customer : User
     {
-        public string Address { get; set; }
+
+
         public string? CartID { get; set; }
 
         [ForeignKey("CartID")]
@@ -15,6 +16,13 @@ namespace Sarvicny.Domain.Entities.Users
 
 
         public List<FavProvider>? Favourites { get; set; } = new List<FavProvider>();
+
+        //public CustomerDistrict CustomerDistrict { get; set; }
+
+        public string DistrictName { get; set; }
+        public string Address { get; set; }
+
+
 
 
 

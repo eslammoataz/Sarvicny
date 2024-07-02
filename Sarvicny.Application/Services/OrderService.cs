@@ -6,6 +6,7 @@ using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Specification;
 
 namespace Sarvicny.Application.Services
@@ -17,8 +18,10 @@ namespace Sarvicny.Application.Services
         private readonly IServiceProviderRepository _providerRepository;
         private readonly IEmailService _emailService;
         private readonly IServiceRepository _serviceRepository;
+        private readonly IDistrictRepository _districtRepository;
+        private readonly ICustomerRepository _customerRepository;
         private IUnitOfWork _unitOfWork;
-        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IEmailService emailService, IServiceRepository serviceRepository)
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepository, IEmailService emailService, IServiceRepository serviceRepository, ICustomerRepository customerRepository , IDistrictRepository districtRepository)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
@@ -26,6 +29,8 @@ namespace Sarvicny.Application.Services
             _providerRepository = serviceProviderRepository;
             _emailService = emailService;
             _serviceRepository = serviceRepository;
+            _districtRepository = districtRepository;
+            _customerRepository = customerRepository;
 
         }
 
@@ -522,7 +527,43 @@ namespace Sarvicny.Application.Services
             }
             TimeSpan startTime = TimeSpan.Parse(matchingProviderDto.startTime);
 
-            var MatchedProviderSortedbyFav = await _providerRepository.GetAllMatchedProviders(matchingProviderDto.services, startTime, matchingProviderDto.dayOfWeek, matchingProviderDto.districtId, matchingProviderDto.customerId);
+
+            var spec = new BaseSpecifications<Customer>(c => c.Id == matchingProviderDto.customerId);
+
+            var customer = await _customerRepository.GetCustomerById(spec);
+            if (customer == null)
+            {
+                return new Response<List<object>>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Customer Not Found" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            }
+
+            var districtId = matchingProviderDto.districtId;
+
+            District district = null;
+            if (districtId == null)
+            {
+                district = await _districtRepository.GetDistrictByName(customer.DistrictName);
+            }
+            else
+            {
+                district = await _districtRepository.GetDistrictById(districtId);
+                if (district == null)
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "district not found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+            }
+            
+
+            var MatchedProviderSortedbyFav = await _providerRepository.GetAllMatchedProviders(matchingProviderDto.services, startTime, matchingProviderDto.dayOfWeek, district.DistrictID, matchingProviderDto.customerId);
             if (MatchedProviderSortedbyFav == null)
             {
                 return new Response<List<object>>
@@ -538,8 +579,8 @@ namespace Sarvicny.Application.Services
             List<object> result = new List<object>();
             foreach (var match in MatchedProviderSortedbyFav)
             {
-                var spec = new ProviderWithDetailsSpecification(match.Id);
-                var provider = await _providerRepository.FindByIdAsync(spec);
+                var specP = new ProviderWithDetailsSpecification(match.Id);
+                var provider = await _providerRepository.FindByIdAsync(specP);
                 var availability = provider.Availabilities.FirstOrDefault(a => a.DayOfWeek == matchingProviderDto.dayOfWeek);
                 var slot = availability.Slots.FirstOrDefault(s => s.StartTime == startTime);
 
@@ -606,26 +647,61 @@ namespace Sarvicny.Application.Services
                     };
 
             }
+            var spec = new BaseSpecifications<Customer>(c => c.Id == matchingProviderDto.customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
 
-            var Suggestions = await _providerRepository.SuggestionLevel1(matchingProviderDto.services, matchingProviderDto.dayOfWeek, matchingProviderDto.districtId, matchingProviderDto.customerId);
-            if (Suggestions == null)
+            if (customer == null)
             {
-
                 return new Response<List<object>>
                 {
                     isError = true,
-                    Message = "No MatchedProvider in This day of week",
-                    Payload = null,
-
+                    Errors = new List<string> { "Customer Not Found" },
+                    Status = "Error",
+                    Message = "Failed",
                 };
-
             }
+
+            var districtId = matchingProviderDto.districtId;
+
+            District district = null;
+            if (districtId == null)
+            {
+                district = await _districtRepository.GetDistrictByName(customer.DistrictName);
+            }
+            else
+            {
+                district = await _districtRepository.GetDistrictById(districtId);
+                if (district == null)
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "district not found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+            }
+
+            var Suggestions = await _providerRepository.SuggestionLevel1(matchingProviderDto.services, matchingProviderDto.dayOfWeek, district.DistrictID, matchingProviderDto.customerId);
+                if (Suggestions == null)
+                {
+
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Message = "No MatchedProvider in This day of week",
+                        Payload = null,
+
+                    };
+
+                }
+
+  
 
             List<object> result = new List<object>();
             foreach (var match in Suggestions)
             {
-                var spec = new ProviderWithDetailsSpecification(match.Id);
-                var provider = await _providerRepository.FindByIdAsync(spec);
+                var specP = new ProviderWithDetailsSpecification(match.Id);
+                var provider = await _providerRepository.FindByIdAsync(specP);
                 var availability = provider.Availabilities.FirstOrDefault();
 
                 decimal rate = 0.12m;
@@ -691,7 +767,41 @@ namespace Sarvicny.Application.Services
 
             }
 
-            var Suggestions = await _providerRepository.SuggestionLevel2(matchingProviderDto.services, matchingProviderDto.districtId, matchingProviderDto.customerId);
+            var spec = new BaseSpecifications<Customer>(c => c.Id == matchingProviderDto.customerId);
+            var customer = await _customerRepository.GetCustomerById(spec);
+
+            if (customer == null)
+            {
+                return new Response<List<object>>
+                {
+                    isError = true,
+                    Errors = new List<string> { "Customer Not Found" },
+                    Status = "Error",
+                    Message = "Failed",
+                };
+            }
+
+            var districtId = matchingProviderDto.districtId;
+
+            District district = null;
+            if (districtId == null)
+            {
+                district = await _districtRepository.GetDistrictByName(customer.DistrictName);
+            }
+            else
+            {
+                district = await _districtRepository.GetDistrictById(districtId);
+                if (district == null)
+                    return new Response<List<object>>
+                    {
+                        isError = true,
+                        Errors = new List<string> { "district not found" },
+                        Status = "Error",
+                        Message = "Failed",
+                    };
+            }
+
+            var Suggestions = await _providerRepository.SuggestionLevel2(matchingProviderDto.services, district.DistrictID, matchingProviderDto.customerId);
             if (Suggestions == null)
             {
 
@@ -708,8 +818,8 @@ namespace Sarvicny.Application.Services
             List<object> result = new List<object>();
             foreach (var match in Suggestions)
             {
-                var spec = new ProviderWithDetailsSpecification(match.Id);
-                var provider = await _providerRepository.FindByIdAsync(spec);
+                var specP = new ProviderWithDetailsSpecification(match.Id);
+                var provider = await _providerRepository.FindByIdAsync(specP);
 
 
                 decimal rate = 0.12m;

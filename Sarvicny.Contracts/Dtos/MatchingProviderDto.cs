@@ -19,8 +19,8 @@ namespace Sarvicny.Contracts.Dtos
 
         public string? dayOfWeek { get; set; }
 
-        [Required(ErrorMessage = "District ID is Required ")]
-        public string districtId { get; set; }
+  
+        public string? districtId { get; set; }
 
         [Required(ErrorMessage = "Customer ID is Required ")]
         public string customerId { get; set; }
