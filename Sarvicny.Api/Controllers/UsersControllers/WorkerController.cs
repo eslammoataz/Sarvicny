@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
@@ -13,13 +14,15 @@ namespace Sarvicny.Api.Controllers.UsersControllers
     {
 
         private readonly IAuthenticationService authenticationService;
+        private readonly IServiceProviderService _serviceProviderService;
         // private readonly IWorkerService workerService;
 
 
-        public WorkerController(IAuthenticationService authenticationService)
+        public WorkerController(IAuthenticationService authenticationService, IServiceProviderService serviceProviderService)
         {
 
             this.authenticationService = authenticationService;
+            this._serviceProviderService = serviceProviderService;
             // this.workerService = workerService;
         }
 
@@ -36,7 +39,6 @@ namespace Sarvicny.Api.Controllers.UsersControllers
                 PhoneNumber = registrationDto.PhoneNumber,
                 LastName = registrationDto.LastName,
                 FirstName = registrationDto.FirstName,
-                CriminalRecord = registrationDto.CriminalRecord,
                 NationalID = registrationDto.NationalID,
 
                 IsVerified = false,
@@ -52,20 +54,35 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
         }
 
-        // [HttpGet]
-        // [Route("getWorkerProfile")]
-        // public async Task<IActionResult> ShowWorkerProfile(string workerId)
-        // {
-        //     var response = await workerService.ShowWorkerProfile(workerId);
-        //
-        //     if (response.isError)
-        //     {
-        //         return BadRequest(response);
-        //     }
-        //     return Ok(response);
-        //
-        // }
+        [HttpPost]
+        [Route("uploadFile")]
+        public async Task<IActionResult> UploadFile([FromBody] ImageUploadDto imageUploadDto, ProviderFileTypes fileName, string providerId)
+        {
 
+            var Response = await _serviceProviderService.UploadFileForWoker(imageUploadDto,fileName, providerId);
 
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+
+            return Ok(Response);
+
+        }
+        [HttpGet]
+        [Route("getWorkerImage")]
+        public async Task<IActionResult> getWorkerImage(string providerId)
+        {
+
+            var Response = await _serviceProviderService.GetImageForWorker(providerId);
+
+            if (Response.isError)
+            {
+                return BadRequest(Response);
+            }
+
+            return Ok(Response);
+
+        }
     }
 }

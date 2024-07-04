@@ -21,6 +21,9 @@ public interface IAdminService
     Task<Response<List<object>>> getAllOrders();
     Task<Response<List<object>>> getAllPendingOrPaidOrders();
     Task<Response<List<object>>> getAllCanceledByProviderOrders();
+
+    Task<Response<List<object>>> getAllOrdersNeedRefund();
+
     //Task<Response<List<object>>> RemoveAllPaymentExpiredOrders();
 
     Task<Response<object>> MarkOrderComplete(string orderId);
@@ -31,4 +34,6 @@ public interface IAdminService
     Task<Response<District>> AddDistrict(District district);
     Task<Response<object>> ReAssignOrder(string OrderId);
     Task<Response<object>> MarkFraud(string OrderId);
+
+    Task<Response<object>> GetCriminalRecordFileForWorker(string providerId);
 }

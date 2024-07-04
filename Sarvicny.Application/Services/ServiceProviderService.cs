@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Org.BouncyCastle.Asn1.Crmf;
 using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
@@ -7,6 +8,7 @@ using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceSpecifications;
 using Sarvicny.Contracts;
+using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
@@ -1150,10 +1152,9 @@ namespace Sarvicny.Application.Services
                     Payload = null,
                     Message = "Order Not Found",
                     Errors = new List<string>() { "Error with order" },
-
                 };
-
             }
+
             if (order.OrderStatus == OrderStatusEnum.Canceled || order.OrderStatus == OrderStatusEnum.CanceledByProvider)
             {
                 return new Response<object>()
@@ -1194,6 +1195,19 @@ namespace Sarvicny.Application.Services
 
                 };
             }
+            if (order.OrderDetails.RequestedSlot.RequestedDay!= DateTime.Today)
+            {
+                return new Response<object>()
+
+                {
+                    isError = true,
+                    Payload = null,
+                    Message = "OrderStatus cannot be set in another day than the requested",
+                    Errors = new List<string>() { "Error with order" },
+
+                };
+
+            }
             if (status != OrderStatusEnum.Start && status != OrderStatusEnum.Preparing && status != OrderStatusEnum.OnTheWay && status != OrderStatusEnum.InProgress && status != OrderStatusEnum.Done)
             {
                 return new Response<object>()
@@ -1206,6 +1220,8 @@ namespace Sarvicny.Application.Services
 
                 };
             }
+
+            
 
             order.OrderStatus = status;
             if (status == OrderStatusEnum.Done)
@@ -1315,5 +1331,167 @@ namespace Sarvicny.Application.Services
             };
 
         }
+
+        public async Task<Response<object>> UploadFileForWoker(ImageUploadDto imageUploadDto,ProviderFileTypes fileName, string providerId)
+        {
+            //var spec1 = new ProviderWithDetailsSpecification(providerId);
+
+            var worker = await _serviceProviderRepository.FindWorkerByIdAsync(providerId);
+
+            if (worker == null)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = null,
+                    Payload = null,
+                    Message = "failed",
+                };
+            }
+            if (fileName == ProviderFileTypes.CriminalRecord && worker.CriminalRecord !=null)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = null,
+                    Payload = null,
+                    Message = "failed, file already uploaded",
+                };
+            }
+            if (fileName == ProviderFileTypes.Image && worker.ProviderImage != null)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = null,
+                    Payload = null,
+                    Message = "failed, file already uploaded",
+                };
+            }
+
+            try
+            {
+                // Create directory structure if it doesn't exist
+                var providerFolder = Path.Combine(Environment.CurrentDirectory, "App_Data", "WorkersData", providerId);
+                if (!Directory.Exists(providerFolder))
+                {
+                    Directory.CreateDirectory(providerFolder);
+                }
+
+                // Save the image file
+                var imageFilePath = Path.Combine(providerFolder, fileName.ToString());
+                var imageBytes = Convert.FromBase64String(imageUploadDto.Base64Image);
+                await System.IO.File.WriteAllBytesAsync(imageFilePath, imageBytes);
+
+                if (fileName == ProviderFileTypes.CriminalRecord)
+                {
+                    worker.CriminalRecord = imageFilePath;
+                }
+                worker.ProviderImage = imageFilePath;
+
+                _unitOfWork.Commit();
+
+                var result = new
+                {
+                    fileName,
+                    ImageLength = imageBytes.Length
+                };
+
+                return new Response<object>
+                {
+                    isError = false,
+                    Payload = result,
+                    Message = "success",
+                };
+
+
+
+            }
+            catch (Exception ex)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = null,
+                    Payload = null,
+                    Message = $"{ex.Message }",
+                };
+
+            }
+        }
+
+        public async Task<Response<object>> GetImageForWorker(string providerId)
+        {
+            var worker = await _serviceProviderRepository.FindWorkerByIdAsync(providerId);
+
+            if (worker == null)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = null,
+                    Payload = null,
+                    Message = "failed",
+                };
+            }
+            if (worker.ProviderImage == null)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    Errors = null,
+                    Payload = null,
+                    Message = "No image found",
+                };
+            }
+
+                try
+            {
+                var providerFolder = Path.Combine(Environment.CurrentDirectory, "App_Data", "WorkersData", providerId);
+                var filePath = Path.Combine(providerFolder, "Image");
+
+                if (File.Exists(filePath))
+                {
+                    // Read the file as bytes
+                    byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
+
+                    // Convert bytes to base64 string
+                    string base64String = Convert.ToBase64String(fileBytes);
+
+                    var result = new
+                    {
+                        base64String
+                    };
+                    return new Response<object>
+                    {
+                        isError = false,
+                        Payload = base64String,
+                        Message = "success",
+                    };
+                }
+                else
+                {
+                    return new Response<object>
+                    {
+                        isError = true,
+                        
+                        Payload = null,
+                        Message = "file does not exist",
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Response<object>
+                {
+                    isError = true,
+                    
+                    Payload = null,
+                    Message = $"{ex.Message}",
+                };
+
+            }
+        }
     }
 }
+

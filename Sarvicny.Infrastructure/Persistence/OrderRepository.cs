@@ -176,6 +176,20 @@ namespace Sarvicny.Infrastructure.Persistence
 
         }
 
+        public async Task<List<Order>> GetAllCanceled_Reassigned_RemovedWithRefundOrders(ISpecifications<Order> spec)
+        {
+            var CanceledStatus = OrderStatusEnum.Canceled.ToString();
+            var Reassigned = OrderStatusEnum.ReAssigned.ToString();
+            var RemovedWithRefund = OrderStatusEnum.RemovedWithRefund.ToString();
+
+            var orders = await ApplySpecification(spec)
+                .Where(or => or.OrderStatusString == CanceledStatus || or.OrderStatusString == Reassigned || or.OrderStatusString == RemovedWithRefund)
+                .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date)
+                .ToListAsync();
+            return orders;
+
+        }
+
         //public async Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec)
         //{
         //    var orders = await ApplySpecification(spec)

@@ -341,6 +341,13 @@ namespace Sarvicny.Infrastructure.Persistence
 
             return suggestedProviders;
         }
+
+        public async Task<Worker?> FindWorkerByIdAsync(string Id)
+        {
+            return await _context.Workers.FirstOrDefaultAsync(p => p.Id == Id);
+
+            
+        }
     }
 
 }

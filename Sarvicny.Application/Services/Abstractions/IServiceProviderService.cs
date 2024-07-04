@@ -1,4 +1,5 @@
 ﻿using Sarvicny.Contracts;
+using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Requests.AvailabilityRequestsValidations;
@@ -39,9 +40,6 @@ namespace Sarvicny.Application.Services.Abstractions
         Task<Response<object>> DisableDistrictFromProvider(string providerId, string District);
         Task<Response<object>> EnableDistrictToProvider(string providerId, string District);
 
-       
-
-
         Task<Response<List<object>>> GetProviderDistricts(string providerId);
       
        Task<Response<object>> SetOrderStatus(string orderId, OrderStatusEnum status);
@@ -50,6 +48,11 @@ namespace Sarvicny.Application.Services.Abstractions
        Task<Response<object>> getProviderServicePrice(string providerId, string customerId);
 
         Task<Response<object>> getWallet(string providerId);
+
+        Task<Response<object>> UploadFileForWoker(ImageUploadDto imageUploadDto, ProviderFileTypes fileName, string providerId);
+
+        Task<Response<object>> GetImageForWorker(string providerId);
+        
 
     }
 }

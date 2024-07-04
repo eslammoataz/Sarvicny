@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 
 namespace Sarvicny.Api.Controllers.UsersControllers;
@@ -173,7 +174,19 @@ public class AdminController : ControllerBase
             return BadRequest(response);
         }
 
+        return Ok(response);
 
+    }
+
+    [HttpGet("getAllOrdersNeedRefund")]
+    public async Task<IActionResult> getAllOrdersNeedRefund()
+    {
+        var response = await _adminService.getAllOrdersNeedRefund();
+
+        if (response.isError)
+        {
+            return BadRequest(response);
+        }
         return Ok(response);
 
     }
@@ -293,6 +306,21 @@ public class AdminController : ControllerBase
         }
 
         return Ok(response);
+
+    }
+    [HttpGet]
+    [Route("getWorkerCriminalRecord")]
+    public async Task<IActionResult> getWorkerImage(string providerId)
+    {
+
+        var Response = await _adminService.GetCriminalRecordFileForWorker(providerId);
+
+        if (Response.isError)
+        {
+            return BadRequest(Response);
+        }
+
+        return Ok(Response);
 
     }
 

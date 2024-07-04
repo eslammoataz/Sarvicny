@@ -9,6 +9,7 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
     public interface IServiceProviderRepository
     {
         Task<Provider?> FindByIdAsync(ISpecifications<Provider> specifications);
+        Task<Worker?> FindWorkerByIdAsync(string Id);
         Task<bool> WorkerExists(string workerId);
         Task AddProviderService(ProviderService workerService);
         Task<bool> IsServiceRegisteredForWorker(string workerId, string serviceId);

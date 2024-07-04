@@ -243,6 +243,20 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             return Ok(response);
 
         }
+
+        [HttpPost]
+        [Route("cancelOrder/{orderId}")]
+        public async Task<IActionResult> CancelOrder(string customerId, string orderId)
+        {
+            var response = await _customerService.CancelOrder(customerId, orderId);
+
+            if (response.isError)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         [HttpGet]
         [Route("getCustomerOrdersLog/{customerId}")]
         public async Task<IActionResult> getCustomerOrdersLog(string customerId)
@@ -339,9 +353,9 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
 
         [HttpGet("customerOrders/{customerId}/status/canceledByOrder")]
-        public async Task<IActionResult> GetCustomerCanceledOrders(string customerId)
+        public async Task<IActionResult> GetCustomerCanceledByProviderOrders(string customerId)
         {
-            var response = await _customerService.GetCustomerCanceledOrders(customerId);
+            var response = await _customerService.GetCustomerCanceledByProviderOrders(customerId);
 
             if (response.isError)
             {
@@ -349,6 +363,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
             }
             return Ok(response);
         }
+
+
     }
 
 }

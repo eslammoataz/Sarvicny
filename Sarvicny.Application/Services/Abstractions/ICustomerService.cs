@@ -28,9 +28,11 @@ namespace Sarvicny.Application.Services.Abstractions
         public Task<Response<List<object>>> getCustomerFavourites(string customerId);
 
         public Task<Response<object>> RemoveFavProvider(string customerId, string providerId);
-        Task<Response<object>> GetCustomerCanceledOrders(string customerId);
+        Task<Response<object>> GetCustomerCanceledByProviderOrders(string customerId);
 
         Task<Response<object>> GetReAssignedCartServiceRequests(string customerId);
+
+        Task<Response<object>> CancelOrder(string customerId, string orderId);
 
     }
 }

@@ -150,7 +150,7 @@ public class AdminService : IAdminService
                 Status = "Fail",
                 Message = "Provider Not Found",
                 Payload = null,
-                isError= true,
+                isError = true,
 
             };
 
@@ -165,7 +165,7 @@ public class AdminService : IAdminService
             approved.Id,
             approved.FirstName,
             approved.LastName,
-           
+
             isVerified = approved.IsVerified,
             services = approved.ProviderServices.Select(s => new
             {
@@ -186,7 +186,7 @@ public class AdminService : IAdminService
             }).ToList(),
 
         };
-   
+
         _unitOfWork.Commit();
 
         var message = new EmailDto(provider.Email!, "Sarvicny: Worker Approved Successfully", "Congratulations you are accepted");
@@ -265,7 +265,7 @@ public class AdminService : IAdminService
         };
     }
 
-    public async Task<Response<object>> ApproveServiceForProvider(string providerId,string providerServiceID)
+    public async Task<Response<object>> ApproveServiceForProvider(string providerId, string providerServiceID)
     {
         var spec = new ProviderWithDetailsSpecification(providerId);
 
@@ -277,7 +277,7 @@ public class AdminService : IAdminService
                 Status = "Fail",
                 Message = "Provider Not Found",
                 Payload = null,
-                isError= true,
+                isError = true,
             };
 
         }
@@ -353,7 +353,7 @@ public class AdminService : IAdminService
 
             };
         }
-        if (providerService.isVerified== true)
+        if (providerService.isVerified == true)
         {
             return new Response<object>()
             {
@@ -377,7 +377,7 @@ public class AdminService : IAdminService
             Status = "Success ",
             Message = "Service Provider is removed ",
             Payload = null,
-            
+
 
         };
     }
@@ -394,9 +394,9 @@ public class AdminService : IAdminService
             p.Id,
             p.FirstName,
             p.LastName,
-    
+
             isVerified = p.IsVerified,
-            services = p.ProviderServices.Where(ps=>ps.isVerified==false).Select(s => new
+            services = p.ProviderServices.Where(ps => ps.isVerified == false).Select(s => new
             {
                 s.ServiceID,
                 s.Service.ServiceName,
@@ -687,7 +687,7 @@ public class AdminService : IAdminService
     //    };
     //}
 
-    
+
     public async Task<Response<List<object>>> getAllCanceledByProviderOrders()
     {
         var spec = new OrderWithDetailsSpecification();
@@ -856,7 +856,7 @@ public class AdminService : IAdminService
 
 
         var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
- 
+
         List<RequestedService> requestedServices = new List<RequestedService>();
         foreach (var serviceId in services)
         {
@@ -864,12 +864,12 @@ public class AdminService : IAdminService
             newPrice += ps.Price * 1.12m;
 
             var spec = new BaseSpecifications<Service>(s => s.ServiceID == serviceId);
-            var service =await _serviceRepository.GetServiceById(spec);
+            var service = await _serviceRepository.GetServiceById(spec);
             var requestedService = new RequestedService
             {
                 ServiceId = serviceId,
-                Service= service,
-                
+                Service = service,
+
                 CartId = order.Customer.CartID
             };
             await _serviceRepository.AddRequestedService(requestedService);
@@ -880,7 +880,7 @@ public class AdminService : IAdminService
 
         order.OrderStatus = OrderStatusEnum.ReAssigned;
 
-        
+
 
 
 
@@ -939,7 +939,7 @@ public class AdminService : IAdminService
 
         // Find the next availability that is after today
         var selectedAvailability = filteredProvider.Availabilities.FirstOrDefault(); //already al youm ali ana 3aizah
-           
+
         var selectedSlot = selectedAvailability.Slots.Where(s => s.isActive == true).OrderBy(s => s.StartTime).FirstOrDefault();
 
 
@@ -1010,7 +1010,7 @@ public class AdminService : IAdminService
 
     }
 
-    public async Task<Response<object>> GetSuggestion2(Order order, List<string> services,Provider provider )
+    public async Task<Response<object>> GetSuggestion2(Order order, List<string> services, Provider provider)
     {
         decimal newPrice = 0;
         var specProvider = new ProviderWithDetailsSpecification(provider.Id);
@@ -1020,14 +1020,14 @@ public class AdminService : IAdminService
 
         // Find the next availability that is after today
 
-        var requestDay =  (DayOfWeek)Enum.Parse(typeof(DayOfWeek), order.OrderDetails.RequestedSlot.DayOfWeek);
+        var requestDay = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), order.OrderDetails.RequestedSlot.DayOfWeek);
 
         var selectedAvailability = filteredProvider.Availabilities
          .OrderBy(a =>
          {
              var availabilityDay = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), a.DayOfWeek);
              var difference = ((int)availabilityDay - (int)requestDay + 7) % 7;
-           
+
              return difference;
          }).FirstOrDefault();
         var selectedSlot = selectedAvailability.Slots.Where(s => s.isActive == true).OrderBy(s => s.StartTime).FirstOrDefault();
@@ -1037,7 +1037,7 @@ public class AdminService : IAdminService
         var daysUntilNextAvailability = ((int)availabilityDay - (int)requestDay + 7) % 7;
         var nearestAvailabilityDate = order.OrderDetails.RequestedSlot.RequestedDay.AddDays(daysUntilNextAvailability);
 
-       
+
         List<RequestedService> requestedServices = new List<RequestedService>();
         foreach (var serviceId in services)
         {
@@ -1349,7 +1349,7 @@ public class AdminService : IAdminService
 
         }
 
-       
+
         order.OrderStatus = OrderStatusEnum.Completed;
 
         var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
@@ -1361,7 +1361,7 @@ public class AdminService : IAdminService
         var provider = order.OrderDetails.Provider;
         var wallet = provider.Wallet;
 
-        
+
 
         if (wallet is null)
         {
@@ -1370,10 +1370,10 @@ public class AdminService : IAdminService
                 ProviderId = provider.Id,
             };
         }
-         if(order.TransactionPayment.PaymentMethod == PaymentMethod.Paypal || order.TransactionPayment.PaymentMethod == PaymentMethod.Paymob)
+        if (order.TransactionPayment.PaymentMethod == PaymentMethod.Paypal || order.TransactionPayment.PaymentMethod == PaymentMethod.Paymob)
         {
             wallet.PendingBalance = Math.Ceiling(order.OrderDetails.Price / (1 + 0.12m));
-            
+
         }
         else
         {
@@ -1439,14 +1439,120 @@ public class AdminService : IAdminService
             providerId = order.OrderDetails.ProviderID,
             order = order.OrderID
         };
-        
+
         return new Response<object>()
         {
             isError = false,
             Message = "Order is canceled and ready To be reassigned",
             Errors = null,
-            Payload= result
+            Payload = result
         };
 
+    }
+
+    public async Task<Response<object>> GetCriminalRecordFileForWorker(string providerId)
+    {
+        var worker = await _providerRepository.FindWorkerByIdAsync(providerId);
+
+        if (worker == null)
+        {
+            return new Response<object>
+            {
+                isError = true,
+                Errors = null,
+                Payload = null,
+                Message = "failed",
+            };
+        }
+        if (worker.CriminalRecord == null)
+        {
+            return new Response<object>
+            {
+                isError = true,
+                Errors = null,
+                Payload = null,
+                Message = "No file found",
+            };
+        }
+        try
+        {
+            var providerFolder = Path.Combine(Environment.CurrentDirectory, "App_Data", "WorkersData", providerId);
+            var filePath = Path.Combine(providerFolder, "CriminalRecord");
+
+            if (File.Exists(filePath))
+            {
+                // Read the file as bytes
+                byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
+
+                // Convert bytes to base64 string
+                string base64String = Convert.ToBase64String(fileBytes);
+
+                var result = new
+                {
+                    base64String
+                };
+                return new Response<object>
+                {
+                    isError = false,
+                    Payload = base64String,
+                    Message = "success",
+                };
+            }
+            else
+            {
+                return new Response<object>
+                {
+                    isError = true,
+
+                    Payload = null,
+                    Message = "file does not exist",
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new Response<object>
+            {
+                isError = true,
+
+                Payload = null,
+                Message = $"{ex.Message}",
+            };
+
+        }
+    }
+
+    public async Task<Response<List<object>>> getAllOrdersNeedRefund()
+    {
+        var spec = new OrderWithDetailsSpecification();
+
+        var orders = await _orderRepository.GetAllCanceled_Reassigned_RemovedWithRefundOrders(spec);
+
+        List<object> result = new List<object>();
+        foreach (var order in orders)
+        {
+            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+
+            result.Add(orderDetails);
+
+        }
+        if (result.Count == 0)
+        {
+            return new Response<List<object>>()
+            {
+                Status = "Success",
+                Message = "No Orders Found",
+                Payload = null,
+                isError = false
+            };
+        }
+
+        return new Response<List<object>>()
+        {
+            Status = "Success",
+            Message = "Action Done Successfully",
+            Payload = result,
+
+        };
     }
 }

@@ -285,7 +285,7 @@ namespace Sarvicny.Application.Services
                 orderId = order.OrderID,
                 orderDate = order.OrderDate,
                 OrderStatus = order.OrderStatus,
-                //PaymentExpirytime = order.PaymentExpiryTime,
+                CustomerCancelDate = order.CancelDate,
 
 
                 customerId = order.CustomerID,
@@ -324,7 +324,7 @@ namespace Sarvicny.Application.Services
 
                 providerRating = order.PRate?.Rate,
                 providerComment = order.PRate?.Comment,
-                customerRating = order.CRate.Rate,
+                customerRating = order.CRate?.Rate,
                 customerComment = order.CRate?.Comment,
             };
 

@@ -21,6 +21,8 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Sarvicny.Application.Services
 {
     public class CustomerService : ICustomerService
+
+
     {
         private readonly IServiceRepository _serviceRepository;
         private readonly IServiceProviderRepository _providerRepository;
@@ -1214,7 +1216,7 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public async Task<Response<object>> GetCustomerCanceledOrders(string customerId)
+        public async Task<Response<object>> GetCustomerCanceledByProviderOrders(string customerId)
         {
             var customer = await _customerRepository.GetCustomerById(new CustomerWithOrdersSpecification(customerId));
             if (customer == null)
@@ -1318,9 +1320,72 @@ namespace Sarvicny.Application.Services
 
         }
 
-        public Task<Response<object>> AddDistrictToCustomer(string districtId, string customerId)
+        public async Task<Response<object>> CancelOrder(string customerId, string orderId)
         {
-            throw new NotImplementedException();
+
+            var customer = await _customerRepository.GetCustomerById(new CustomerWithOrdersSpecification(customerId));
+            if (customer == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Customer Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+
+            var order= customer.Orders.FirstOrDefault(o=>o.OrderID == orderId);
+            if (order == null)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order Not Found",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            if(order.OrderStatus == OrderStatusEnum.Canceled)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order is already Canceled",
+                    Payload = null,
+                    isError = true
+                };
+            }
+            if (order.OrderStatus == OrderStatusEnum.InProgress) {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order is cannot be canceled Canceled (order is in progress)",
+                    Payload = null,
+                    isError = true
+                };
+            }
+
+            order.OrderStatus = OrderStatusEnum.Canceled;
+            order.CancelDate = DateTime.UtcNow;
+            var originalSlot = await _providerService.getOriginalSlot(order.OrderDetails.RequestedSlot, order.OrderDetails.ProviderID);
+            if (originalSlot != null)
+            {
+                originalSlot.isActive = true;
+            }
+
+            _unitOfWork.Commit();
+            return new Response<object>()
+            {
+                Status = "sucess",
+                Message = "Order is canceled ",
+                isError = false
+            };
+
+
+
+
+
         }
     }
 
