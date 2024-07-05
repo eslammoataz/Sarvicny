@@ -200,46 +200,78 @@ namespace Sarvicny.Infrastructure.Data
 
 
 
+            /*   builder.Entity<Order>()
+                 .HasOne<OrderDetails>()
+                 .WithOne()
+                 .HasForeignKey<Order>(o => o.OrderDetailsId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+             builder.Entity<OrderDetails>()
+              .HasOne(od => od.Provider)
+              .WithMany()
+              .HasForeignKey(od => od.ProviderID)
+              .OnDelete(DeleteBehavior.NoAction);
+
+             builder.Entity<OrderDetails>()
+                  .HasOne(od => od.Provider)
+                  .WithMany()
+                  .HasForeignKey(od => od.ProviderID)
+                  .OnDelete(DeleteBehavior.NoAction);
+
+
+
+              builder.Entity<OrderDetails>()
+             .HasOne(od => od.RequestedSlot)
+             .WithMany() // No navigation property in RequestedSlot
+             .HasForeignKey(od => od.RequestedSlotID)
+             .OnDelete(DeleteBehavior.Cascade);
+
+
+             builder.Entity<OrderDetails>()
+             .HasMany(od => od.RequestedServices)
+             .WithOne()
+             .HasForeignKey(rs => rs.OrderId)
+             .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<CartServiceRequest>()
+             .HasMany(od => od.RequestedServices)
+             .WithOne()
+             .HasForeignKey(rs => rs.CartId)
+             .OnDelete(DeleteBehavior.Cascade);*/
+
             builder.Entity<Order>()
-                .HasOne<OrderDetails>()
-                .WithOne()
-                .HasForeignKey<Order>(o => o.OrderDetailsId)
+      .HasOne(o => o.OrderDetails)
+      .WithOne()
+      .HasForeignKey<Order>(o => o.OrderDetailsId)
+      .OnDelete(DeleteBehavior.Cascade);
+
+            // OrderDetails to Provider (Many-to-One)
+            builder.Entity<OrderDetails>()
+                .HasOne(od => od.Provider)
+                .WithMany()
+                .HasForeignKey(od => od.ProviderID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // OrderDetails to RequestedSlot (Many-to-One)
+            builder.Entity<OrderDetails>()
+                .HasOne(od => od.RequestedSlot)
+                .WithMany() // No navigation property in RequestedSlot
+                .HasForeignKey(od => od.RequestedSlotID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // OrderDetails to RequestedServices (One-to-Many)
             builder.Entity<OrderDetails>()
-             .HasOne(od => od.Provider)
-             .WithMany()
-             .HasForeignKey(od => od.ProviderID)
-             .OnDelete(DeleteBehavior.NoAction);
+                .HasMany(od => od.RequestedServices)
+                .WithOne()
+                .HasForeignKey(rs => rs.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<OrderDetails>()
-                 .HasOne(od => od.Provider)
-                 .WithMany()
-                 .HasForeignKey(od => od.ProviderID)
-                 .OnDelete(DeleteBehavior.NoAction);
-
-
-
-                        builder.Entity<OrderDetails>()
-            .HasOne(od => od.RequestedSlot)
-            .WithMany() // No navigation property in RequestedSlot
-            .HasForeignKey(od => od.RequestedSlotID)
-            .OnDelete(DeleteBehavior.Cascade);
-
-
-            builder.Entity<OrderDetails>()
-            .HasMany(od => od.RequestedServices)
-            .WithOne()
-            .HasForeignKey(rs => rs.OrderId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-             builder.Entity<CartServiceRequest>()
-            .HasMany(od => od.RequestedServices)
-            .WithOne()
-            .HasForeignKey(rs => rs.CartId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-
+            // CartServiceRequest to RequestedServices (One-to-Many)
+            builder.Entity<CartServiceRequest>()
+                .HasMany(cs => cs.RequestedServices)
+                .WithOne()
+                .HasForeignKey(rs => rs.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
 

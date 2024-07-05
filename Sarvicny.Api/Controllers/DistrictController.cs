@@ -9,8 +9,8 @@ namespace Sarvicny.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [Authorize(Roles = "ServiceProvider ,Admin")]
+   [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+   [Authorize(Roles = "ServiceProvider ,Admin")]
     public class DistrictController : ControllerBase
     {
 

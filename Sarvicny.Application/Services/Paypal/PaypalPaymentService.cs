@@ -18,15 +18,18 @@ namespace Sarvicny.Application.Services.Paypal
         private readonly IHandlePayment _handlePayment;
         private readonly IOrderRepository _orderRepository;
         private readonly IEmailService _emailService;
+        private readonly IUnitOfWork _unitOfWork;
 
 
-        public PaypalPaymentService(ILogger<PaypalPaymentService> logger, IConfiguration config, IHandlePayment handlePayment, IOrderRepository orderRepository, IEmailService emailService)
+        public PaypalPaymentService(ILogger<PaypalPaymentService> logger, IConfiguration config, IHandlePayment handlePayment, IOrderRepository orderRepository, IEmailService emailService, IUnitOfWork unitOfWork)
         {
             _logger = logger;
             _config = config;
             _handlePayment = handlePayment;
             _orderRepository = orderRepository;
             _emailService = emailService;
+            _unitOfWork = unitOfWork;
+
         }
 
         public async Task<string> GetAuthToken()
@@ -437,7 +440,7 @@ namespace Sarvicny.Application.Services.Paypal
                 $", Here is some of its details ,\n\nOrder Details:{order}\n ");
             _emailService.SendEmail(message);
 
-            
+            _unitOfWork.Commit();
 
 
             return new Response<object>()

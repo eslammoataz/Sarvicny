@@ -327,6 +327,9 @@ namespace Sarvicny.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<DateTime?>("CancelDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("CustomerID")
                         .IsRequired()
                         .HasColumnType("varchar(255)");
@@ -359,7 +362,8 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.HasIndex("CustomerID");
 
-                    b.HasIndex("OrderDetailsId");
+                    b.HasIndex("OrderDetailsId")
+                        .IsUnique();
 
                     b.HasIndex("TransactionPaymentId");
 
@@ -562,16 +566,10 @@ namespace Sarvicny.Infrastructure.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("CartId")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("CartServiceRequestID")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("OrderDetailsID")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("OrderId")
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ServiceId")
                         .IsRequired()
@@ -579,9 +577,9 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.HasKey("RequestedServiceId");
 
-                    b.HasIndex("CartServiceRequestID");
+                    b.HasIndex("CartId");
 
-                    b.HasIndex("OrderDetailsID");
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("ServiceId");
 
@@ -626,9 +624,6 @@ namespace Sarvicny.Infrastructure.Migrations
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<DateTime?>("PaymentDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("PaymentExpiryTime")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int?>("PaymentMethod")
@@ -742,6 +737,10 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.Property<string>("CartID")
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("DistrictName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasIndex("CartID")
                         .IsUnique();
 
@@ -759,7 +758,6 @@ namespace Sarvicny.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("WalletId")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.HasIndex("WalletId");
@@ -783,11 +781,13 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.HasBaseType("Sarvicny.Domain.Entities.Users.ServicProviders.Provider");
 
                     b.Property<string>("CriminalRecord")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("NationalID")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ProviderImage")
                         .HasColumnType("longtext");
 
                     b.ToTable("Workers", (string)null);
@@ -917,8 +917,8 @@ namespace Sarvicny.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Sarvicny.Domain.Entities.OrderDetails", "OrderDetails")
-                        .WithMany()
-                        .HasForeignKey("OrderDetailsId")
+                        .WithOne()
+                        .HasForeignKey("Sarvicny.Domain.Entities.Order", "OrderDetailsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -960,7 +960,7 @@ namespace Sarvicny.Infrastructure.Migrations
                     b.HasOne("Sarvicny.Domain.Entities.Users.ServicProviders.Provider", "Provider")
                         .WithMany()
                         .HasForeignKey("ProviderID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Sarvicny.Domain.Entities.Avaliabilities.RequestedSlot", "RequestedSlot")
@@ -1040,11 +1040,13 @@ namespace Sarvicny.Infrastructure.Migrations
                 {
                     b.HasOne("Sarvicny.Domain.Entities.CartServiceRequest", null)
                         .WithMany("RequestedServices")
-                        .HasForeignKey("CartServiceRequestID");
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Sarvicny.Domain.Entities.OrderDetails", null)
                         .WithMany("RequestedServices")
-                        .HasForeignKey("OrderDetailsID");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Sarvicny.Domain.Entities.Service", "Service")
                         .WithMany()
@@ -1106,9 +1108,7 @@ namespace Sarvicny.Infrastructure.Migrations
 
                     b.HasOne("Sarvicny.Domain.Entities.ProviderWallet", "Wallet")
                         .WithMany()
-                        .HasForeignKey("WalletId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WalletId");
 
                     b.Navigation("Wallet");
                 });
