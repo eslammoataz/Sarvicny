@@ -424,8 +424,7 @@ public class PaymobPaymentService : IPaymobPaymentService
             };
         }
 
-        var orders = transactionPayment.OrderList;
-
+        var orders = transactionPayment.OrderList.Where(o=>o.OrderStatus==OrderStatusEnum.Canceled|| o.OrderStatus == OrderStatusEnum.ReAssigned|| o.OrderStatus == OrderStatusEnum.RemovedWithRefund);
 
         foreach (var order in orders)
         {

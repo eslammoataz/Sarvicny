@@ -4,6 +4,7 @@ using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
+using System.Reflection.Emit;
 
 
 namespace Sarvicny.Infrastructure.Data
@@ -197,6 +198,12 @@ namespace Sarvicny.Infrastructure.Data
                 .WithMany(tp => tp.OrderList)
                 .HasForeignKey(o => o.TransactionPaymentId)
                 .IsRequired();
+
+
+                       builder.Entity<OrderDetails>()
+                .HasOne(od => od.Provider)
+                .HasForeignKey(od => od.ProviderID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             /* builder.Entity<Order>()
                .HasOne(o => o.OrderDetails)

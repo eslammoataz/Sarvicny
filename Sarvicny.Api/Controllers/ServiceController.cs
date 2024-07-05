@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Dtos;
@@ -9,6 +11,8 @@ namespace Sarvicny.Api.Controllers;
 
 [ApiController]
 [Route("api/services")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[Authorize(Roles = "ServiceProvider ,Admin")]
 public class ServiceController : ControllerBase
 {
     private readonly IServicesService _servicesService;

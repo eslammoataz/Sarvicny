@@ -14,8 +14,6 @@ namespace Sarvicny.Domain.Entities
 
         public string OrderId { get; set; }
 
-
-
         public string ProviderID { get; set; }
 
         [ForeignKey("ProviderID")]
