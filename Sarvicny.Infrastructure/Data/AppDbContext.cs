@@ -167,8 +167,6 @@ namespace Sarvicny.Infrastructure.Data
                    .HasForeignKey<Customer>(c => c.CartID);
 
 
-
-
             builder.Entity<CartServiceRequest>()
                .HasOne(c => c.Slot)
                .WithMany()
@@ -200,16 +198,55 @@ namespace Sarvicny.Infrastructure.Data
                 .IsRequired();
 
 
-                       builder.Entity<OrderDetails>()
-                .HasOne(od => od.Provider)
-                .HasForeignKey(od => od.ProviderID)
-                .OnDelete(DeleteBehavior.NoAction);
 
-            /* builder.Entity<Order>()
-               .HasOne(o => o.OrderDetails)
-               .WithOne(od => od.Order)
-               .HasForeignKey<Order>(o => o.OrderDetailsId)
-               .OnDelete(DeleteBehavior.Cascade);*/
+
+            builder.Entity<Order>()
+                .HasOne<OrderDetails>()
+                .WithOne()
+                .HasForeignKey<Order>(o => o.OrderDetailsId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<OrderDetails>()
+             .HasOne(od => od.Provider)
+             .WithMany()
+             .HasForeignKey(od => od.ProviderID)
+             .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<OrderDetails>()
+                 .HasOne(od => od.Provider)
+                 .WithMany()
+                 .HasForeignKey(od => od.ProviderID)
+                 .OnDelete(DeleteBehavior.NoAction);
+
+
+
+                        builder.Entity<OrderDetails>()
+            .HasOne(od => od.RequestedSlot)
+            .WithMany() // No navigation property in RequestedSlot
+            .HasForeignKey(od => od.RequestedSlotID)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+            builder.Entity<OrderDetails>()
+            .HasMany(od => od.RequestedServices)
+            .WithOne()
+            .HasForeignKey(rs => rs.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+             builder.Entity<CartServiceRequest>()
+            .HasMany(od => od.RequestedServices)
+            .WithOne()
+            .HasForeignKey(rs => rs.CartId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+
+
+
+
+
 
 
 
