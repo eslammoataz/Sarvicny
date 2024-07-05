@@ -151,6 +151,7 @@ namespace Sarvicny.Application.Services
             else if (paymentMethod == PaymentMethod.Paypal)
                 return await _paypalPaymentService.Refund(transactionPayment, order, refundAmount);
 
+            _unitOfWork.Commit();
             return new Response<object>()
             {
                 isError = true,

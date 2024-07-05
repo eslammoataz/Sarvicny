@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Application.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
@@ -10,6 +10,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "ServiceProvider ,Admin")]
     public class WorkerController : ControllerBase
     {
 
@@ -59,7 +60,7 @@ namespace Sarvicny.Api.Controllers.UsersControllers
         public async Task<IActionResult> UploadFile([FromBody] ImageUploadDto imageUploadDto, ProviderFileTypes fileName, string providerId)
         {
 
-            var Response = await _serviceProviderService.UploadFileForWoker(imageUploadDto,fileName, providerId);
+            var Response = await _serviceProviderService.UploadFileForWoker(imageUploadDto, fileName, providerId);
 
             if (Response.isError)
             {

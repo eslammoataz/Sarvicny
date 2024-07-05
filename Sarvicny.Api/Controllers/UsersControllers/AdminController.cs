@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Sarvicny.Application.Services;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sarvicny.Application.Services.Abstractions;
 
 namespace Sarvicny.Api.Controllers.UsersControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
@@ -18,6 +21,7 @@ public class AdminController : ControllerBase
 
 
     [HttpGet("getCustomers")]
+
     public async Task<IActionResult> GetAllCustomers()
     {
         return Ok(await _adminService.GetAllCustomers());

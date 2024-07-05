@@ -4,8 +4,10 @@ using Newtonsoft.Json;
 using RestSharp;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Email;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Emails;
 
 namespace Sarvicny.Application.Services.Paypal
 {
@@ -15,14 +17,16 @@ namespace Sarvicny.Application.Services.Paypal
         private readonly IConfiguration _config;
         private readonly IHandlePayment _handlePayment;
         private readonly IOrderRepository _orderRepository;
+        private readonly IEmailService _emailService;
 
 
-        public PaypalPaymentService(ILogger<PaypalPaymentService> logger, IConfiguration config, IHandlePayment handlePayment, IOrderRepository orderRepository)
+        public PaypalPaymentService(ILogger<PaypalPaymentService> logger, IConfiguration config, IHandlePayment handlePayment, IOrderRepository orderRepository, IEmailService emailService)
         {
             _logger = logger;
             _config = config;
             _handlePayment = handlePayment;
             _orderRepository = orderRepository;
+            _emailService = emailService;
         }
 
         public async Task<string> GetAuthToken()
@@ -399,8 +403,8 @@ namespace Sarvicny.Application.Services.Paypal
 
             var accessToken = await GetAuthToken();
 
-            //var refundUrl = string.Format(refundUrlFormat, order.SaleID);
-            var refundUrl = string.Format(refundUrlFormat, "1");
+            var refundUrl = string.Format(refundUrlFormat, transactionPayment.SaleID);
+            //var refundUrl = string.Format(refundUrlFormat, "1");
             var client = new RestClient(refundUrl);
             var request = new RestRequest(refundUrl, Method.Post);
 
@@ -428,6 +432,10 @@ namespace Sarvicny.Application.Services.Paypal
             _logger.LogInformation($"Refund successful: {response.Content}");
 
             order.OrderStatus = OrderStatusEnum.Refunded;
+
+            var message = new EmailDto(order.OrderDetails.Provider.Email!, "Sarvicny: new Request Alert", $" A refund has been sent to your paypal account" +
+                $", Here is some of its details ,\n\nOrder Details:{order}\n ");
+            _emailService.SendEmail(message);
 
 
             return new Response<object>()

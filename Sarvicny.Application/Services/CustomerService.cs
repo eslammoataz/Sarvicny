@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Sarvicny.Application.Common.Helper;
+﻿using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -16,7 +15,6 @@ using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Sarvicny.Application.Services
 {
@@ -960,7 +958,7 @@ namespace Sarvicny.Application.Services
             var email = updateCustomerDto.Email;
             var phone = updateCustomerDto.PhoneNumber;
             var address = updateCustomerDto.Address;
-            var districtName= updateCustomerDto.DistrictName;
+            var districtName = updateCustomerDto.DistrictName;
 
 
             if (usrname != null)
@@ -1201,7 +1199,7 @@ namespace Sarvicny.Application.Services
                     providerCompletedOrdersCount = completedOrdersCount,
                     providerAvgCustomerRate = avgCustomersRate
 
-            };
+                };
                 result.Add(favAsObj);
             }
 
@@ -1335,7 +1333,7 @@ namespace Sarvicny.Application.Services
                 };
             }
 
-            var order= customer.Orders.FirstOrDefault(o=>o.OrderID == orderId);
+            var order = customer.Orders.FirstOrDefault(o => o.OrderID == orderId);
             if (order == null)
             {
                 return new Response<object>()
@@ -1346,7 +1344,7 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            if(order.OrderStatus == OrderStatusEnum.Canceled)
+            if (order.OrderStatus == OrderStatusEnum.Canceled)
             {
                 return new Response<object>()
                 {
@@ -1356,7 +1354,8 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            if (order.OrderStatus == OrderStatusEnum.InProgress) {
+            if (order.OrderStatus == OrderStatusEnum.InProgress)
+            {
                 return new Response<object>()
                 {
                     Status = "failed",

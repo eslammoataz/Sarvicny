@@ -1,22 +1,17 @@
-﻿using MailKit.Search;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
-using Sarvicny.Application.Services.Specifications.CustomerSpecification;
 using Sarvicny.Application.Services.Specifications.DistrictSpecification;
 using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Application.Services.Specifications.ServiceProviderSpecifications;
 using Sarvicny.Contracts;
-using Sarvicny.Contracts.Dtos;
 using Sarvicny.Domain.Entities;
-using Sarvicny.Domain.Entities.Avaliabilities;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
 using Sarvicny.Domain.Entities.Users.ServicProviders;
 using Sarvicny.Domain.Specification;
-using System.Reflection.Metadata;
 
 namespace Sarvicny.Application.Services;
 

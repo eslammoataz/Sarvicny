@@ -12,6 +12,7 @@ using Sarvicny.Contracts;
 using Sarvicny.Contracts.Authentication;
 using Sarvicny.Domain.Entities.Emails;
 using Sarvicny.Domain.Entities.Users;
+using System.Data;
 using System.Security.Claims;
 
 
@@ -29,13 +30,14 @@ namespace Sarvicny.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomerRepository _customerRepository;
         private readonly IServiceProviderRepository _serviceProviderRepository;
+        private readonly UserManager<User> _userManager;
 
 
 
         public AuthenticationService(IConfiguration config, IEmailService emailService,
                 IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator,
                 IJwtTokenGenerator jwtTokenGenerator, IRoleRepository roleRepository, IUserRepository userRepository
-                , IUnitOfWork unitOfWork, ILogger<AuthenticationService> logger, ICustomerRepository customerRepository, IServiceProviderRepository serviceProviderRepository)
+                , IUnitOfWork unitOfWork, ILogger<AuthenticationService> logger, ICustomerRepository customerRepository, IServiceProviderRepository serviceProviderRepository, UserManager<User> userManager)
         {
             JwtTokenGenerator = jwtTokenGenerator;
             _config = config;
@@ -47,6 +49,7 @@ namespace Sarvicny.Application.Services
             _unitOfWork = unitOfWork;
             _customerRepository = customerRepository;
             _serviceProviderRepository = serviceProviderRepository;
+            _userManager = userManager;
         }
 
 
@@ -111,8 +114,16 @@ namespace Sarvicny.Application.Services
             {
                   new Claim("userId", user.Id),
                   new Claim("Role", role),
-
             };
+
+            var roles = await _userRepository.GetRolesAsync(user);
+
+            foreach (var r in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, r));
+            }
+
+
 
             var tokenString = JwtTokenGenerator.GenerateToken(claims, _config);
             SetAuthenticationCookie(tokenString);
@@ -173,11 +184,26 @@ namespace Sarvicny.Application.Services
             List<Claim> claims = new()
             {
                 new Claim("userId", user.Id),
-                new Claim("role", roles.FirstOrDefault()!)
-
             };
 
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             var tokenString = JwtTokenGenerator.GenerateToken(claims, _config);
+            //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigninKey"]));
+            //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            //var token = new JwtSecurityToken(
+            //    issuer: _config["JWT:ValidIssuer"],
+            //    audience: _config["JWT:ValidAudience"],
+            //    claims: claims,
+            //    expires: DateTime.Now.AddMinutes(60),
+            //    signingCredentials: creds);
+
+            //var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
             SetAuthenticationCookie(tokenString);
 
 

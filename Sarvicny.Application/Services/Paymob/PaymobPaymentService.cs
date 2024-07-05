@@ -5,11 +5,13 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
+using Sarvicny.Application.Services.Email;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Payment;
 using Sarvicny.Contracts.Payment.Request;
 using Sarvicny.Contracts.Payment.Response;
 using Sarvicny.Domain.Entities;
+using Sarvicny.Domain.Entities.Emails;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,12 +24,16 @@ public class PaymobPaymentService : IPaymobPaymentService
     private readonly IHandlePayment _handlePayment;
     private readonly ITransactionPaymentRepository _transactionPaymentRepository;
     private readonly ILogger<PaymobPaymentService> _logger;
-    public PaymobPaymentService(IConfiguration config, IHandlePayment handlePayment, ITransactionPaymentRepository transactionPaymentRepository, ILogger<PaymobPaymentService> logger)
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailService _emailService;
+    public PaymobPaymentService(IConfiguration config, IHandlePayment handlePayment, ITransactionPaymentRepository transactionPaymentRepository, ILogger<PaymobPaymentService> logger, IUnitOfWork unitOfWork, IEmailService emailService)
     {
         _config = config;
         _handlePayment = handlePayment;
         _transactionPaymentRepository = transactionPaymentRepository;
         _logger = logger;
+        _unitOfWork = unitOfWork;
+        _emailService = emailService;
     }
     public async Task<string> GetAuthToken()
     {
@@ -196,13 +202,16 @@ public class PaymobPaymentService : IPaymobPaymentService
         var orderId = transaction.Obj.order.merchant_order_id;
         var emptySaleId = string.Empty; // needs handling
 
-        await _handlePayment.validateOrder(orderId, transaction.Obj.success, transaction.Obj.TransactionId, emptySaleId, PaymentMethod.Paymob);
+        var isRefundTransaction = transaction.Obj.is_refunded;
 
-        return new Response<object>
+        if (isRefundTransaction)
         {
-            Message = "Success",
-            Payload = transaction
-        };
+            return await HandleRefund(transaction);
+        }
+        else
+        {
+            return await _handlePayment.validateOrder(orderId, transaction.Obj.success, transaction.Obj.TransactionId, emptySaleId, PaymentMethod.Paymob);
+        }
 
     }
 
@@ -328,7 +337,7 @@ public class PaymobPaymentService : IPaymobPaymentService
 
     public async Task<Response<object>> Refund(TransactionPayment transactionPayment, Order order, decimal amount)
     {
-        var token = _config["PayMob:RefundKey"];
+        var token = _config["PayMob:Rkey"];
 
         if (string.IsNullOrEmpty(token))
         {
@@ -349,7 +358,13 @@ public class PaymobPaymentService : IPaymobPaymentService
         var refundRequest = new
         {
             transaction_id = transactionPayment.TransactionID,
-            amount_cents = 10 // Convert to integer cents
+            amount_cents = amount * 100, // Convert to integer cents
+            merchant_order_id = order.OrderID,
+            metadata = new
+            {
+                order_id = "ord_123456",
+                customer_note = "Refund requested due to product issue"
+            }
         };
 
         request.AddJsonBody(refundRequest);
@@ -392,6 +407,50 @@ public class PaymobPaymentService : IPaymobPaymentService
                 Payload = null
             };
         }
+    }
+
+    public async Task<Response<object>> HandleRefund(TransactionCallBackBody transaction)
+    {
+        var transactionId = transaction.Obj.TransactionId;
+        var transactionPayment = await _transactionPaymentRepository.GetTransactionByTransactionID(transactionId);
+
+        if (transactionPayment is null)
+        {
+            return new Response<object>
+            {
+                isError = true,
+                Message = "Transaction not found",
+                Payload = null
+            };
+        }
+
+        var orders = transactionPayment.OrderList;
+
+
+        foreach (var order in orders)
+        {
+            order.OrderStatus = OrderStatusEnum.Refunded;
+        }
+
+        _unitOfWork.Commit();
+
+        var customerEmail = orders.FirstOrDefault()?.Customer.Email;
+
+        if (customerEmail is not null)
+        {
+            var message = new EmailDto(customerEmail!, "Sarvicny: new Request Alert", $" A refund has been sent to your paypal account" +
+            $", Here is some of its details ,\n\nOrder Details:{transactionPayment}\n ");
+            _emailService.SendEmail(message);
+        }
+
+        return new Response<object>
+        {
+            isError = false,
+            Message = "Refund is done successfully money sent to customer",
+            Payload = orders
+        };
+
+
     }
 
 

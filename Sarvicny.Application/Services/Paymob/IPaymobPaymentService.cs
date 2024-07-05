@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using Sarvicny.Contracts;
+using Sarvicny.Contracts.Payment;
 using Sarvicny.Contracts.Payment.Response;
 using Sarvicny.Domain.Entities;
 
@@ -21,4 +22,6 @@ public interface IPaymobPaymentService
     public bool VerifyHmac(Dictionary<string, string> data, string receivedHmac);
 
     public Task<Response<object>> Refund(TransactionPayment transactionPayment, Order order, decimal amount);
+
+    public Task<Response<object>> HandleRefund(TransactionCallBackBody transaction);
 }

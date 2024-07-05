@@ -346,7 +346,7 @@ namespace Sarvicny.Infrastructure.Persistence
         {
             return await _context.Workers.FirstOrDefaultAsync(p => p.Id == Id);
 
-            
+
         }
     }
 

@@ -29,12 +29,21 @@ namespace Sarvicny.Infrastructure.Persistence
         public async Task<Customer> GetCustomerByTransactionPaymentId(string transactionPaymentId)
         {
             var transactionPayment = _context.TransactionPayment
-                .Include(t => t.OrderList)
+                .Include(t => t.OrderList).ThenInclude(o => o.Customer)
                 .FirstOrDefault(t => t.TransactionPaymentID == transactionPaymentId);
 
             var customer = await _context.Customers.FindAsync(transactionPayment.OrderList.FirstOrDefault().CustomerID);
 
             return customer;
+        }
+
+        public async Task<TransactionPayment> GetTransactionByTransactionID(string transactionId)
+        {
+            var transactionPayment = _context.TransactionPayment
+                .Include(t => t.OrderList).ThenInclude(o => o.Customer)
+                .FirstOrDefault(t => t.TransactionID == transactionId);
+
+            return transactionPayment;
         }
 
         public async Task<TransactionPayment> GetTransactionPaymentAsync(string transactionPaymentId)

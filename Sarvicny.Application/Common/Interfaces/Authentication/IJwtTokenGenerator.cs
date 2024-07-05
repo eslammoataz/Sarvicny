@@ -1,5 +1,5 @@
-﻿using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 
 namespace Sarvicny.Application.Common.Interfaces.Authentication;
 

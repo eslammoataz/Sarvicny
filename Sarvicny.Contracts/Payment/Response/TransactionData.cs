@@ -12,7 +12,6 @@ namespace Sarvicny.Contracts.Payment.Response
         public bool is_capture { get; set; }
         public int amount_cents { get; set; }
         public bool is_voided { get; set; }
-        public bool is_refund { get; set; }
         public int integration_id { get; set; }
         public OrderData? order { get; set; }
         public DateTime created_at { get; set; }

@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Sarvicny.Api.Middlewares;
 
