@@ -1195,7 +1195,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            if (order.OrderDetails.RequestedSlot.RequestedDay!= DateTime.Today)
+            if (order.OrderDetails.RequestedSlot.RequestedDay.Date!= DateTime.Today)
             {
                 return new Response<object>()
 

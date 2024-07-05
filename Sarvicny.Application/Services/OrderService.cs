@@ -457,7 +457,11 @@ namespace Sarvicny.Application.Services
                 Address = order.OrderDetails.Address,
 
                 Problem = order.OrderDetails.ProblemDescription,
-                profit = Math.Ceiling(order.OrderDetails.Price / (1 + 0.12m))
+                profit = Math.Ceiling(order.OrderDetails.Price / (1 + 0.12m)),
+
+                providerRate= order.PRate?.Rate,
+                providerComment = order.PRate?.Comment,
+
             };
 
             return new Response<object>()

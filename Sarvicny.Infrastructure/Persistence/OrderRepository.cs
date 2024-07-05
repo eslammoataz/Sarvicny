@@ -181,8 +181,10 @@ namespace Sarvicny.Infrastructure.Persistence
             var CanceledStatus = OrderStatusEnum.Canceled.ToString();
             var Reassigned = OrderStatusEnum.ReAssigned.ToString();
             var RemovedWithRefund = OrderStatusEnum.RemovedWithRefund.ToString();
+            var cash = PaymentMethod.Cash.ToString();
 
             var orders = await ApplySpecification(spec)
+                .Where(or=>or.TransactionPayment.PaymentMethod != PaymentMethod.Cash)
                 .Where(or => or.OrderStatusString == CanceledStatus || or.OrderStatusString == Reassigned || or.OrderStatusString == RemovedWithRefund)
                 .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date)
                 .ToListAsync();
