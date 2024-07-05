@@ -11,8 +11,8 @@ namespace Sarvicny.Api.Controllers;
 
 [ApiController]
 [Route("api/services")]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Authorize(Roles = "ServiceProvider ,Admin")]
+//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+//[Authorize(Roles = "ServiceProvider ,Admin")]
 public class ServiceController : ControllerBase
 {
     private readonly IServicesService _servicesService;

@@ -11,8 +11,8 @@ using Sarvicny.Infrastructure.Data;
 namespace Sarvicny.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240705132915_eww")]
-    partial class eww
+    [Migration("20240705141502_fix db")]
+    partial class fixdb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -12,8 +12,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
     [Route("api/[controller]")]
     [ApiController]
-   [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-   [Authorize(Roles = "Customer ,Admin")]
+   //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+   //[Authorize(Roles = "Customer ,Admin")]
     public class CustomerController : ControllerBase
     {
 

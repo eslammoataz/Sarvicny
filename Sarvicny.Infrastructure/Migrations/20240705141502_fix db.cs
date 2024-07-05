@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Sarvicny.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class eww : Migration
+    public partial class fixdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

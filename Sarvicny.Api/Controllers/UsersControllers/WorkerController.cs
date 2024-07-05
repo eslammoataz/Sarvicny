@@ -11,8 +11,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-   [Authorize(Roles = "ServiceProvider ,Admin")]
+ //   [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+  // [Authorize(Roles = "ServiceProvider ,Admin")]
     public class WorkerController : ControllerBase
     {
 

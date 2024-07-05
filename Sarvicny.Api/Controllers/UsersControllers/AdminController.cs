@@ -7,8 +7,8 @@ namespace Sarvicny.Api.Controllers.UsersControllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-[Authorize(Roles = "Admin")]
+//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+//[Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
