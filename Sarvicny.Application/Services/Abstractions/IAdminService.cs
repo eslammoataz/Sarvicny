@@ -22,7 +22,7 @@ public interface IAdminService
     Task<Response<List<object>>> getAllPendingOrPaidOrders();
     Task<Response<List<object>>> getAllCanceledByProviderOrders();
 
-    Task<Response<List<object>>> getAllOrdersNeedRefund();
+    Task<Response<List<object>>> getAllTransactionsNeedRefund();
 
     //Task<Response<List<object>>> RemoveAllPaymentExpiredOrders();
 

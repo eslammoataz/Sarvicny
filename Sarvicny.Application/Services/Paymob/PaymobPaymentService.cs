@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
@@ -335,7 +336,7 @@ public class PaymobPaymentService : IPaymobPaymentService
         return dictionary;
     }
 
-    public async Task<Response<object>> Refund(TransactionPayment transactionPayment, Order order, decimal amount)
+    public async Task<Response<object>> Refund(TransactionPayment transactionPayment, decimal amount)
     {
         var token = _config["PayMob:Rkey"];
 
@@ -359,7 +360,6 @@ public class PaymobPaymentService : IPaymobPaymentService
         {
             transaction_id = transactionPayment.TransactionID,
             amount_cents = amount * 100, // Convert to integer cents
-            merchant_order_id = order.OrderID,
             metadata = new
             {
                 order_id = "ord_123456",
@@ -424,29 +424,36 @@ public class PaymobPaymentService : IPaymobPaymentService
             };
         }
 
-        var orders = transactionPayment.OrderList.Where(o=>o.OrderStatus==OrderStatusEnum.Canceled|| o.OrderStatus == OrderStatusEnum.ReAssigned|| o.OrderStatus == OrderStatusEnum.RemovedWithRefund);
+        var refundableOrders = transactionPayment.OrderList
+                .Where(o => o.OrderStatus == OrderStatusEnum.Canceled || o.OrderStatus == OrderStatusEnum.ReAssigned || o.OrderStatus == OrderStatusEnum.RemovedWithRefund)
+                .ToList();
 
-        foreach (var order in orders)
+        StringBuilder allOrdersDetails = new StringBuilder();
+
+        foreach (var order in refundableOrders)
         {
             order.OrderStatus = OrderStatusEnum.Refunded;
+            var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessageForCustomer(order);
+            allOrdersDetails.AppendLine(orderDetailsForCustomer);
         }
+
+        // Create the email message
+        var message = new EmailDto(
+            refundableOrders.First().OrderDetails.Provider.Email!,
+            "Sarvicny: New Refund Alert",
+            $"A refund has been sent to your PayPal account. Here are the details:\n\n{allOrdersDetails}"
+        );
+
+
+        _emailService.SendEmail(message);
 
         _unitOfWork.Commit();
-
-        var customerEmail = orders.FirstOrDefault()?.Customer.Email;
-
-        if (customerEmail is not null)
-        {
-            var message = new EmailDto(customerEmail!, "Sarvicny: new Request Alert", $" A refund has been sent to your paypal account" +
-            $", Here is some of its details ,\n\nOrder Details:{transactionPayment}\n ");
-            _emailService.SendEmail(message);
-        }
 
         return new Response<object>
         {
             isError = false,
             Message = "Refund is done successfully money sent to customer",
-            Payload = orders
+            Payload = refundableOrders
         };
 
 

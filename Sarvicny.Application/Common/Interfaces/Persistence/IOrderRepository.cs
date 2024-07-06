@@ -34,7 +34,9 @@ namespace Sarvicny.Application.Common.Interfaces.Persistence
         //Task<List<Order>> getAllPaymentExpiredOrders(ISpecifications<Order> spec);
         // Task<List<Order>> getAllExpiredOrders(ISpecifications<Order> spec);
 
-        Task<List<Order>> GetAllCanceled_Reassigned_RemovedWithRefundOrders(ISpecifications<Order> spec);
+        Task<List<Order>> getAllRefundableOrders(ISpecifications<Order> spec);
+
+
 
         Task ChangeOrderPaidStatus(Order order, string transactionId, string saleId, PaymentMethod paymentMethod, bool transactionStatus);
 

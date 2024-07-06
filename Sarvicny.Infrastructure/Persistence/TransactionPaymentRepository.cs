@@ -2,6 +2,7 @@
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Users;
+using Sarvicny.Domain.Specification;
 using Sarvicny.Infrastructure.Data;
 
 namespace Sarvicny.Infrastructure.Persistence
@@ -45,7 +46,10 @@ namespace Sarvicny.Infrastructure.Persistence
 
             return transactionPayment;
         }
-
+        private IQueryable<TransactionPayment> ApplySpecification(ISpecifications<TransactionPayment> spec)
+        {
+            return SpecificationBuilder<TransactionPayment>.Build(_context.TransactionPayment, spec);
+        }
         public async Task<TransactionPayment> GetTransactionPaymentAsync(string transactionPaymentId)
         {
             var transactionPayment = _context.TransactionPayment
@@ -61,9 +65,31 @@ namespace Sarvicny.Infrastructure.Persistence
             return transactionPayment;
         }
 
+        public async Task<List<TransactionPayment>> getAllRefundableTransactions(ISpecifications<TransactionPayment> spec)
+        {
+            var CanceledStatus = OrderStatusEnum.Canceled.ToString();
+            var Reassigned = OrderStatusEnum.ReAssigned.ToString();
+            var RemovedWithRefund = OrderStatusEnum.RemovedWithRefund.ToString();
+            var cash = PaymentMethod.Cash.ToString();
+
+            var transactions = await ApplySpecification(spec)
+    .Where(t => t.PaymentMethod != PaymentMethod.Cash)
+    .Where(t => t.OrderList.Any(o => o.OrderStatusString == CanceledStatus ||
+                                     o.OrderStatusString == Reassigned ||
+                                     o.OrderStatusString == RemovedWithRefund)).ToListAsync();
+
+
+            return transactions;
+        }
+
         public async Task UpdateTransactionPaymentAsync(TransactionPayment transactionPayment)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<TransactionPayment?> GetTransactionPaymentByIdAsync(ISpecifications<TransactionPayment> spec)
+        {
+            return await ApplySpecification(spec).FirstOrDefaultAsync();
         }
     }
 }

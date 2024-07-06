@@ -2,12 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RestSharp;
+using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
 using Sarvicny.Contracts;
 using Sarvicny.Domain.Entities;
 using Sarvicny.Domain.Entities.Emails;
+using System.Text;
 
 namespace Sarvicny.Application.Services.Paypal
 {
@@ -400,7 +402,7 @@ namespace Sarvicny.Application.Services.Paypal
             }
         }
 
-        public async Task<Response<object>> Refund(TransactionPayment transactionPayment, Order order, decimal amount)
+        public async Task<Response<object>> Refund(TransactionPayment transactionPayment, decimal amount)
         {
             string refundUrlFormat = "https://api.sandbox.paypal.com/v1/payments/sale/{0}/refund";
 
@@ -429,15 +431,38 @@ namespace Sarvicny.Application.Services.Paypal
             var response = await client.ExecuteAsync(request);
             if (!response.IsSuccessful)
             {
+                return new Response<object>
+                {
+                    isError = true,
+                    Message = $"Refund processing error: {response.ErrorMessage} - Status: {response.StatusCode} - Content: {response.Content}",
+                    Payload = null
+                };
                 throw new Exception("Refund failed: " + response.Content);
             }
 
             _logger.LogInformation($"Refund successful: {response.Content}");
 
-            order.OrderStatus = OrderStatusEnum.Refunded;
+            var refundableOrders = transactionPayment.OrderList
+                .Where(o => o.OrderStatus == OrderStatusEnum.Canceled || o.OrderStatus == OrderStatusEnum.ReAssigned || o.OrderStatus == OrderStatusEnum.RemovedWithRefund)
+                .ToList();
 
-            var message = new EmailDto(order.OrderDetails.Provider.Email!, "Sarvicny: new Request Alert", $" A refund has been sent to your paypal account" +
-                $", Here is some of its details ,\n\nOrder Details:{order}\n ");
+            StringBuilder allOrdersDetails = new StringBuilder();
+
+            foreach (var order in refundableOrders)
+            {
+                order.OrderStatus = OrderStatusEnum.Refunded;
+                var orderDetailsForCustomer = HelperMethods.GenerateOrderDetailsMessageForCustomer(order);
+                allOrdersDetails.AppendLine(orderDetailsForCustomer);
+            }
+
+            // Create the email message
+            var message = new EmailDto(
+                refundableOrders.First().OrderDetails.Provider.Email!,
+                "Sarvicny: New Refund Alert",
+                $"A refund has been sent to your PayPal account. Here are the details:\n\n{allOrdersDetails}"
+            );
+
+
             _emailService.SendEmail(message);
 
             _unitOfWork.Commit();

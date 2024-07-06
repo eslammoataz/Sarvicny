@@ -46,6 +46,7 @@ namespace Sarvicny.Infrastructure.Persistence
             return SpecificationBuilder<Order>.Build(_context.Orders, spec);
         }
 
+
         public async Task<Order?> GetOrder(ISpecifications<Order> specifications)
         {
             return await ApplySpecification(specifications).FirstOrDefaultAsync();
@@ -176,7 +177,7 @@ namespace Sarvicny.Infrastructure.Persistence
 
         }
 
-        public async Task<List<Order>> GetAllCanceled_Reassigned_RemovedWithRefundOrders(ISpecifications<Order> spec)
+        public async Task<List<Order>> getAllRefundableOrders(ISpecifications<Order> spec)
         {
             var CanceledStatus = OrderStatusEnum.Canceled.ToString();
             var Reassigned = OrderStatusEnum.ReAssigned.ToString();
@@ -186,11 +187,32 @@ namespace Sarvicny.Infrastructure.Persistence
             var orders = await ApplySpecification(spec)
                 .Where(or=>or.TransactionPayment.PaymentMethod != PaymentMethod.Cash)
                 .Where(or => or.OrderStatusString == CanceledStatus || or.OrderStatusString == Reassigned || or.OrderStatusString == RemovedWithRefund)
+
                 .OrderByDescending(or => or.OrderDetails.RequestedSlot.RequestedDay.Date)
                 .ToListAsync();
+
+
             return orders;
+           
 
         }
+
+        //public async Task<List<TransactionPayment>> getAllRefundableTransactions(ISpecifications<TransactionPayment> spec)
+        //{
+        //    var CanceledStatus = OrderStatusEnum.Canceled.ToString();
+        //    var Reassigned = OrderStatusEnum.ReAssigned.ToString();
+        //    var RemovedWithRefund = OrderStatusEnum.RemovedWithRefund.ToString();
+        //    var cash = PaymentMethod.Cash.ToString();
+
+        //            var transactions = await ApplySpecificationT(spec)
+        //    .Where(t => t.PaymentMethod != PaymentMethod.Cash)
+        //    .Where(t => t.OrderList.Any(o => o.OrderStatusString == CanceledStatus ||
+        //                                     o.OrderStatusString == Reassigned ||
+        //                                     o.OrderStatusString == RemovedWithRefund)).ToListAsync();
+
+
+        //    return transactions;
+        //}
 
         //public async Task<List<Order>> GetAllExpiredOrders(ISpecifications<Order> spec)
         //{

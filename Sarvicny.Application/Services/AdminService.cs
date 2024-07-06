@@ -26,6 +26,7 @@ public class AdminService : IAdminService
     private readonly IOrderRepository _orderRepository;
     private readonly IDistrictRepository _districtRepository;
     private readonly ICustomerRepository _customerRepository;
+    private readonly ITransactionPaymentRepository _transactionPaymentRepository;
 
 
 
@@ -34,7 +35,7 @@ public class AdminService : IAdminService
     private readonly IOrderService _orderService;
     private readonly IServiceProviderService _providerService;
 
-    public AdminService(UserManager<User> userManager, IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService, IOrderService orderService, IDistrictRepository districtRepository, IServiceProviderService providerService, ICustomerRepository customerRepository)
+    public AdminService(UserManager<User> userManager, IUserRepository userRepository, IServiceRepository serviceRepository, IUnitOfWork unitOfWork, IServiceProviderRepository serviceProviderRepositor, IAdminRepository adminRepository, IOrderRepository orderRepository, IEmailService emailService, IOrderService orderService, IDistrictRepository districtRepository, IServiceProviderService providerService, ICustomerRepository customerRepository, ITransactionPaymentRepository transactionPaymentRepository)
     {
         _userManager = userManager;
         _serviceRepository = serviceRepository;
@@ -48,6 +49,7 @@ public class AdminService : IAdminService
         _districtRepository = districtRepository;
         _providerService = providerService;
         _customerRepository = customerRepository;
+        _transactionPaymentRepository = transactionPaymentRepository;
     }
 
     public async Task<Response<ICollection<object>>> GetAllCustomers()
@@ -1517,29 +1519,35 @@ public class AdminService : IAdminService
         }
     }
 
-    public async Task<Response<List<object>>> getAllOrdersNeedRefund()
+    public async Task<Response<List<object>>> getAllTransactionsNeedRefund()
     {
-        var spec = new OrderWithDetailsSpecification();
+        var spec = new TransactionPaymentWithDetailsSpecification();
 
-        var orders = await _orderRepository.GetAllCanceled_Reassigned_RemovedWithRefundOrders(spec);
+        var transactions= await _transactionPaymentRepository.getAllRefundableTransactions(spec);
 
         List<object> result = new List<object>();
-        foreach (var order in orders)
-        {
-            var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
 
-            result.Add(orderDetails);
-
-        }
-        if (result.Count == 0)
+        foreach (var transaction in transactions)
         {
-            return new Response<List<object>>()
+            List<object> ordersDetails = new List<object>();
+
+            var orders = transaction.OrderList.Where(o => o.OrderStatus == OrderStatusEnum.Canceled || o.OrderStatus == OrderStatusEnum.RemovedWithRefund || o.OrderStatus == OrderStatusEnum.ReAssigned).ToList();
+            foreach (var order in orders)
             {
-                Status = "Success",
-                Message = "No Orders Found",
-                Payload = null,
-                isError = false
+                var orderDetails = await _orderService.ShowAllOrderDetailsForAdmin(order.OrderID);
+                ordersDetails.Add(orderDetails);
+            }
+
+            var transactionWithOrders = new 
+            {
+                TransactionPaymentID = transaction.TransactionPaymentID,
+                OrdersDetails = ordersDetails
             };
+            
+
+            result.Add(transactionWithOrders);
+          
+
         }
 
         return new Response<List<object>>()

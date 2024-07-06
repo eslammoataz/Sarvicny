@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sarvicny.Application.Services;
 using Sarvicny.Application.Services.Abstractions;
 
 namespace Sarvicny.Api.Controllers.UsersControllers;
@@ -12,11 +13,13 @@ namespace Sarvicny.Api.Controllers.UsersControllers;
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
+    private readonly IPaymentService _paymentService;
 
 
-    public AdminController(IAdminService adminService)
+    public AdminController(IAdminService adminService, IPaymentService paymentService)
     {
         _adminService = adminService;
+        _paymentService = paymentService;
     }
 
 
@@ -185,7 +188,7 @@ public class AdminController : ControllerBase
     [HttpGet("getAllOrdersNeedRefund")]
     public async Task<IActionResult> getAllOrdersNeedRefund()
     {
-        var response = await _adminService.getAllOrdersNeedRefund();
+        var response = await _adminService.getAllTransactionsNeedRefund();
 
         if (response.isError)
         {
@@ -325,6 +328,20 @@ public class AdminController : ControllerBase
         }
 
         return Ok(Response);
+
+    }
+
+    [HttpPost]
+    [Route("refund")]
+    public async Task<IActionResult> Refund(string transactionPaymentId)
+    {
+        var response = await _paymentService.RefundAffectedTransaction(transactionPaymentId);
+
+        if (response.isError)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
 
     }
 
