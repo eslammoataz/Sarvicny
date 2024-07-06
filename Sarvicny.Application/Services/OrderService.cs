@@ -126,7 +126,7 @@ namespace Sarvicny.Application.Services
 
                 };
             }
-            if (order.OrderStatus != OrderStatusEnum.Done || order.OrderStatus != OrderStatusEnum.Completed)
+            if (order.OrderStatus != OrderStatusEnum.Done && order.OrderStatus != OrderStatusEnum.Completed)
             {
                 return new Response<object>()
                 {
