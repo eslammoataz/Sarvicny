@@ -1366,6 +1366,7 @@ public class AdminService : IAdminService
             {
                 ProviderId = provider.Id,
             };
+            wallet = provider.Wallet;
         }
         if (order.TransactionPayment.PaymentMethod == PaymentMethod.Paypal || order.TransactionPayment.PaymentMethod == PaymentMethod.Paymob)
         {
