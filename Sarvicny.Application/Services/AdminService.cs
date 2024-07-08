@@ -395,6 +395,7 @@ public class AdminService : IAdminService
             isVerified = p.IsVerified,
             services = p.ProviderServices.Where(ps => ps.isVerified == false).Select(s => new
             {
+                s.ProviderServiceID,
                 s.ServiceID,
                 s.Service.ServiceName,
 
