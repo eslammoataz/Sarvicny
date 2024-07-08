@@ -1344,7 +1344,18 @@ namespace Sarvicny.Application.Services
                     isError = true
                 };
             }
-            if (order.OrderStatus == OrderStatusEnum.Canceled)
+            if (order.OrderStatus == OrderStatusEnum.Removed || order.OrderStatus == OrderStatusEnum.Refunded || order.OrderStatus == OrderStatusEnum.ReAssigned || order.OrderStatus == OrderStatusEnum.RemovedWithRefund || order.OrderStatus == OrderStatusEnum.Done|| order.OrderStatus == OrderStatusEnum.Completed)
+            {
+                return new Response<object>()
+                {
+                    Status = "failed",
+                    Message = "Order can't be canceled",
+                    Payload = null,
+                    isError = true
+                };
+            }
+
+            if (order.OrderStatus == OrderStatusEnum.Canceled|| order.OrderStatus == OrderStatusEnum.CanceledByProvider)
             {
                 return new Response<object>()
                 {

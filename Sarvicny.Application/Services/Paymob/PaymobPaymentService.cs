@@ -7,6 +7,7 @@ using Sarvicny.Application.Common.Helper;
 using Sarvicny.Application.Common.Interfaces.Persistence;
 using Sarvicny.Application.Services.Abstractions;
 using Sarvicny.Application.Services.Email;
+using Sarvicny.Application.Services.Specifications.OrderSpecifications;
 using Sarvicny.Contracts;
 using Sarvicny.Contracts.Payment;
 using Sarvicny.Contracts.Payment.Request;
@@ -412,7 +413,8 @@ public class PaymobPaymentService : IPaymobPaymentService
     public async Task<Response<object>> HandleRefund(TransactionCallBackBody transaction)
     {
         var transactionId = transaction.Obj.TransactionId;
-        var transactionPayment = await _transactionPaymentRepository.GetTransactionByTransactionID(transactionId);
+        var spec = new TransactionPaymentWithDetailsSpecification(transactionId);
+        var transactionPayment = await _transactionPaymentRepository.GetTransactionPaymentByIdAsync(spec);
 
         if (transactionPayment is null)
         {
@@ -439,9 +441,9 @@ public class PaymobPaymentService : IPaymobPaymentService
 
         // Create the email message
         var message = new EmailDto(
-            refundableOrders.First().OrderDetails.Provider.Email!,
+            refundableOrders.First().Customer.Email!,
             "Sarvicny: New Refund Alert",
-            $"A refund has been sent to your PayPal account. Here are the details:\n\n{allOrdersDetails}"
+            $"A refund has been sent to your payMob account. Here are the details:\n\n{allOrdersDetails}"
         );
 
 
@@ -453,7 +455,7 @@ public class PaymobPaymentService : IPaymobPaymentService
         {
             isError = false,
             Message = "Refund is done successfully money sent to customer",
-            Payload = refundableOrders
+            Payload = null
         };
 
 

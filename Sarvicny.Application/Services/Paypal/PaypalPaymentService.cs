@@ -457,7 +457,7 @@ namespace Sarvicny.Application.Services.Paypal
 
             // Create the email message
             var message = new EmailDto(
-                refundableOrders.First().OrderDetails.Provider.Email!,
+                refundableOrders.First().Customer.Email!,
                 "Sarvicny: New Refund Alert",
                 $"A refund has been sent to your PayPal account. Here are the details:\n\n{allOrdersDetails}"
             );
